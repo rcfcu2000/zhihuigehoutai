@@ -1,3 +1,5 @@
+import { it } from "element-plus/es/locale";
+
 function getRecentDates(monthsOffset: number): string[] {
     // 创建当前时间的 Date 对象
     let currentDate = new Date();
@@ -24,6 +26,88 @@ function getRecentDates(monthsOffset: number): string[] {
 }
 
 
+const gmvPrductList = {
+    recoreds:[
+        {
+            current_inventory: "S",
+            store_gmv: [1231231, 123, 123, 123, 123, 123]
+        },
+        {
+            current_inventory: "A",
+            store_gmv: [1231231, 123, 123, 123, 123, 123]
+        }, {
+            current_inventory: "B",
+            store_gmv: [1231231, 123, 123, 123, 123, 123]
+        }
+    ],
+    // date:['12-1','12-2'...]
+}
+
+export const lineOptions1 = (arr: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+            data: arr.map((i: { class: any; }) => i.class),
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: getRecentDates(1),
+            axisLine: {
+                show: false,
+
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            }
+        },
+        yAxis: {
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        series: arr.map((i: { class: string; data: any; }, index: number) => {
+            return {
+                name: i.class,
+                symbolSize: 1, // 设置数据点的大小为8像素
+                type: 'line',
+                data: i.data.map(i => i.store_gmv),
+                itemStyle: {
+                    color: backColor[index],
+                }
+            }
+        }),
+    }
+}
+
 
 
 export const lineOptions = (arr: any) => {
@@ -44,11 +128,6 @@ export const lineOptions = (arr: any) => {
             right: '4%',
             bottom: '3%',
             containLabel: true
-        },
-        toolbox: {
-            feature: {
-                saveAsImage: {}
-            }
         },
         xAxis: {
             type: 'category',
@@ -94,26 +173,6 @@ export const lineOptions = (arr: any) => {
                 }
             }
         }),
-        // series: [
-        //     {
-        //         name: 'Video Ads',
-        //         type: 'line',
-        //         stack: 'Total',
-        //         data: data
-        //     },
-        //     {
-        //         name: 'Direct',
-        //         type: 'line',
-        //         stack: 'Total',
-        //         data: data
-        //     },
-        //     {
-        //         name: 'Search Engine',
-        //         type: 'line',
-        //         stack: 'Total',
-        //         data: data
-        //     }
-        // ]
     }
 }
 

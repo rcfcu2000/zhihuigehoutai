@@ -1,54 +1,43 @@
 <template>
-    <div class="main">
+    <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
         <div class="header">
             <span class="titl1_h1">货盘分析</span>
             <div class="search">
                 <div class="search_left">
                     <div class="search_line">
                         负责人
-                        <el-select v-model="searchData.name" class="select_width" placeholder="请选择" size="small">
+                        <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" size="small">
                             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </div>
                     <div class="search_line">
                         本月货盘
-                        <el-select v-model="searchData.monthData" class="select_width" placeholder="请选择" size="small">
+                        <el-select v-model="searchData.current_inventory" class="select_width" placeholder="请选择"
+                            size="small">
                             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </div>
                     <div class="search_line">
                         货盘变化
-                        <el-radio-group v-model="searchData.palletChange" size="small">
-                            <el-radio-button label="上升" />
-                            <el-radio-button label="持平" />
-                            <el-radio-button label="下降" />
-                        </el-radio-group>
+                        <div class="line">
+                            <el-radio-group v-model="searchData.all" @change="searchData.inventory_change = []"
+                                class="ml-4">
+                                <el-radio :label="999" border size="small">全部</el-radio>
+                            </el-radio-group>
+                            <el-checkbox-group v-model="searchData.inventory_change" size="small"
+                                @change="changeCheckGroup">
+                                <el-checkbox border v-for="(item, index) in cities" :key="item.label" :label="item.label">{{
+                                    item.value
+                                }}</el-checkbox>
+                            </el-checkbox-group>
+                        </div>
                     </div>
                 </div>
                 <div class="search_right">
                     <div class="search_line">
-                        流量归属原则
-                        <el-select v-model="searchData.name" class="select_width" placeholder="请选择" size="small">
-                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-                        </el-select>
-                    </div>
-                    <div class="search_line">
-                        件单价
-                        <el-select v-model="searchData.monthData" class="select_width" placeholder="请选择" size="small">
-                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-                        </el-select>
-                    </div>
-                    <div class="search_line">
-                        已上架月份
-                        <el-input v-model="searchData.listedMonth" class="select_width" size="small" placeholder="请输入" />
-                    </div>
-                    <div class="search_line">
-                        年月
-                        <el-radio-group v-model="searchData.palletChange" style="color: #fff;" class="search_radio"
-                            size="small">
-                            <el-radio label="202309" />
-                            <el-radio label="202310" />
-                        </el-radio-group>
+                        请选择起止时间
+                        <el-date-picker @change="chageSearch" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+                            value-format="YYYY-MM-DD" type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
                     </div>
                 </div>
             </div>
@@ -64,7 +53,7 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            1.55
+                            {{ state.titleData.attachment_rate || 0 }}
                         </span>
                         <span class="ctn_name">
                             连带率
@@ -72,7 +61,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            5.72%
+                            {{ state.titleData.add_to_cart_rate || 0 }}%
                         </span>
                         <span class="ctn_name">
                             加购率
@@ -80,7 +69,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            1.36%
+                            {{ state.titleData.favorite_rate || 0 }}%
                         </span>
                         <span class="ctn_name">
                             收藏率
@@ -88,7 +77,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            13.31%
+                            {{ state.titleData.refund_rate || 0 }}%
                         </span>
                         <span class="ctn_name">
                             退款率
@@ -103,7 +92,7 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            11.37%
+                            {{ state.titleData.returning_buyer_percentage || 0 }}%
                         </span>
                         <span class="ctn_name">
                             老买家人数占比
@@ -111,7 +100,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            11.98%
+                            {{ state.titleData.returning_buyer_gmv_percentage || 0 }}%
                         </span>
                         <span class="ctn_name">
                             老买家GWV占比
@@ -119,7 +108,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            880
+                            {{ state.titleData.returning_buyer_average_order_value || 0 }}
                         </span>
                         <span class="ctn_name">
                             老买家客单价
@@ -127,7 +116,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            836
+                            {{ state.titleData.average_order_value_range || 0 }}
                         </span>
                         <span class="ctn_name">
                             客单价
@@ -142,7 +131,7 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            7833
+                            {{ state.titleData.search_visitor_count || 0 }}
                         </span>
                         <span class="ctn_name">
                             搜索访客数
@@ -150,7 +139,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            5.33%
+                            {{ state.titleData.search_gmv_percentage || 0 }}%
                         </span>
                         <span class="ctn_name">
                             搜多GMV占比
@@ -158,7 +147,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            47.93%
+                            {{ state.titleData.paid_traffic_percentage || 0 }}%
                         </span>
                         <span class="ctn_name">
                             付费流量占比
@@ -166,7 +155,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            63.34%
+                            {{ state.titleData.paid_gmv_percentage || 0 }}%
                         </span>
                         <span class="ctn_name">
                             付费GMV占比
@@ -184,7 +173,6 @@
                     最高层级{{ state.treeLevel }}
                 </div>
                 <div class="GMV_left_ctn" id="GMVDismantlingecharts">
-                    <!-- <tree-view :treeData="state.treeData"></tree-view> -->
                 </div>
             </div>
             <div class="GMV_right">
@@ -195,7 +183,7 @@
 
                 </div>
                 <div class="echarts_title">
-                    GMV对比
+                    访客对比
                 </div>
                 <div class="echarts_1" id="Visitorcharts">
 
@@ -211,7 +199,9 @@
                     货盘趋势
                 </div>
                 <div class="trend_comparison_box" id="Palletecharts">
-
+                    <el-skeleton :rows="6" animated>
+                    </el-skeleton>
+                    <el-empty description="description" />
                 </div>
             </div>
             <div class="trend_comparison_right flex_size">
@@ -222,6 +212,10 @@
 
                 </div>
             </div>
+        </div>
+        <div class="title title_btn">
+            <span> 单价趋势</span>
+            <button class="btn" @click="getUserPrice">调整价格区间</button>
         </div>
         <div class="trend_comparison">
             <div class="trend_comparison_left flex_size">
@@ -247,7 +241,8 @@
         <div class="table">
             <el-auto-resizer>
                 <template #default="{ height, width }">
-                    <el-table-v2 :columns="tableColumns" stripe :data="tableData" :width="width" :height="height" fixed>
+                    <el-table-v2 :columns="tableColumns" stripe :data="state.tableData" :width="width" :height="height"
+                        fixed>
                         <template #empty>
                             <div class="flex items-center justify-center h-100%">
                                 <el-empty />
@@ -257,19 +252,86 @@
                 </template>
             </el-auto-resizer>
         </div>
+        <el-dialog v-model="state.dialogForm.visible" width="600px" title="设置价格区间（最多6个）" align-center>
+            <div class="dialog-content">
+                <div class="dp-flex justify-content-space-betwee tip align-items">
+                    <span>
+                        客单价(元)
+                    </span>
+                    <span class="dp-flex align-items cursor-pointer" @click="restore">
+                        <el-icon :size="20">
+                            <RefreshLeft />
+                        </el-icon>
+                        恢复默认
+                    </span>
+                </div>
+                <el-form ref="formRef" :model="userPriceRange">
+                    <div v-for="(item, index) in userPriceRange.priceRange" class=" item_line dp-flex" :key="index">
+                        <el-form-item :prop="'priceRange.' + index + '.priceMin'" :rules="{
+                            required: true,
+                            message: '填写价格区间',
+                            trigger: 'blur',
+                        }">
+                            <el-input-number v-model="item.priceMin" class="input_width input_style" :controls="false"
+                                @blur="checkNum(item.priceMin, index, 'priceMin')" /> -
+                        </el-form-item>
+                        <el-form-item :prop="'priceRange.' + index + '.priceMax'" :rules="{
+                            required: true,
+                            message: '填写价格区间',
+                            type: 'number',
+                            trigger: 'blur'
+                        }">
+                            <el-input-number v-model="item.priceMax" class="input_width input_style" :controls="false"
+                                @blur="checkNum(item.priceMax, index, 'priceMax')" />
+                            <span style="flex:1">元</span>
+                        </el-form-item>
+                        <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
+                    </div>
+
+                </el-form>
+                <el-button class="mt-2 btn_style" style="width:100% ;" @click="addDomain"
+                    :disabled="userPriceRange.priceRange.length === 6">+添加</el-button>
+            </div>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="state.dialogForm.visible = false" class="cancellation btn">取消</el-button>
+                    <el-button @click="submitForm(formRef)" class="primary btn">
+                        确定
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 <script setup lang="ts" name="palletLinkAnalysis">
 import { tableColumns } from './table'
+import { getAlldata, getPriceRangedata, getUserPriceRange, setUserPriceRange } from '@/api/AIdata'
+import { getMonthFinalDay } from '@/utils/getDate'
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
-
-// import TreeView from './components/TreeView.vue'
-import { lineOptions, barOptions } from './echartsOptions'
+import { ElMessage } from 'element-plus'
+import type { FormInstance } from 'element-plus'
+import { lineOptions, barOptions, lineOptions1 } from './echartsOptions'
+import { useUserStore } from '@/pinia/modules/user'
+const userStore = useUserStore()
 import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
-
+const formRef = ref<FormInstance>()
+const cities = [
+    {
+        label: '-1',
+        value: '上升'
+    },
+    {
+        label: '0',
+        value: '持平'
+    },
+    {
+        label: '1',
+        value: '下降'
+    }
+]
 const options = [
     {
         value: 'Option1',
@@ -294,60 +356,153 @@ const options = [
 ]
 
 const state = reactive({
-    treeData: [
-        { name: 'Node A', children: [] },
-        {
-            name: 'Node B',
-            children: [
-                { name: 'Node C', children: [] },
-                { name: 'Node D', children: [] }
-            ]
-        },
-    ],
-    tree:[] as any,
+    tree: [] as any,
+    tableData: [],
+    titleData: {} as any,
+    dialogForm: {
+        visible: false,
+        records: [] as DomainItem[],
+    },
+    loading: true,
     treeLevel: 0,
+    gmvPrductList: []
 })
+
 
 const searchData = reactive({
-    name: '',
-    monthData: '',
-    palletChange: '上升',
-    principle: '',
-    originalPrice: '',
-    listedMonth: '',
-    years: ''
-
+    product_manager: '', //	string 商品负责人 - 负责该商品的人员或团队名称
+    current_inventory: '',// string 当期货盘
+    inventory_change: [],
+    all: 999,
+    date: [getMonthFinalDay('7').beginDate, getMonthFinalDay('7').endDate]
 })
-const generateColumns = (length = 10, prefix = 'column_', props?: any) =>
-    Array.from({ length }).map((_, columnIndex) => ({
-        ...props,
-        key: `${prefix}${columnIndex}`,
-        dataKey: `${prefix}${columnIndex}`,
-        title: `Column ${columnIndex}`,
-        width: 150,
-    }))
 
-const generateData = (
-    columns: ReturnType<typeof generateColumns>,
-    length = 200,
-    prefix = 'row-'
-) =>
-    Array.from({ length }).map((_, rowIndex) => {
-        return columns.reduce(
-            (rowData, column, columnIndex) => {
-                rowData[column.dataKey] = `Row ${rowIndex} - Col ${columnIndex}`
-                return rowData
-            },
-            {
-                id: `${prefix}${rowIndex}`,
-                parentId: null,
-            }
-        )
+
+// 调整价格区间data
+const userPriceRange = reactive<{
+    priceRange: DomainItem[]
+}>({
+    priceRange: [],
+})
+
+interface DomainItem {
+    priceMin: number,
+    priceMax: number,
+    uid: string
+}
+
+const removeLine = (item: DomainItem) => {
+    const index = userPriceRange.priceRange.indexOf(item)
+    if (index !== -1) {
+        userPriceRange.priceRange.splice(index, 1)
+    }
+}
+
+const restore = () => {
+
+}
+
+const addDomain = () => {
+    userPriceRange.priceRange.push({
+        priceMin: '',
+        priceMax: '',
+        uid: userStore.userInfo.ID,
     })
+}
 
-const columns = generateColumns(26)
-const tableData = generateData(columns, 200)
-onMounted(() => {
+const checkNum = (val, ind, str) => {
+    // console.log(val, ind, str);
+    if (!/^\d+$/.test(val)) {
+        ElMessage.warning("输入格式错误或者输入为空");
+        userPriceRange.priceRange[ind][str] = "";
+        return;
+    }
+    let s = false;
+    userPriceRange.priceRange.forEach((item, index) => {
+        if (
+            Number(item.priceMin) < Number(val) &&
+            Number(val) < Number(item.priceMax) &&
+            index !== ind
+        ) {
+            s = true;
+            return;
+        }
+    });
+    if (s) {
+        ElMessage.warning("输入价格与其他区间价格冲突");
+        userPriceRange.priceRange[ind][str] = "";
+        return;
+    }
+}
+
+const submitForm = (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    formEl.validate(async (valid) => {
+        if (valid) {
+            const data = {
+                records: userPriceRange.priceRange,
+                uid: userStore.userInfo.ID
+            }
+            const res = await setUserPriceRange(data)
+            if (res.code === 0) {
+                ElMessage.success('设置成功')
+                state.dialogForm.visible = false
+
+            }
+        } else {
+            console.log('error submit!')
+            return false
+        }
+    })
+}
+
+
+
+onMounted(async () => {
+    console.log(userStore.userInfo.ID)
+    let data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        product_manager: searchData.product_manager,
+        inventory_change: [searchData.all] || searchData.inventory_change,
+        current_inventory: searchData.current_inventory,
+    }
+    const res = await getAlldata(data)
+    const res2 = await getPriceRangedata(data)
+    if (res.code === 0 && res2.code === 0) {
+        state.tableData = res.data.prductInfoList.records
+        state.titleData = res.data.index
+        state.gmvPrductList = res.data.gmvPrductList.records
+        await getData()
+        state.loading = false
+    }
+    state.treeLevel = getLevel(state.tree)
+})
+
+const getUserPrice = async () => {
+    state.loading = true;
+    const res = await getUserPriceRange({
+        id: userStore.userInfo.ID
+    })
+    if (res.code === 0) {
+        state.loading = false;
+        userPriceRange.priceRange = res.data.records
+        state.dialogForm.records = res.data.records
+        console.log(res)
+        state.dialogForm.visible = true
+    }
+}
+
+const chageSearch = () => {
+    console.log(searchData)
+}
+
+const changeCheckGroup = (e: any) => {
+    searchData.all = ''
+    console.log(e)
+}
+
+const getData = () => {
     contrastGMV()
     contrastVisitor()
     palletTrend()
@@ -355,8 +510,8 @@ onMounted(() => {
     unitPriceGMV()
     unitPriceTrend()
     GMVDismantling()
-    state.treeLevel = getLevel(state.tree)
-})
+}
+
 Math.floor(Math.random() * (1 - 100) + 100)//1~100的随机数
 let data = Array.from(new Array(30), (x, i) => Math.floor(Math.random() * (1 - 100) + 100))
 const contrastGMV = () => {
@@ -405,29 +560,7 @@ const palletTrend = () => {
     const chartDom = document.getElementById('Palletecharts') as HTMLElement;
     const myChart = echarts.init(chartDom);
 
-    let arr = [
-        {
-            name: 'S',
-            data: data
-        },
-        {
-            name: 'A',
-            data: data
-        },
-        {
-            name: 'B',
-            data: data
-        },
-        {
-            name: 'C',
-            data: data
-        },
-        {
-            name: 'D',
-            data: data
-        }
-    ]
-    const option = lineOptions(arr)
+    const option = lineOptions1(state.gmvPrductList)
     option && myChart.setOption(option);
 
     window.addEventListener('resize', () => {
@@ -517,7 +650,6 @@ const unitPriceTrend = () => {
         myChart.resize()
     })
 }
-
 
 const GMVDismantling = () => {
     const chartDom = document.getElementById('GMVDismantlingecharts') as HTMLElement;
@@ -714,7 +846,6 @@ const GMVDismantling = () => {
     })
 }
 
-
 const getLevel = (arr) => {
     let maxLevel = 0;
     (function callBack(arr, level) {
@@ -744,6 +875,16 @@ $echarts_bg_img: url('./images/_2.png');
     color: #fff;
     overflow: auto;
 
+    ::v-deep(.el-checkbox) {
+        margin: 0 10px;
+        color: #fff;
+    }
+
+    ::v-deep(.el-radio) {
+        margin: 0 10px;
+        color: #fff;
+    }
+
     .header {
         height: 63px;
         width: 100%;
@@ -759,8 +900,14 @@ $echarts_bg_img: url('./images/_2.png');
 
             .search_left {
                 display: flex;
-                flex: 0.3;
+                flex: 0.35;
                 justify-content: space-between;
+
+                .search_line:last-child {
+                    width: 400px;
+                    display: flex;
+                    align-items: center;
+                }
             }
 
             .search_right {
@@ -770,7 +917,13 @@ $echarts_bg_img: url('./images/_2.png');
 
             }
 
+
+
             .search_line {
+                .line {
+                    display: flex;
+                }
+
                 .select_width {
                     width: 100px;
                 }
@@ -805,6 +958,24 @@ $echarts_bg_img: url('./images/_2.png');
         width: 462px;
         background-image: url('./images/image-2.png');
         background-size: 100% 100%;
+    }
+
+    .title_btn {
+        display: flex;
+        justify-content: space-between;
+
+        .btn {
+            margin-top: 24px;
+            padding: 0 20px;
+            height: 40px;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+
+            color: #fff;
+            background: linear-gradient(180deg, rgba(0, 72, 92, 1) 0%, rgba(1, 190, 226, 1) 100%);
+        }
     }
 
     .roduct_num {
@@ -846,9 +1017,9 @@ $echarts_bg_img: url('./images/_2.png');
 
     .echarts_title {
         margin: 10px 0 16px 0;
-        width: 340px;
+        width: 220px;
         height: 32px;
-        padding-left: 50px;
+        padding-left: 40px;
         background-image: url('./images/11.png');
         background-size: 100% 100%;
         font-size: 24px;
@@ -919,8 +1090,8 @@ $echarts_bg_img: url('./images/_2.png');
         font-size: 24px;
         padding-left: 60px;
         font-weight: 700;
-        // background-image: url('./images/table_title.png');
-        background: linear-gradient(90deg, #008CC2 0%, #008CC2 100%);
+        background-image: url('./images/table_title.png');
+        // background: linear-gradient(90deg, #008CC2 0%, #008CC2 100%);
         background-size: 100% 100%;
         margin-left: 20px;
         box-sizing: border-box;
@@ -960,6 +1131,83 @@ $echarts_bg_img: url('./images/_2.png');
                         .el-table-v2__row:hover {
                             background-color: rgb(32, 96, 169);
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    ::v-deep(.el-overlay) {
+        .el-overlay-dialog {
+            .el-dialog {
+                background: linear-gradient(116.95deg, rgba(0, 13, 36, 1) 0%, rgba(0, 82, 117, 1) 100%);
+
+                .el-dialog__header {
+                    border-bottom: 2px solid rgba(6, 132, 188, 1);
+
+                    .el-dialog__title {
+                        color: #fff;
+
+                    }
+                }
+
+                .dialog-content {
+                    color: #fff;
+
+                    .item_line {
+                        position: relative;
+
+                        .position_right {
+                            position: absolute;
+                            right: 20px;
+                        }
+                    }
+
+                    .tip {
+                        margin: 10px 0;
+                        font-size: 16px;
+                    }
+
+                    .input_width {
+                        width: 140px;
+                        margin: 0 10px;
+                    }
+
+                    .input_style {
+                        .el-input__wrapper {
+                            background: transparent;
+
+                            .el-input__inner {
+                                color: #fff;
+
+                            }
+                        }
+
+                    }
+
+                    .btn_style {
+                        background: transparent;
+                        color: #fff;
+                        border: 1px solid #fff;
+                    }
+                }
+
+                .dialog-footer {
+                    .btn {
+                        border: none;
+                        padding: 8px 18px;
+                        margin: 0 10px;
+                        color: #fff;
+                        background: transparent;
+                    }
+
+                    .cancellation {
+                        border: 1px solid #fff;
+                    }
+
+                    .primary {
+                        border: 1px solid rgb(7, 95, 154);
+                        background: rgb(7, 95, 154);
                     }
                 }
             }

@@ -4,6 +4,8 @@ import 'element-plus/es/components/notification/style/css'
 import 'element-plus/es/components/message-box/style/css'
 import './style/element_visiable.scss'
 import './style/visualization.scss'
+// import ElementPlus from 'element-plus'
+// import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import { createApp } from 'vue'
 // 引入gin-vue-admin前端初始化相关内容
 import './core/gin-vue-admin'
