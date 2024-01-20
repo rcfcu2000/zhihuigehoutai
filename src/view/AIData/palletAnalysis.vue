@@ -215,7 +215,7 @@
         </div>
         <div class="title title_btn">
             <span> 单价趋势</span>
-            <button class="btn" @click="getUserPrice">调整价格区间</button>
+            <el-button class="btn" @click="getUserPrice">调整价格区间</el-button>
         </div>
         <div class="trend_comparison">
             <div class="trend_comparison_left flex_size">
