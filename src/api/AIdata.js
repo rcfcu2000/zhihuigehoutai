@@ -36,3 +36,21 @@ export const setUserPriceRange = (data) => {
         data
     })
 }
+
+// 获取分类信息
+export const getCategoriesList = (data) => {
+    return service({
+        url: '/inventory/getCategoriesList',
+        method: 'post',
+        data
+    })
+}
+
+// 获取负责人列表
+export const getResponsibleList = (data) => {
+    return service({
+        url: '/inventory/getResponsibleList',
+        method: 'post',
+        data
+    })
+}

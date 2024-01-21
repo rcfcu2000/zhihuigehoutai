@@ -27,7 +27,7 @@ function getRecentDates(monthsOffset: number): string[] {
 
 
 const gmvPrductList = {
-    recoreds:[
+    recoreds: [
         {
             current_inventory: "S",
             store_gmv: [1231231, 123, 123, 123, 123, 123]
@@ -43,6 +43,7 @@ const gmvPrductList = {
     // date:['12-1','12-2'...]
 }
 
+
 export const lineOptions1 = (arr: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
@@ -51,7 +52,7 @@ export const lineOptions1 = (arr: any) => {
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-            data: arr.map((i: { class: any; }) => i.class),
+            data: arr.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -65,7 +66,7 @@ export const lineOptions1 = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: getRecentDates(1),
+            data: arr[0]?.date,
             axisLine: {
                 show: false,
 
@@ -94,12 +95,12 @@ export const lineOptions1 = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { class: string; data: any; }, index: number) => {
+        series: arr.map((i: { name: any; data: any; }, index: number) => {
             return {
-                name: i.class,
+                name: i.name,
                 symbolSize: 1, // 设置数据点的大小为8像素
                 type: 'line',
-                data: i.data.map(i => i.store_gmv),
+                data: i.data,
                 itemStyle: {
                     color: backColor[index],
                 }
@@ -176,37 +177,14 @@ export const lineOptions = (arr: any) => {
     }
 }
 
+
+
 export const barOptions = (arr: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
     return {
         tooltip: {
             trigger: 'axis'
         },
-        // tooltip: {
-        // show: true,
-        // confine: true,
-        // trigger: "axis",
-        // axisPointer: {
-        //     type: "shadow",
-        // },
-        // padding: 0,
-        // formatter: function (params) {
-        //     console.log(params)
-        //     return (
-        //         '<div class="Page-tip">
-        //            <div class="Page-title">' +
-        //         params[0].name +
-        //         "</div>" +
-        //         params[0].seriesName +
-        //         // "核销门店数量排名: " +
-        //         params[0].value +
-        //         "<br/>" +
-        //         "</div>"
-        //     );
-        // },
-        // extraCssText:
-        //     "background-color:rgba(0,0,0,0);color: #ffffff;border:none;",
-        // },
         legend: {
             data: arr.map((i: { name: any; }) => i.name),
             textStyle: {
@@ -223,7 +201,7 @@ export const barOptions = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: getRecentDates(1),
+            data: arr[0]?.date,
             axisLine: {
                 show: false,
                 lineStyle: {
