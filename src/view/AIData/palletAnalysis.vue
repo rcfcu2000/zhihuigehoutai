@@ -510,7 +510,7 @@ const getData2 = async () => {
     start_date: searchData.date[0],
     product_manager: searchData.product_manager,
     inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
-    current_inventory: searchData.current_inventory,
+    current_inventory: [searchData.current_inventory],
   };
   const [res, res2] = [await getAlldata(data), await getPriceRangedata(data)];
   if (res.code === 0 && res2.code === 0) {
