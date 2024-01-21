@@ -153,7 +153,7 @@
             <span class="ctn_num">
               {{ state.titleData.search_gmv_percentage || 0 }}%
             </span>
-            <span class="ctn_name"> 搜多GMV占比 </span>
+            <span class="ctn_name"> 搜索GMV占比 </span>
           </li>
           <li>
             <span class="ctn_num">
