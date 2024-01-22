@@ -52,7 +52,7 @@ export const lineOptions1 = (arr: any) => {
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-            data: arr.map((i: { name: any; }) => i.name),
+            data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -95,7 +95,7 @@ export const lineOptions1 = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
             return {
                 name: i.name,
                 symbolSize: 1, // 设置数据点的大小为8像素
@@ -119,7 +119,7 @@ export const lineOptions = (arr: any) => {
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-            data: arr.map((i: { name: any; }) => i.name),
+            data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -162,7 +162,7 @@ export const lineOptions = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
             return {
                 name: i.name,
                 stack: 'Total',
@@ -186,7 +186,7 @@ export const barOptions = (arr: any) => {
             trigger: 'axis'
         },
         legend: {
-            data: arr.map((i: { name: any; }) => i.name),
+            data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -229,7 +229,7 @@ export const barOptions = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
             return {
                 type: 'bar',
                 name: i.name,

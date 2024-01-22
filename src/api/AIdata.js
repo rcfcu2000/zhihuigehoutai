@@ -54,3 +54,12 @@ export const getResponsibleList = (data) => {
         data
     })
 }
+
+// 获取下一级GMV拆分
+export const getSubGmvList = (data) => {
+    return service({
+        url: '/inventory/getSubGmvList',
+        method: 'post',
+        data
+    })
+}
