@@ -44,7 +44,7 @@ const gmvPrductList = {
 }
 
 
-export const lineOptions1 = (arr: any) => {
+export const lineOptions1 = (arr: any, date: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
@@ -66,7 +66,7 @@ export const lineOptions1 = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: arr[0]?.date,
+            data: date,
             axisLine: {
                 show: false,
 
@@ -179,7 +179,7 @@ export const lineOptions = (arr: any) => {
 
 
 
-export const barOptions = (arr: any) => {
+export const barOptions = (arr: any, date: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
     return {
         tooltip: {
@@ -201,7 +201,7 @@ export const barOptions = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: arr[0]?.date,
+            data: date,
             axisLine: {
                 show: false,
                 lineStyle: {

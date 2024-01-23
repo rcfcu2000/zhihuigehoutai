@@ -6,8 +6,8 @@
         <div class="search_left">
           <div class="search_line">
             负责人
-            <el-select v-model="searchData.product_manager" class="select_width"  placeholder="请选择"
-              @change="getData2" size="small">
+            <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
+              size="small">
               <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
                 :value="item.responsible" />
             </el-select>
@@ -37,7 +37,8 @@
           <div class="search_line">
             请选择起止时间
             <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD" type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
+              value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+              end-placeholder="结束时间" />
           </div>
         </div>
       </div>
@@ -159,12 +160,8 @@
       <div class="trend_comparison_left flex_size">
         <div class="echarts_title">货盘趋势</div>
         <div class="trend_comparison_box" id="Palletecharts">
-          <el-skeleton :rows="6" animated> </el-skeleton>
-          <!-- <el-empty
-            v-show="state.gmvPrductList.length <= 0"
-            description="暂无数据"
-            class="eharts_empty"
-          /> -->
+          <el-skeleton :rows="6" animated > </el-skeleton>
+          <!-- <el-empty v-else description="暂无数据" class="eharts_empty" /> -->
         </div>
       </div>
       <div class="trend_comparison_right flex_size">
@@ -197,8 +194,6 @@
     </div>
     <div class="table_title">商品明细</div>
     <div class="aiData_table table">
-      <!-- <el-auto-resizer> -->
-      <!-- <template #default="{ height, width }"> -->
       <el-table :data="state.tableData" max-height="450">
         <el-table-column label="商品ID" width="150">
           <template #default="scope">
@@ -218,7 +213,7 @@
         </el-table-column>
         <el-table-column label="净利润率" width="150">
           <template #default="scope">
-            <span>  {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
+            <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
         <el-table-column label="产品分类" width="150">
@@ -297,8 +292,6 @@
           </div>
         </template>
       </el-table>
-      <!-- </template> -->
-      <!-- </el-auto-resizer> -->
     </div>
     <el-dialog v-model="state.dialogForm.visible" width="600px" title="设置价格区间（最多6个）" align-center>
       <div class="dialog-content">
@@ -411,14 +404,17 @@ const state = reactive({
   priceRangedata: [] as any,
   responsibleList: [] as any,
   monthPallet: [] as any,
+  oldNewList: [] as any,
 });
-
+const disabledDate = (time: Date) => {
+  return time.getTime() > Date.now()
+}
 const searchData = reactive({
   product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称
   current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
-  date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+  date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
 });
 
 // 调整价格区间data
@@ -452,7 +448,6 @@ const addDomain = () => {
 };
 
 const checkNum = (val, ind, str) => {
-  // console.log(val, ind, str);
   if (!/^\d+$/.test(val)) {
     ElMessage.warning("输入格式错误或者输入为空");
     userPriceRange.priceRange[ind][str] = "";
@@ -484,7 +479,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
         records: userPriceRange.priceRange,
         uid: userStore.userInfo.ID,
       };
-      console.log(data)
       const res = await setUserPriceRange(data);
       if (res.code === 0) {
         ElMessage.success("设置成功");
@@ -587,6 +581,8 @@ const getData2 = async () => {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
     state.gmvPrductList = res.data.gmvPrductList.records;
+    state.oldNewList = res.data.oldNewList.records;
+
     state.priceRangedata = res2.data.records;
     getEchartsData();
     state.loading = false;
@@ -686,15 +682,15 @@ const contrastVisitor = () => {
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
+  const date = state.gmvPrductList?.map(i => i.date)
   const arr = state.gmvPrductList?.map((i) => {
     return {
       name: i.class,
-      date: i.data?.map((j) => j.date),
       data: i.data?.map((j) => j.store_gmv),
     };
   });
   if (arr) {
-    const option = lineOptions1(arr);
+    const option = lineOptions1(arr, date);
     option && myChart.setOption(option);
 
   }
@@ -706,22 +702,22 @@ const palletTrend = () => {
 const newOldContrast = () => {
   const chartDom = document.getElementById("newOldecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-
+  const date = state.oldNewList?.map(i => i.date)
   let arr = [
     {
       name: "支付卖家数",
-      data: data,
+      data: state.oldNewList?.map(i => i.paid_buyers_count),
     },
     {
       name: "支付新卖家数",
-      data: data,
+      data: state.oldNewList?.map(i => i.new_paid_buyers_count),
     },
     {
       name: "支付老买家数",
-      data: data,
+      data: state.oldNewList?.map(i => i.returning_paid_buyers_count),
     },
   ];
-  const option = lineOptions(arr);
+  const option = lineOptions1(arr, date);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -738,7 +734,8 @@ const unitPriceGMV = () => {
       data: i.records?.map((j) => parseFloat((j.gmv).toFixed(2))),
     };
   });
-  const option = barOptions(arr);
+  const date = arr?.map(i => i.date)
+  const option = barOptions(arr, date[0]);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -755,7 +752,8 @@ const unitPriceTrend = () => {
       data: i.records?.map((j) => parseFloat((j.visitor_count).toFixed(2))),
     };
   });
-  const option = barOptions(arr);
+  const date = arr?.map(i => i.date)
+  const option = barOptions(arr, date[0]);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -855,7 +853,6 @@ const GMVDismantling = () => {
               lv: 1,
             };
           });
-          console.log(childs);
           addDataToTree(state.tree[0], params.data.name, childs);
           myChart.setOption(option);
         }
@@ -864,7 +861,6 @@ const GMVDismantling = () => {
       data.current_inventory = [params.data.current];
       data.primary_category = params.data.name;
       data.leve = 1
-      console.log(data, 111111111111111111111111111111)
       getSubGmvList(data).then((res) => {
         if (res.code === 0) {
           if (res.data.records) {
@@ -891,7 +887,6 @@ const GMVDismantling = () => {
       data.primary_category = params.data.primary;
       data.secondary_category = params.data.name;
       data.leve = 2
-      console.log(data, 22222222222222222222222222)
       getSubGmvList(data).then((res) => {
         if (res.code === 0) {
           if (res.data.records) {
@@ -921,7 +916,6 @@ const GMVDismantling = () => {
     //   data.secondary_category = params.data.secondary;
     //   data.tertiary_category = params.data.name;
     //   data.leve = 2
-    //   console.log(data, 22222222222222222222222222)
     //   getSubGmvList(data).then((res) => {
     //     if (res.code === 0) {
     //       if (res.data.records) {
@@ -944,7 +938,6 @@ const GMVDismantling = () => {
     //     }
     //   });
     // }
-    console.log(state.tree)
   });
   window.addEventListener("resize", () => {
     myChart.resize();
