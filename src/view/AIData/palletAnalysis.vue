@@ -419,8 +419,8 @@ const searchData = reactive({
   current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
-  date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-  // date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
+  // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+  date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
 });
 
 // 调整价格区间data
