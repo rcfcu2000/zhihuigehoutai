@@ -6,7 +6,7 @@
         <div class="search_left">
           <div class="search_line">
             负责人
-            <el-select v-model="searchData.product_manager" class="select_width" multiple placeholder="请选择"
+            <el-select v-model="searchData.product_manager" class="select_width"  placeholder="请选择"
               @change="getData2" size="small">
               <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
                 :value="item.responsible" />
@@ -414,7 +414,7 @@ const state = reactive({
 });
 
 const searchData = reactive({
-  product_manager: [], //	string 商品负责人 - 负责该商品的人员或团队名称
+  product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称
   current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
@@ -536,6 +536,7 @@ const getData = async () => {
   const [resp1, resp2] = [await getResponsibleList(), await getCategoriesList()];
   if (resp1.code === 0 && resp2.code === 0) {
     state.responsibleList = resp1.data.records;
+    // console.log([resp1.data.records[0].responsible])
     searchData.product_manager = resp1.data.records[0].responsible;
     let data = {
       end_date: searchData.date[1],

@@ -61,3 +61,6 @@
 .aiData_table .el-table--enable-row-hover .el-table__body tr:nth-child(2n){
      background-color: rgba(7, 35, 82, 1) !important;
 }
+.aiData_table .el-table th.el-table__cell{
+  background-color: transparent !important;
+}
