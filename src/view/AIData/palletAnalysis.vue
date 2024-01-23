@@ -163,9 +163,9 @@
         <div class="echarts_title">货盘趋势</div>
         <div class="trend_comparison_box" id="Palletecharts">
           <el-skeleton :rows="6" animated> </el-skeleton>
-          <el-empty description="暂无数据" class="eharts_empty">
+          <!-- <el-empty description="暂无数据" class="eharts_empty">
 
-          </el-empty>
+          </el-empty> -->
         </div>
       </div>
       <div class="trend_comparison_right flex_size">
@@ -210,7 +210,7 @@
             <span>{{ scope.row.product_abbreviation }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="GMV" width="150">
+        <el-table-column label="GMV" width="150" sortable :sort-method="sortGmv">
           <template #default="scope">
             <span>{{ scope.row.gmv }}</span>
           </template>
@@ -419,7 +419,8 @@ const searchData = reactive({
   current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
-  date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
+  date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+  // date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
 });
 
 // 调整价格区间data
@@ -639,6 +640,13 @@ const getEchartsData2 = () => {
   // GMVDismantling();
 };
 
+const sortGmv = (obj1, obj2) => {
+  let val1 = obj1.gmv
+  let val2 = obj2.gmv
+  return val1 - val2
+}
+
+
 Math.floor(Math.random() * (1 - 100) + 100); //1~100的随机数
 let data = Array.from(new Array(30), (x, i) =>
   Math.floor(Math.random() * (1 - 100) + 100)
@@ -702,7 +710,6 @@ const palletTrend = () => {
     option && myChart.setOption(option);
 
   }
-
   window.addEventListener("resize", () => {
     myChart.resize();
   });
