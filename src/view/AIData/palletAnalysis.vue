@@ -688,14 +688,16 @@ const contrastVisitor = () => {
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-  const date = state.gmvPrductList?.map(i => i.date)
+
   const arr = state.gmvPrductList?.map((i) => {
     return {
       name: i.class,
+      date: i.data?.map((j) => j.date),
       data: i.data?.map((j) => j.store_gmv),
     };
   });
   if (arr) {
+    const date = arr[0]?.date
     const option = lineOptions1(arr, date);
     option && myChart.setOption(option);
 
@@ -830,7 +832,7 @@ const GMVDismantling = () => {
               `{a|${param.name} }` +
               `{b|${param.value} }` +
               `{c|${param.data.bfb}}`,
-            
+
             ].join("\n");
           },
         },
