@@ -217,7 +217,19 @@
         </el-table-column>
         <el-table-column label="净利润率" width="150">
           <template #default="scope">
-            <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
+            <div class="alcenter">
+              <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
+                <Top />
+              </el-icon>
+              <el-icon size="15" color="#FECD04"
+                v-if="scope.row.net_profit_margin < 0.2 && scope.row.net_profit_margin > -0.5">
+                <Right />
+              </el-icon>
+              <el-icon size="15" color="red" v-if="scope.row.net_profit_margin < -0.5">
+                <Bottom />
+              </el-icon>
+              <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="产品分类" width="150">
@@ -415,7 +427,7 @@ const disabledDate = (time: Date) => {
   return time.getTime() > Date.now()
 }
 const searchData = reactive({
-  product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称
+  product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
   current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
@@ -1255,6 +1267,11 @@ $echarts_bg_img: url("./images/_2.png");
     overflow: auto;
     margin-bottom: 10px;
     margin-top: 4px;
+
+    .alcenter {
+      display: flex;
+      align-items: center;
+    }
 
     // border: 1px solid #fff;
 
