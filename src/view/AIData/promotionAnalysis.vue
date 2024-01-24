@@ -374,26 +374,6 @@ const searchTableData = reactive({
 
 })
 
-const Commodity_detail = {
-    title: "商品明细",
-    tableData: [
-        {
-            cost_percentage: 0, // 花费占比
-            overall_add_to_cart_rate: 0, // 全店加购率
-            overall_conversion_rate: 0, // 全店转化率
-            overall_gmv: 0, // 全店GMV
-            overall_roi: 0, // 全店投资回报率
-            promotion_add_to_cart_rate: 0, // 推广加购率
-            promotion_conversion_rate: 0, // 推广转化
-            promotion_cost: 0, // 推广花费
-            promotion_gmv: 0, // 推广产生的GMV
-            promotion_gmv_percentage: 0, // 推广GMV占比
-            promotion_roi: 0, // 推广投资回报率
-            promotion_traffic_percentage: 0, // 推广流量占比
-        }
-    ],
-}
-
 // 接口返回的全部数据
 const allData = reactive({
     Product: {
@@ -459,7 +439,8 @@ const allData = reactive({
             // { title: '花费全店占比', width: 100, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
             // { title: '支付转化率', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
         ]
-    } as any
+    } as any,
+    allData: {}
 })
 
 onMounted(async () => {
@@ -535,13 +516,13 @@ const disabledDate = (time: Date) => {
 }
 const getAll = async () => {
     const arr = {
-        "audience_filter": "",  //  人群筛选
-        "bid_type": "",  // 出价方式
+        "audience_filter": [""],  //  人群筛选
+        "bid_type": [""],  // 出价方式
         // "current_inventory": [
         //     "string"   // 当期货盘
         // ],
-        "keyword_filter": "",  // 关键词
-        "pallet": "",  // 货盘字段
+        "keyword_filter": [""],  // 关键词
+        "pallet": [""],  // 货盘字段
         // "product_manager": [
         //     "string"   // 商品负责人
         // ],
@@ -552,13 +533,16 @@ const getAll = async () => {
         "end_date": "2023-01-21", // 日期 - 数据统计的时间点
         "start_date": "2023-01-01",
     }
-    const [proRes, planRes] = [await getProductGetAlldata(arr), await getPlanGetAlldata(arr)]
+    const [proRes, planRes, allRes] = [await getProductGetAlldata(arr), await getPlanGetAlldata(arr), await getPromotionGetAlldata(arr)]
     if (proRes.code === 0) {
         allData.Product.data = proRes.data
         console.log(proRes, "Productalldata")
     }
     if (planRes.code === 0) {
         allData.Plan.data = planRes.data
+    }
+    if (allRes.code === 0) {
+        allData.allData = allRes.data
     }
     console.log(allData, "结束时间")
 }
