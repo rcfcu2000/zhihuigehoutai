@@ -6,36 +6,45 @@
                 <div class="search_left">
                     <div class="search_line">
                         负责人
-                        <el-select v-model="searchData.name" class="select_width" placeholder="请选择" size="small">
-                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                        <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择"
+                            @change="getData2" size="small">
+                            <el-option v-for="item in state.responsibleList" :key="item.responsible"
+                                :label="item.responsible" :value="item.responsible" />
                         </el-select>
                     </div>
                     <div class="search_line">
                         本月货盘
-                        <el-select v-model="searchData.monthData" class="select_width" placeholder="请选择" size="small">
-                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                        <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2"
+                            class="select_width" placeholder="请选择" size="small">
+                            <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
+                                :label="item.current_inventory" :value="item.current_inventory" />
                         </el-select>
                     </div>
                     <div class="search_line">
                         货盘变化
-                        <el-radio-group v-model="searchData.palletChange" size="small">
-                            <el-radio-button label="场景推广" />
-                            <el-radio-button label="精准人群推广" />
-                            <el-radio-button label="关键词推广" />
-                        </el-radio-group>
+                        <div class="line">
+                            <el-radio-group v-model="searchData.all" @change="changeCheckGroup('999')" class="ml-4">
+                                <el-radio :label="999" border size="small">全部</el-radio>
+                            </el-radio-group>
+                            <el-checkbox-group v-model="searchData.inventory_change" size="small"
+                                @change="changeCheckGroup('dx')">
+                                <el-checkbox border v-for="(item, index) in cities" :key="item.label" :label="item.label">{{
+                                    item.value
+                                }}</el-checkbox>
+                            </el-checkbox-group>
+                        </div>
                     </div>
                 </div>
                 <div class="search_right">
                     <div class="search_line">
-                        年月
-                        <el-radio-group v-model="searchData.palletChange" style="color: #fff;" class="search_radio"
-                            size="small">
-                            <el-radio label="202309" />
-                            <el-radio label="202310" />
-                        </el-radio-group>
+                        请选择起止时间
+                        <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+                            value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
+                            start-placeholder="开始时间" end-placeholder="结束时间" />
                     </div>
                 </div>
             </div>
+
         </div>
         <div class="title">
             重点指标
@@ -173,28 +182,28 @@
         <div class="echarts_ctn">
             <div class="echarts_box">
                 <div class="echarts_title">
-                    重点指标
+                    出价类型分析
                 </div>
                 <div class="echarts_size">
                 </div>
             </div>
             <div class="echarts_box">
                 <div class="echarts_title">
-                    重点指标
+                    货盘花费
                 </div>
                 <div class="echarts_size">
                 </div>
             </div>
             <div class="echarts_box">
                 <div class="echarts_title">
-                    重点指标
+                    关键词花费(TOP-20)
                 </div>
                 <div class="echarts_size">
                 </div>
             </div>
             <div class="echarts_box">
                 <div class="echarts_title">
-                    重点指标
+                    人群花费(TOP-20)
                 </div>
                 <div class="echarts_size">
                 </div>
@@ -203,18 +212,18 @@
 
         <!-- 明细表格查询条件 -->
         <div class="detailSearch">
-            <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
+            <el-form :inline="true" :model="searchTableData" size="small" class="form-inline" label-position="right">
                 <el-form-item label="出价方式：">
-                    <el-input v-model="searchData.bid_type" placeholder="" clearable />
+                    <el-input v-model="searchTableData.bid_type" placeholder="" clearable />
                 </el-form-item>
                 <el-form-item label="货盘：">
-                    <el-input v-model="searchData.pallet" placeholder="" clearable />
+                    <el-input v-model="searchTableData.pallet" placeholder="" clearable />
                 </el-form-item>
                 <el-form-item label="关键词：">
-                    <el-input v-model="searchData.keyword_filter" placeholder="" clearable />
+                    <el-input v-model="searchTableData.keyword_filter" placeholder="" clearable />
                 </el-form-item>
                 <el-form-item label="人群：">
-                    <el-input v-model="searchData.audience_filter" placeholder="" clearable />
+                    <el-input v-model="searchTableData.audience_filter" placeholder="" clearable />
                 </el-form-item>
             </el-form>
         </div>
@@ -236,45 +245,48 @@ import {
     getPromotionGetAlldata,
     getProductGetAlldata,
     getPlanGetAlldata,
+    getResponsibleList,
+    getSubGmvList,
 } from '@/api/AIdata'
-
+import { getMonthFinalDay } from "@/utils/getDate";
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
 
-const options = [
+const cities = [
     {
-        value: 'Option1',
-        label: 'Option1',
+        label: -1,
+        value: "场景推广",
     },
     {
-        value: 'Option2',
-        label: 'Option2',
+        label: 0,
+        value: "精准人群推广",
     },
     {
-        value: 'Option3',
-        label: 'Option3',
+        label: 1,
+        value: "关键词推广",
     },
-    {
-        value: 'Option4',
-        label: 'Option4',
-    },
-    {
-        value: 'Option5',
-        label: 'Option5',
-    },
-]
+];
 
 const searchData = reactive({
-    name: '',
-    monthData: '',
-    palletChange: '上升',
-    principle: '',
-    originalPrice: '',
-    listedMonth: '',
-    years: '',
+    product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
+    current_inventory: [], // string 当期货盘
+    inventory_change: [],
+    all: 999 as any,
+    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
+})
 
+const state = reactive({
+    titleData: {
+
+    } as any,
+    responsibleList: [] as any, // 获取用户
+    monthPallet: [] as any, // 获取货盘信息
+})
+
+const searchTableData = reactive({
     // 明细表格
     keyword_filter: [], // 关键词
     audience_filter: '', // 人群
@@ -343,7 +355,7 @@ const allData = reactive({
             { title: '出价方式', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', },
             { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', },
             { title: '场景名称', width: 100, align: 'center', dataKey: 'campaign_scene', key: 'campaign_scene', },
-            
+
             { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
             // { title: 'GMV趋势', width: 100, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
             { title: '点击率', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', },
@@ -380,6 +392,44 @@ const getPlan = async () => {
 
 const getProduct = async () => {
 
+}
+
+const changeCheckGroup = (type: string) => {
+    if (type === "999") {
+        searchData.inventory_change = [];
+    } else {
+        searchData.all = null;
+    }
+    getData2();
+};
+
+const getData2 = async () => {
+
+};
+
+const getData = async () => {
+    const resp1 = await getResponsibleList();
+    if (resp1.code === 0) {
+        state.responsibleList = resp1.data.records;
+        searchData.product_manager = resp1.data.records[0].responsible;
+        let data = {
+            end_date: searchData.date[1],
+            start_date: searchData.date[0],
+            current_inventory: [],
+            product_manager: searchData.product_manager,
+            inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+        };
+        const resp2 = await getSubGmvList(data);
+        if (resp2.code === 0) {
+            state.monthPallet = resp2.data.records;
+            await getData2();
+        }
+    }
+
+}
+
+const disabledDate = (time: Date) => {
+    return time.getTime() > Date.now()
 }
 const getAll = async () => {
     const arr = {
@@ -441,7 +491,13 @@ $echarts_bg_img2: url('./images/_2.png');
 
             .search_left {
                 display: flex;
-                flex: 0.4;
+                flex: 0.5;
+
+                .search_line:last-child {
+                    width: 520px;
+                    display: flex;
+                    align-items: center;
+                }
             }
 
             .search_right {
@@ -452,19 +508,25 @@ $echarts_bg_img2: url('./images/_2.png');
             }
 
             .search_line {
-                margin: 0 12px;
+
+                .line {
+                    display: flex;
+                    justify-content: space-between;
+                }
 
                 .select_width {
                     width: 100px;
                 }
 
-                .search_radio {
-                    ::v-deep(.el-radio) {
-                        color: #fff;
-
-                    }
-
+                ::v-deep(.el-radio) {
+                    color: #fff;
+                    margin: 0 10px;
                 }
+
+                .el-checkbox {
+                    color: #fff;
+                }
+
             }
         }
 
@@ -645,6 +707,10 @@ $echarts_bg_img2: url('./images/_2.png');
     box-shadow: none;
     border-radius: 0;
     border: 1px solid rgba(1, 229, 255, 1);
+
+    .el-range-input {
+        color: #fff;
+    }
 }
 
 ::v-deep(.el-form-item__label) {
