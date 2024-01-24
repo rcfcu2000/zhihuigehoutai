@@ -89,6 +89,17 @@ export const getPlanGetAlldata = (data) => {
         data
     })
 }
+
+// 获取推广分析四个图标信息
+export const getSearchdata = (data) => {
+    return service({
+        url: '/promotion/getSearchdata',
+        method: 'post',
+        data
+    })
+}
+
+
 // 获取下一级GMV拆分 //货盘list
 export const getSubGmvList = (data) => {
     return service({

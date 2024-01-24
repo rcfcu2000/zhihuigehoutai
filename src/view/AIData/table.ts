@@ -6,9 +6,9 @@ export const tableColumns = ref(
         { title: '商品ID', width: 100, dataKey: 'product_id', key: 'product_id', align: 'center', },
         { title: '商品简称', width: 100, dataKey: 'product_abbreviation', key: 'product_abbreviation', align: 'center' },
         { title: 'GMV', dataKey: 'gmv', key: 'gmv', width: 150, align: 'center', sortable: true, },
-        { title: '净利润率', dataKey: 'net_profit_margin', key: 'net_profit_margin', width: 150, align: 'center',
-      
-    },
+        {
+            title: '净利润率', dataKey: 'net_profit_margin', key: 'net_profit_margin', width: 150, align: 'center',
+        },
         { title: '产品分类', dataKey: 'product_category', key: 'product_category', width: 150, align: 'center' },
         { title: '搜索访客占比', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', width: 150, align: 'center' },
         { title: '搜索GMV占比', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', width: 150, align: 'center' },

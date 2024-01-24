@@ -55,7 +55,7 @@
                     <ul class="roduct_num_box_ctn">
                         <li>
                             <span class="ctn_num">
-                                151239
+                                {{ parseFloat((state.titleData.promotion_cost).toFixed(2)) }}
                             </span>
                             <span class="ctn_name">
                                 推广花费
@@ -63,7 +63,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                510938
+                                {{ parseFloat((state.titleData.promotion_gmv).toFixed(2)) }}
                             </span>
                             <span class="ctn_name">
                                 推广GMV
@@ -71,7 +71,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                3073947
+                                {{ parseFloat((state.titleData.overall_gmv).toFixed(2)) }}
                             </span>
                             <span class="ctn_name">
                                 店铺GMV
@@ -79,7 +79,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                4.92%
+                                {{ parseFloat((state.titleData.cost_percentage * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 花费占比
@@ -87,7 +87,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                16.92%
+                                {{ parseFloat((state.titleData.promotion_gmv_percentage * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 推广GMV占比
@@ -99,7 +99,7 @@
                     <ul class="roduct_num_box_ctn">
                         <li>
                             <span class="ctn_num">
-                                7.97%
+                                {{ parseFloat((state.titleData.promotion_add_to_cart_rate * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 推广加购率
@@ -107,7 +107,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                5.84%
+                                {{ parseFloat((state.titleData.overall_add_to_cart_rate * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 全店加购率
@@ -115,7 +115,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                1.12%
+                                {{ parseFloat((state.titleData.promotion_conversion_rate * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 推广转化率
@@ -123,7 +123,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                1.25%
+                                {{ parseFloat((state.titleData.overall_conversion_rate * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 全店转化率
@@ -131,7 +131,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                3.38
+                                {{ parseFloat((state.titleData.promotion_gmv_percentage * 100).toFixed(2)) }}%
                             </span>
                             <span class="ctn_name">
                                 推广ROI
@@ -141,42 +141,48 @@
                 </div>
             </div>
             <div class="roduct_right">
-                <div class="roduct_right_title"> 精准人群推广</div>
-                <ul class="roduct_right_ctn">
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">151239</span>
-                        <span class="ctn_tit">花费</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">204.38</span>
-                        <span class="ctn_tit">成交成本</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">510938</span>
-                        <span class="ctn_tit">GMV</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">24.10%</span>
-                        <span class="ctn_tit">GMV占比</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">3.38</span>
-                        <span class="ctn_tit">推广ROI</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">54821</span>
-                        <span class="ctn_tit">点击量</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">0.84%</span>
-                        <span class="ctn_tit">点击率</span>
-                    </li>
-                    <li class="roduct_right_ctn_data">
-                        <span class="ctn_num">2.76</span>
-                        <span class="ctn_tit">CPC</span>
-                    </li>
+                <div class="roduct_right_list" v-for="(ikun, index) in state.extendList" :key="index">
+                    <div class="roduct_right_title"> {{ ikun.scene_category }}</div>
+                    <ul class="roduct_right_ctn">
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num"> {{ parseFloat((ikun.spend).toFixed(2)) }} </span>
+                            <span class="ctn_tit">花费</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.transaction_cost).toFixed(2)) }}</span>
+                            <span class="ctn_tit">成交成本</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.gmv).toFixed(2)) }}</span>
+                            <span class="ctn_tit">GMV</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
+                            <span class="ctn_tit">渠道占比</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.promotion_roi).toFixed(2)) }}</span>
+                            <span class="ctn_tit">推广ROI</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.clicks).toFixed(2)) }}</span>
+                            <span class="ctn_tit">点击量</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num"> {{ parseFloat((ikun.click_through_rate * 100).toFixed(2)) }} %</span>
+                            <span class="ctn_tit">点击率</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.cpc).toFixed(2)) }}</span>
+                            <span class="ctn_tit">CPC</span>
+                        </li>
+                        <li class="roduct_right_ctn_data">
+                            <span class="ctn_num">{{ parseFloat((ikun.add_to_cart_cost).toFixed(2)) }}</span>
+                            <span class="ctn_tit">加购成本</span>
+                        </li>
+                    </ul>
+                </div>
 
-                </ul>
             </div>
         </div>
         <div class="echarts_ctn">
@@ -184,28 +190,85 @@
                 <div class="echarts_title">
                     出价类型分析
                 </div>
-                <div class="echarts_size">
+                <div class="echarts_size aiData_table" style="box-sizing: border-box; padding: 10px;">
+                    <el-table :data="state.tableData" max-height="350px" style="width: 100%">
+                        <el-table-column label="出价类型">
+                            <template #default="scope">
+                                <span>{{ scope.row.product_id }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="花费">
+                            <template #default="scope">
+                                <span>{{ scope.row.product_abbreviation }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="GMV">
+                            <template #default="scope">
+                                <span>{{ scope.row.product_category }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="GMV占比">
+                            <template #default="scope">
+                                <span> {{ parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="点击量">
+                            <template #default="scope">
+                                <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="点击率">
+                            <template #default="scope">
+                                <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="加购成本">
+                            <template #default="scope">
+                                <span>{{ scope.row.current_inventory }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="推广ROI">
+                            <template #default="scope">
+                                <span>{{ scope.row.last_period_stockpile }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="成交成本">
+                            <template #default="scope">
+                                <span>{{ scope.row.stockpile_change }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="推广转化率">
+                            <template #default="scope">
+                                <span>{{ scope.row.stockpile_change }}</span>
+                            </template>
+                        </el-table-column>
+                        <template #empty>
+                            <div class="flex items-center justify-center h-100%">
+                                <el-empty />
+                            </div>
+                        </template>
+                    </el-table>
                 </div>
             </div>
             <div class="echarts_box">
                 <div class="echarts_title">
                     货盘花费
                 </div>
-                <div class="echarts_size">
+                <div class="echarts_size" id="PromtionEcharts2">
                 </div>
             </div>
             <div class="echarts_box">
                 <div class="echarts_title">
                     关键词花费(TOP-20)
                 </div>
-                <div class="echarts_size">
+                <div class="echarts_size" id="PromtionEcharts3">
                 </div>
             </div>
             <div class="echarts_box">
                 <div class="echarts_title">
                     人群花费(TOP-20)
                 </div>
-                <div class="echarts_size">
+                <div class="echarts_size" id="PromtionEcharts4">
                 </div>
             </div>
         </div>
@@ -257,6 +320,7 @@ import {
     getPlanGetAlldata,
     getResponsibleList,
     getSubGmvList,
+    getSearchdata,
 } from '@/api/AIdata'
 
 import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
@@ -293,10 +357,26 @@ const searchData = reactive({
 
 const state = reactive({
     titleData: {
-
+        cost_percentage: 0, // 花费占比
+        overall_add_to_cart_rate: 0, // 全店加购率
+        overall_conversion_rate: 0, // 全店转化率
+        overall_gmv: 0, // 全店GMV
+        // overall_roi: 0, // 全店投资回报率
+        promotion_add_to_cart_rate: 0, // 推广加购率
+        promotion_conversion_rate: 0, // 推广转化
+        promotion_cost: 0, // 推广花费
+        promotion_gmv: 0, // 推广产生的GMV
+        promotion_gmv_percentage: 0, // 推广GMV占比
+        // promotion_roi: 0, // 推广投资回报率
+        // promotion_traffic_percentage: 0, // 推广流量占比
     } as any,
+    extendList: [] as any,
     responsibleList: [] as any, // 获取用户
     monthPallet: [] as any, // 获取货盘信息
+    tableData: [] as any,
+    echartsData2: [] as any,
+    echartsData3: [] as any,
+    echartsData4: [] as any,
 })
 
 const searchTableData = reactive({
@@ -398,6 +478,11 @@ const getProduct = async () => {
 
 }
 
+// 获取四个图表数据
+const getEcharts = async () => {
+
+}
+
 const changeCheckGroup = (type: string) => {
     if (type === "999") {
         searchData.inventory_change = [];
@@ -408,7 +493,7 @@ const changeCheckGroup = (type: string) => {
 };
 
 const getData2 = async () => {
-
+    getPromotionGetAll()
 };
 
 const getData = async () => {
@@ -427,9 +512,25 @@ const getData = async () => {
         if (resp2.code === 0) {
             state.monthPallet = resp2.data.records;
             await getData2();
+
         }
     }
+}
 
+const getPromotionGetAll = async () => {
+    let data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        current_inventory: [],
+        product_manager: [searchData.product_manager],
+        inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+    };
+    const res = await getPromotionGetAlldata(data);
+    if (res.code === 0) {
+        state.titleData = res.data.promotionIndex1
+        state.extendList = res.data.promotionIndex2.records
+        console.log(state.extendList)
+    }
 }
 
 const disabledDate = (time: Date) => {
@@ -477,7 +578,8 @@ $echarts_bg_img2: url('./images/_2.png');
     background-image: url('./images/bc.jpg');
     background-size: 100% 100%;
     color: #fff;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .header {
         height: 63px;
@@ -494,7 +596,8 @@ $echarts_bg_img2: url('./images/_2.png');
 
             .search_left {
                 display: flex;
-                flex: 0.5;
+                flex: 0.35;
+                justify-content: space-between;
 
                 .search_line:last-child {
                     width: 520px;
@@ -600,6 +703,12 @@ $echarts_bg_img2: url('./images/_2.png');
             background-image: url('./images/lr.png');
             background-size: 100% 100%;
 
+            .roduct_right_list {
+                display: flex;
+                flex-direction: column;
+                padding: 10px 10%;
+            }
+
             .roduct_right_title {
                 text-align: center;
                 color: rgba(255, 120, 2, 1);
@@ -607,9 +716,7 @@ $echarts_bg_img2: url('./images/_2.png');
             }
 
             .roduct_right_ctn {
-                height: 80px;
                 display: flex;
-                padding: 6% 10%;
                 justify-content: space-between;
 
                 .roduct_right_ctn_data {
