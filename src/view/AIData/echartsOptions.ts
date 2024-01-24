@@ -109,8 +109,6 @@ export const lineOptions1 = (arr: any, date: any) => {
     }
 }
 
-
-
 export const lineOptions = (arr: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {

@@ -151,7 +151,9 @@
         <div class="echarts_title">访客对比</div>
         <div class="echarts_1" id="Visitorcharts">
           <el-skeleton :rows="4" animated> </el-skeleton>
-          <!-- <el-empty description="description" /> -->
+          <!-- <el-empty description="description">
+
+          </el-empty> -->
         </div>
       </div>
     </div>
@@ -160,8 +162,10 @@
       <div class="trend_comparison_left flex_size">
         <div class="echarts_title">货盘趋势</div>
         <div class="trend_comparison_box" id="Palletecharts">
-          <el-skeleton :rows="6" animated > </el-skeleton>
-          <!-- <el-empty v-else description="暂无数据" class="eharts_empty" /> -->
+          <el-skeleton :rows="6" animated> </el-skeleton>
+          <!-- <el-empty description="暂无数据" class="eharts_empty">
+
+          </el-empty> -->
         </div>
       </div>
       <div class="trend_comparison_right flex_size">
@@ -206,7 +210,7 @@
             <span>{{ scope.row.product_abbreviation }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="GMV" width="150">
+        <el-table-column label="GMV" width="150" sortable :sort-method="sortGmv">
           <template #default="scope">
             <span>{{ scope.row.gmv }}</span>
           </template>
@@ -360,6 +364,7 @@ import { lineOptions, barOptions, lineOptions1 } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
+import { pa } from "element-plus/es/locale";
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const formRef = ref<FormInstance>();
@@ -414,6 +419,7 @@ const searchData = reactive({
   current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
+  // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
   date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
 });
 
@@ -551,11 +557,12 @@ const getData = async () => {
           name: "GMV",
           value: parseFloat(allValue.toFixed(2)),
           lv: -1,
+          bfb: '100%',
           children: resp3.data.records?.map((i) => {
             return {
               name: i.current_inventory,
               value: parseFloat(i.payment_amount.toFixed(2)),
-              // bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(2)),
+              bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
               lv: 0,
             };
@@ -633,6 +640,13 @@ const getEchartsData2 = () => {
   // GMVDismantling();
 };
 
+const sortGmv = (obj1, obj2) => {
+  let val1 = obj1.gmv
+  let val2 = obj2.gmv
+  return val1 - val2
+}
+
+
 Math.floor(Math.random() * (1 - 100) + 100); //1~100的随机数
 let data = Array.from(new Array(30), (x, i) =>
   Math.floor(Math.random() * (1 - 100) + 100)
@@ -682,19 +696,20 @@ const contrastVisitor = () => {
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-  const date = state.gmvPrductList?.map(i => i.date)
+
   const arr = state.gmvPrductList?.map((i) => {
     return {
       name: i.class,
+      date: i.data?.map((j) => j.date),
       data: i.data?.map((j) => j.store_gmv),
     };
   });
   if (arr) {
+    const date = arr[0]?.date
     const option = lineOptions1(arr, date);
     option && myChart.setOption(option);
 
   }
-
   window.addEventListener("resize", () => {
     myChart.resize();
   });
@@ -792,9 +807,22 @@ const GMVDismantling = () => {
           position: "center",
           rich: {
             a: {
-              color: "#FECD04",
+              color: "#fff",
               lineHeight: 60,
               fontSize: 18,
+              // width:140,
+            },
+            b: {
+              color: "#03FF91",
+              lineHeight: 80,
+              fontSize: 14,
+              top: 20,
+            },
+            c: {
+              color: "#FD89EE",
+              lineHeight: 80,
+              fontSize: 14,
+              top: 20,
             },
             // b: {
             //   backgroundColor: {
@@ -808,8 +836,10 @@ const GMVDismantling = () => {
 
           formatter: function (param) {
             return [
-              `{a|${param.name}    ${param.value}}`,
-              // '{b|}'
+              `{a|${param.name} }` +
+              `{b|${param.value} }` +
+              `{c|${param.data.bfb}}`,
+
             ].join("\n");
           },
         },
@@ -847,7 +877,7 @@ const GMVDismantling = () => {
             return {
               name: i.primary_category,
               value: i.payment_amount,
-              bfb: i.payment_amount_percentage,
+              bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
               current: params.data.name,
               lv: 1,
@@ -869,7 +899,7 @@ const GMVDismantling = () => {
                 name: i.secondary_category,
                 current: params.data.current,
                 value: i.payment_amount,
-                bfb: i.payment_amount_percentage,
+                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
                 primary: params.data.name,
                 lv: 2,
@@ -894,7 +924,7 @@ const GMVDismantling = () => {
               return {
                 name: i.tertiary_category,
                 value: i.payment_amount,
-                bfb: i.payment_amount_percentage,
+                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
                 primary: params.data.primary,
                 secondary: params.data.name,
