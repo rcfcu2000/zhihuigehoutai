@@ -89,7 +89,11 @@ export const getPlanGetAlldata = (data) => {
         data
     })
 }
+<<<<<<< HEAD
 // 获取下一级GMV拆分 //货盘list
+=======
+// 获取下一级GMV拆分
+>>>>>>> e0092f26209d19d1a82c4b35a24754bb003cccc4
 export const getSubGmvList = (data) => {
     return service({
         url: '/inventory/getSubGmvList',
