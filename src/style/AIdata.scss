@@ -1,0 +1,66 @@
+.aiData_table {
+  background-color: transparent;
+}
+ 
+/* 表格整体背景色 */
+.aiData_table .el-table,
+.aiData_table .el-table__expanded-cell {
+  background-color: transparent;
+}
+ 
+/* 表格最下面的线 */
+.aiData_table .el-table__inner-wrapper::before {
+  height: 0px;
+}
+ 
+.aiData_table .el-table td.el-table__cell,
+.aiData_table .el-table th.el-table__cell.is-leaf {
+  border: 0px;
+}
+ 
+.aiData_table .el-table thead {
+  color: #fff;
+  background-color: rgba(7, 30, 72, 1);
+  border: 0;
+}
+ 
+.aiData_table .el-table th {
+  background: transparent;
+}
+ 
+/* 表格内tr背景色修改 */
+.aiData_table .el-table tr {
+  background-color: transparent !important;
+  border: 1px;
+  /* 设置字体大小 */
+  font-size: 16px;
+  color: #fff;
+}
+ 
+/*表格内td背景色修改*/
+.aiData_table .el-table td {
+  background-color: transparent !important;
+  border: 1px;
+  /* 设置字体大小 */
+  font-size: 16px;
+  color: #fff;
+}
+ 
+.aiData_table .current-row {
+  /* 选中时的图片显示 */
+  background: rgb(26, 46, 161);
+  background-size: 100% 100% !important;
+}
+ 
+/* 用来设置当前页面element全局table 鼠标移入某行时的背景色*/
+.aiData_table .el-table--enable-row-hover .el-table__body tr:hover>td {
+  background-color: rgba(7, 35, 82, 0.5) !important;
+  /* color: #f19944; */
+  /* 设置文字颜色，可以选择不设置 */
+}
+.aiData_table .el-table--enable-row-hover .el-table__body tr:nth-child(2n){
+     background-color: rgba(7, 35, 82, 1) !important;
+}
+.aiData_table .el-table th.el-table__cell{
+  background-color: transparent !important;
+}

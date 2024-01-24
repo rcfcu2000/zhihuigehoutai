@@ -1,70 +1,34 @@
 <template>
-  <div
-    class="main"
-    v-loading.fullscreen.lock="state.loading"
-    element-loading-background="rgba(122, 122, 122, 0.8)"
-  >
+  <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
     <div class="header">
       <span class="titl1_h1">货盘分析</span>
       <div class="search">
         <div class="search_left">
           <div class="search_line">
             负责人
-            <el-select
-              v-model="searchData.product_manager"
-              class="select_width"
-              placeholder="请选择"
-              @change="getData2"
-              size="small"
-            >
-              <el-option
-                v-for="item in state.responsibleList"
-                :key="item.responsible"
-                :label="item.responsible"
-                :value="item.responsible"
-              />
+            <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
+              size="small">
+              <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+                :value="item.responsible" />
             </el-select>
           </div>
           <div class="search_line">
             本月货盘
-            <el-select
-              v-model="searchData.current_inventory"
-              clearable
-              @change="getData2"
-              class="select_width"
-              placeholder="请选择"
-              size="small"
-            >
-              <el-option
-                v-for="item in state.monthPallet"
-                :key="item.current_inventory"
-                :label="item.current_inventory"
-                :value="item.current_inventory"
-              />
+            <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
+              placeholder="请选择" size="small">
+              <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
+                :value="item.current_inventory" />
             </el-select>
           </div>
           <div class="search_line">
             货盘变化
             <div class="line">
-              <el-radio-group
-                v-model="searchData.all"
-                @change="changeCheckGroup('999')"
-                class="ml-4"
-              >
+              <el-radio-group v-model="searchData.all" @change="changeCheckGroup('999')" class="ml-4">
                 <el-radio :label="999" border size="small">全部</el-radio>
               </el-radio-group>
-              <el-checkbox-group
-                v-model="searchData.inventory_change"
-                size="small"
-                @change="changeCheckGroup('dx')"
-              >
-                <el-checkbox
-                  border
-                  v-for="(item, index) in cities"
-                  :key="item.label"
-                  :label="item.label"
-                  >{{ item.value }}</el-checkbox
-                >
+              <el-checkbox-group v-model="searchData.inventory_change" size="small" @change="changeCheckGroup('dx')">
+                <el-checkbox border v-for="(item, index) in cities" :key="item.label" :label="item.label">{{ item.value
+                }}</el-checkbox>
               </el-checkbox-group>
             </div>
           </div>
@@ -72,16 +36,9 @@
         <div class="search_right">
           <div class="search_line">
             请选择起止时间
-            <el-date-picker
-              @change="chageSearch"
-              v-model="searchData.date"
-              size="small"
-              format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-            />
+            <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+              end-placeholder="结束时间" />
           </div>
         </div>
       </div>
@@ -93,20 +50,27 @@
         <ul class="roduct_num_box_ctn">
           <li>
             <span class="ctn_num">
-              {{ state.titleData.attachment_rate || 0 }}
+              {{ parseFloat((state.titleData.attachment_rate).toFixed(2)) }}
             </span>
             <span class="ctn_name"> 连带率 </span>
           </li>
           <li>
-            <span class="ctn_num"> {{ state.titleData.add_to_cart_rate || 0 }}% </span>
+            <span class="ctn_num">
+              {{ parseFloat((state.titleData.add_to_cart_rate * 100).toFixed(2)) }}
+              %
+            </span>
             <span class="ctn_name"> 加购率 </span>
           </li>
           <li>
-            <span class="ctn_num"> {{ state.titleData.favorite_rate || 0 }}% </span>
+            <span class="ctn_num">
+              {{ parseFloat((state.titleData.favorite_rate * 100).toFixed(2)) }}
+              % </span>
             <span class="ctn_name"> 收藏率 </span>
           </li>
           <li>
-            <span class="ctn_num"> {{ state.titleData.refund_rate || 0 }}% </span>
+            <span class="ctn_num">
+              {{ parseFloat((state.titleData.refund_rate * 100).toFixed(2)) }}
+              % </span>
             <span class="ctn_name"> 退款率 </span>
           </li>
         </ul>
@@ -116,25 +80,27 @@
         <ul class="roduct_num_box_ctn">
           <li>
             <span class="ctn_num">
-              {{ state.titleData.returning_buyer_percentage || 0 }}%
+              {{ parseFloat((state.titleData.returning_buyer_percentage * 100).toFixed(2)) }}
+              %
             </span>
             <span class="ctn_name"> 老买家人数占比 </span>
           </li>
           <li>
             <span class="ctn_num">
-              {{ state.titleData.returning_buyer_gmv_percentage || 0 }}%
+              {{ parseFloat((state.titleData.returning_buyer_gmv_percentage * 100).toFixed(2)) }}
+              %
             </span>
             <span class="ctn_name"> 老买家GWV占比 </span>
           </li>
           <li>
             <span class="ctn_num">
-              {{ state.titleData.returning_buyer_average_order_value || 0 }}
+              {{ parseFloat(state.titleData.returning_buyer_average_order_value?.toFixed(2)) }}
             </span>
             <span class="ctn_name"> 老买家客单价 </span>
           </li>
           <li>
             <span class="ctn_num">
-              {{ state.titleData.average_order_value_range || 0 }}
+              {{ parseFloat(state.titleData.customer_unit_price?.toFixed(2)) }}
             </span>
             <span class="ctn_name"> 客单价 </span>
           </li>
@@ -145,24 +111,26 @@
         <ul class="roduct_num_box_ctn">
           <li>
             <span class="ctn_num">
-              {{ state.titleData.search_visitor_count || 0 }}
+              {{ parseFloat(state.titleData.search_visitor_count?.toFixed(2)) }}
             </span>
             <span class="ctn_name"> 搜索访客数 </span>
           </li>
           <li>
             <span class="ctn_num">
-              {{ state.titleData.search_gmv_percentage || 0 }}%
+              {{ parseFloat((state.titleData.search_gmv_percentage * 100).toFixed(2)) }}
+              %
             </span>
             <span class="ctn_name"> 搜索GMV占比 </span>
           </li>
           <li>
             <span class="ctn_num">
-              {{ state.titleData.paid_traffic_percentage || 0 }}%
+              {{ parseFloat((state.titleData.paid_traffic_percentage * 100).toFixed(2)) }}
+              %
             </span>
             <span class="ctn_name"> 付费流量占比 </span>
           </li>
           <li>
-            <span class="ctn_num"> {{ state.titleData.paid_gmv_percentage || 0 }}% </span>
+            <span class="ctn_num"> {{ parseFloat((state.titleData.paid_gmv_percentage * 100).toFixed(2)) }}% </span>
             <span class="ctn_name"> 付费GMV占比 </span>
           </li>
         </ul>
@@ -171,7 +139,7 @@
     <div class="title">GMV拆解</div>
     <div class="GMV">
       <div class="GMV_left">
-        <div class="GMV_left_tit">最高层级{{ state.treeLevel }}</div>
+        <div class="GMV_left_tit">{{ state.treeLevel ? state.treeLevel : '全部' }}</div>
         <div class="GMV_left_ctn" id="GMVDismantlingecharts"></div>
       </div>
       <div class="GMV_right">
@@ -192,8 +160,8 @@
       <div class="trend_comparison_left flex_size">
         <div class="echarts_title">货盘趋势</div>
         <div class="trend_comparison_box" id="Palletecharts">
-          <el-skeleton :rows="6" animated> </el-skeleton>
-          <!-- <el-empty description="description" /> -->
+          <el-skeleton :rows="6" animated > </el-skeleton>
+          <!-- <el-empty v-else description="暂无数据" class="eharts_empty" /> -->
         </div>
       </div>
       <div class="trend_comparison_right flex_size">
@@ -225,32 +193,107 @@
       </div>
     </div>
     <div class="table_title">商品明细</div>
-    <div class="table">
-      <el-auto-resizer>
-        <template #default="{ height, width }">
-          <el-table-v2
-            :columns="tableColumns"
-            stripe
-            :data="state.tableData"
-            :width="width"
-            :height="height"
-            fixed
-          >
-            <template #empty>
-              <div class="flex items-center justify-center h-100%">
-                <el-empty />
-              </div>
-            </template>
-          </el-table-v2>
+    <div class="aiData_table table">
+      <el-table :data="state.tableData" max-height="450">
+        <el-table-column label="商品ID" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.product_id }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="商品简称" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.product_abbreviation }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="GMV" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.gmv }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="净利润率" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="产品分类" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.product_category }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="搜索访客占比" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="搜索GMV占比" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="老客占比" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="本月货盘" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.current_inventory }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上月货盘" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.last_period_stockpile }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="盘货变化" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.stockpile_change }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="客单价" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.unit_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="预估毛利率" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2)) }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="支付转化率" width="150">
+          <template #default="scope">
+            <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }} %</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="收藏率" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="加购率" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="连带率" width="150">
+          <template #default="scope">
+            <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="三级类目" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.tertiary_category }}</span>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="flex items-center justify-center h-100%">
+            <el-empty />
+          </div>
         </template>
-      </el-auto-resizer>
+      </el-table>
     </div>
-    <el-dialog
-      v-model="state.dialogForm.visible"
-      width="600px"
-      title="设置价格区间（最多6个）"
-      align-center
-    >
+    <el-dialog v-model="state.dialogForm.visible" width="600px" title="设置价格区间（最多6个）" align-center>
       <div class="dialog-content">
         <div class="dp-flex justify-content-space-betwee tip align-items">
           <span> 客单价(元) </span>
@@ -262,64 +305,35 @@
           </span>
         </div>
         <el-form ref="formRef" :model="userPriceRange">
-          <div
-            v-for="(item, index) in userPriceRange.priceRange"
-            class="item_line dp-flex"
-            :key="index"
-          >
-            <el-form-item
-              :prop="'priceRange.' + index + '.priceMin'"
-              :rules="{
-                required: true,
-                message: '填写价格区间',
-                trigger: 'blur',
-              }"
-            >
-              <el-input-number
-                v-model="item.priceMin"
-                class="input_width input_style"
-                :controls="false"
-                @blur="checkNum(item.priceMin, index, 'priceMin')"
-              />
+          <div v-for="(item, index) in userPriceRange.priceRange" class="item_line dp-flex" :key="index">
+            <el-form-item :prop="'priceRange.' + index + '.priceMin'" :rules="{
+              required: true,
+              message: '填写价格区间',
+              trigger: 'blur',
+            }">
+              <el-input-number v-model="item.priceMin" class="input_width input_style" :controls="false"
+                @blur="checkNum(item.priceMin, index, 'priceMin')" />
               -
             </el-form-item>
-            <el-form-item
-              :prop="'priceRange.' + index + '.priceMax'"
-              :rules="{
-                required: true,
-                message: '填写价格区间',
-                type: 'number',
-                trigger: 'blur',
-              }"
-            >
-              <el-input-number
-                v-model="item.priceMax"
-                class="input_width input_style"
-                :controls="false"
-                @blur="checkNum(item.priceMax, index, 'priceMax')"
-              />
+            <el-form-item :prop="'priceRange.' + index + '.priceMax'" :rules="{
+              required: true,
+              message: '填写价格区间',
+              type: 'number',
+              trigger: 'blur',
+            }">
+              <el-input-number v-model="item.priceMax" class="input_width input_style" :controls="false"
+                @blur="checkNum(item.priceMax, index, 'priceMax')" />
               <span style="flex: 1">元</span>
             </el-form-item>
-            <el-button
-              class="mt-2 btn_style position_right"
-              @click.prevent="removeLine(item)"
-              >-</el-button
-            >
+            <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
           </div>
         </el-form>
-        <el-button
-          class="mt-2 btn_style"
-          style="width: 100%"
-          @click="addDomain"
-          :disabled="userPriceRange.priceRange.length === 6"
-          >+添加</el-button
-        >
+        <el-button class="mt-2 btn_style" style="width: 100%" @click="addDomain"
+          :disabled="userPriceRange.priceRange?.length >= 6">+添加</el-button>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="state.dialogForm.visible = false" class="cancellation btn"
-            >取消</el-button
-          >
+          <el-button @click="state.dialogForm.visible = false" class="cancellation btn">取消</el-button>
           <el-button @click="submitForm(formRef)" class="primary btn"> 确定 </el-button>
         </span>
       </template>
@@ -335,6 +349,7 @@ import {
   setUserPriceRange,
   getResponsibleList,
   getCategoriesList,
+  getSubGmvList,
 } from "@/api/AIdata";
 import { getMonthFinalDay } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
@@ -365,7 +380,20 @@ const cities = [
 const state = reactive({
   tree: [] as any,
   tableData: [],
-  titleData: {} as any,
+  titleData: {
+    attachment_rate: 0,
+    add_to_cart_rate: 0,
+    favorite_rate: 0,
+    refund_rate: 0,
+    returning_buyer_percentage: 0,
+    returning_buyer_gmv_percentage: 0,
+    returning_buyer_average_order_value: 0,
+    customer_unit_price: 0,
+    search_visitor_count: 0,
+    search_gmv_percentage: 0,
+    paid_traffic_percentage: 0,
+    paid_gmv_percentage: 0,
+  } as any,
   dialogForm: {
     visible: false,
     records: [] as DomainItem[],
@@ -376,14 +404,17 @@ const state = reactive({
   priceRangedata: [] as any,
   responsibleList: [] as any,
   monthPallet: [] as any,
+  oldNewList: [] as any,
 });
-
+const disabledDate = (time: Date) => {
+  return time.getTime() > Date.now()
+}
 const searchData = reactive({
-  product_manager: "", //	string 商品负责人 - 负责该商品的人员或团队名称
-  current_inventory: "", // string 当期货盘
+  product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称
+  current_inventory: [], // string 当期货盘
   inventory_change: [],
   all: 999 as any,
-  date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+  date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
 });
 
 // 调整价格区间data
@@ -406,7 +437,7 @@ const removeLine = (item: DomainItem) => {
   }
 };
 
-const restore = () => {};
+const restore = () => { };
 
 const addDomain = () => {
   userPriceRange.priceRange.push({
@@ -417,7 +448,6 @@ const addDomain = () => {
 };
 
 const checkNum = (val, ind, str) => {
-  // console.log(val, ind, str);
   if (!/^\d+$/.test(val)) {
     ElMessage.warning("输入格式错误或者输入为空");
     userPriceRange.priceRange[ind][str] = "";
@@ -452,7 +482,15 @@ const submitForm = (formEl: FormInstance | undefined) => {
       const res = await setUserPriceRange(data);
       if (res.code === 0) {
         ElMessage.success("设置成功");
-        state.dialogForm.visible = false;
+        let obj = {
+          end_date: searchData.date[1],
+          start_date: searchData.date[0],
+          product_manager: searchData.product_manager,
+          inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+          current_inventory: searchData.current_inventory,
+          price_range_list: userPriceRange.priceRange,
+        }
+        getPriceRangedatas(obj)
       }
     } else {
       console.log("error submit!");
@@ -472,15 +510,10 @@ const getUserPrice = async () => {
   });
   if (res.code === 0) {
     state.loading = false;
-    userPriceRange.priceRange = res.data.records;
-    state.dialogForm.records = res.data.records;
+    userPriceRange.priceRange = res.data.records ? res.data.records : [];
+    state.dialogForm.records = res.data.records ? res.data.records : [];
     state.dialogForm.visible = true;
   }
-};
-
-const chageSearch = () => {
-  // console.log(searchData);
-  getData2();
 };
 
 const changeCheckGroup = (type: string) => {
@@ -492,15 +525,45 @@ const changeCheckGroup = (type: string) => {
   getData2();
 };
 
+
 const getData = async () => {
-  // console.log(userStore.userInfo.ID)
   const [resp1, resp2] = [await getResponsibleList(), await getCategoriesList()];
   if (resp1.code === 0 && resp2.code === 0) {
     state.responsibleList = resp1.data.records;
+    // console.log([resp1.data.records[0].responsible])
     searchData.product_manager = resp1.data.records[0].responsible;
-    state.tree = resp2.data.records;
-    // state.treeLevel = getLevel(state.tree)
-    await getData2();
+    let data = {
+      end_date: searchData.date[1],
+      start_date: searchData.date[0],
+      current_inventory: [],
+      product_manager: searchData.product_manager,
+      inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+    };
+    const resp3 = await getSubGmvList(data);
+    if (resp3.code === 0) {
+      state.monthPallet = resp3.data.records;
+      let allValue = 0;
+      resp3.data.records?.forEach((i) => {
+        allValue += (i.payment_amount * 1);
+      });
+      state.tree = [
+        {
+          name: "GMV",
+          value: parseFloat(allValue.toFixed(2)),
+          lv: -1,
+          children: resp3.data.records?.map((i) => {
+            return {
+              name: i.current_inventory,
+              value: parseFloat(i.payment_amount.toFixed(2)),
+              // bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(2)),
+              children: [],
+              lv: 0,
+            };
+          }),
+        },
+      ];
+      await getData2();
+    }
   }
 };
 
@@ -511,16 +574,41 @@ const getData2 = async () => {
     start_date: searchData.date[0],
     product_manager: searchData.product_manager,
     inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
-    current_inventory: [searchData.current_inventory],
+    current_inventory: searchData.current_inventory,
   };
   const [res, res2] = [await getAlldata(data), await getPriceRangedata(data)];
   if (res.code === 0 && res2.code === 0) {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
-    state.monthPallet = res.data.gmvList.records;
     state.gmvPrductList = res.data.gmvPrductList.records;
+    state.oldNewList = res.data.oldNewList.records;
+
     state.priceRangedata = res2.data.records;
     getEchartsData();
+    state.loading = false;
+  }
+};
+
+const getPriceRangedatas = async (data) => {
+  const res = await getPriceRangedata(data)
+  if (res.code === 0) {
+    state.priceRangedata = res.data.records;
+    unitPriceGMV();
+    unitPriceTrend();
+    state.dialogForm.visible = false;
+
+  }
+}
+
+const getData2Copy = async (data: any) => {
+  state.loading = true;
+  const [res, res2] = [await getAlldata(data), await getPriceRangedata(data)];
+  if (res.code === 0 && res2.code === 0) {
+    state.tableData = res.data.prductInfoList.records || [];
+    state.titleData = res.data.index;
+    state.gmvPrductList = res.data.gmvPrductList.records;
+    state.priceRangedata = res2.data.records;
+    getEchartsData2();
     state.loading = false;
   }
 };
@@ -533,6 +621,16 @@ const getEchartsData = () => {
   unitPriceGMV();
   unitPriceTrend();
   GMVDismantling();
+};
+
+const getEchartsData2 = () => {
+  contrastGMV();
+  contrastVisitor();
+  palletTrend();
+  newOldContrast();
+  unitPriceGMV();
+  unitPriceTrend();
+  // GMVDismantling();
 };
 
 Math.floor(Math.random() * (1 - 100) + 100); //1~100的随机数
@@ -584,16 +682,18 @@ const contrastVisitor = () => {
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-  console.log(state.gmvPrductList);
-  const arr = state.gmvPrductList.map((i) => {
+  const date = state.gmvPrductList?.map(i => i.date)
+  const arr = state.gmvPrductList?.map((i) => {
     return {
       name: i.class,
-      date: i.data.map((j) => j.date),
-      data: i.data.map((j) => j.store_gmv),
+      data: i.data?.map((j) => j.store_gmv),
     };
   });
-  const option = lineOptions1(arr);
-  option && myChart.setOption(option);
+  if (arr) {
+    const option = lineOptions1(arr, date);
+    option && myChart.setOption(option);
+
+  }
 
   window.addEventListener("resize", () => {
     myChart.resize();
@@ -602,22 +702,22 @@ const palletTrend = () => {
 const newOldContrast = () => {
   const chartDom = document.getElementById("newOldecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-
+  const date = state.oldNewList?.map(i => i.date)
   let arr = [
     {
       name: "支付卖家数",
-      data: data,
+      data: state.oldNewList?.map(i => i.paid_buyers_count),
     },
     {
       name: "支付新卖家数",
-      data: data,
+      data: state.oldNewList?.map(i => i.new_paid_buyers_count),
     },
     {
       name: "支付老买家数",
-      data: data,
+      data: state.oldNewList?.map(i => i.returning_paid_buyers_count),
     },
   ];
-  const option = lineOptions(arr);
+  const option = lineOptions1(arr, date);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -627,14 +727,15 @@ const newOldContrast = () => {
 const unitPriceGMV = () => {
   const chartDom = document.getElementById("unitPriceGMVcharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-  const arr = state.priceRangedata.map((i) => {
+  const arr = state.priceRangedata?.map((i) => {
     return {
       name: i.price_range,
-      date: i.records.map((j) => j.date),
-      data: i.records.map((j) => j.gmv),
+      date: i.records?.map((j) => j.date),
+      data: i.records?.map((j) => parseFloat((j.gmv).toFixed(2))),
     };
   });
-  const option = barOptions(arr);
+  const date = arr?.map(i => i.date)
+  const option = barOptions(arr, date[0]);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -644,14 +745,15 @@ const unitPriceGMV = () => {
 const unitPriceTrend = () => {
   const chartDom = document.getElementById("unitPriceTrendcharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-  const arr = state.priceRangedata.map((i) => {
+  const arr = state.priceRangedata?.map((i) => {
     return {
       name: i.price_range,
-      date: i.records.map((j) => j.date),
-      data: i.records.map((j) => j.visitor_count),
+      date: i.records?.map((j) => j.date),
+      data: i.records?.map((j) => parseFloat((j.visitor_count).toFixed(2))),
     };
   });
-  const option = barOptions(arr);
+  const date = arr?.map(i => i.date)
+  const option = barOptions(arr, date[0]);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -662,85 +764,7 @@ const unitPriceTrend = () => {
 const GMVDismantling = () => {
   const chartDom = document.getElementById("GMVDismantlingecharts") as HTMLElement;
   const myChart = echarts.init(chartDom);
-  state.tree = [
-    {
-      name: "GMV",
-      value: 2402195,
-      id: "1",
-      children: [
-        {
-          name: "S",
-          value: 1772471,
-          id: "1-1",
-          children: [
-            {
-              name: "住宅家具",
-              id: "1-4-1",
-              value: 1772471,
-              children: [{ name: "床垫类", value: 1772471, id: "1-4-1-1" }],
-            },
-          ],
-        },
-        {
-          name: "A",
-          id: "1-2",
-          value: 839184,
-          children: [
-            { name: "床上用品", value: 250797, id: "1-2-1" },
-            {
-              name: "住宅家具",
-              value: 588388,
-              id: "1-2-1-1",
-              children: [{ name: "床垫类", value: 588388, id: "1-2-1-1-1" }],
-            },
-          ],
-        },
-        {
-          name: "B",
-          id: "1-3",
-          value: 442476,
-          children: [
-            { name: "(空白)", value: 4848, id: "1-3-1" },
-            { name: "床上用品", value: 6470, id: "1-3-2" },
-            {
-              name: "住宅家具",
-              value: 431158,
-              id: "1-3-2-1",
-              children: [{ name: "床垫类", value: 431158, id: "1-3-2-1-1" }],
-            },
-          ],
-        },
-        {
-          name: "C",
-          id: "1-4",
-          value: 13085,
-          children: [
-            {
-              name: "住宅家具",
-              value: 13085,
-              id: "1-4-1",
-              children: [{ name: "床垫类", value: 13085, id: "1-4-1-1" }],
-            },
-          ],
-        },
-        {
-          name: "D",
-          id: "1-5",
-          value: 6731,
-          children: [
-            { name: "(空白)", value: 127, id: "1-5-1" },
-            { name: "床上用品", value: 1547, id: "1-5-2" },
-            {
-              name: "住宅家具",
-              value: 5057,
-              id: "1-5-3",
-              children: [{ name: "床垫类", value: 5057, id: "1-5-3-1" }],
-            },
-          ],
-        },
-      ],
-    },
-  ];
+
   const option = {
     tooltip: {
       trigger: "item",
@@ -766,78 +790,31 @@ const GMVDismantling = () => {
 
         label: {
           position: "center",
-          // color: "#fff",
-          // width: 100,
-          // height: 20,
-          // lineHeight: -70,
-          // borderWidth: 0.5,  // 边框宽度
-          // borderRadius: 20,  // 边框圆角
-          // borderColor: "#B034FF",   // 文字块的边框色
-          // backgroundColor: "#ccc",  // 文字块的背景色
-
           rich: {
             a: {
               color: "#FECD04",
               lineHeight: 60,
               fontSize: 18,
             },
-            b: {
-              backgroundColor: {
-                image:
-                  "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F25%2F20200525121206_tujpk.thumb.1000_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1707983711&t=8d8e6381a1d8f8f95e3fdcb4e7349dc9",
-              },
-              height: 20,
-              width: 100,
-            },
+            // b: {
+            //   backgroundColor: {
+            //     image:
+            //       "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F25%2F20200525121206_tujpk.thumb.1000_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1707983711&t=8d8e6381a1d8f8f95e3fdcb4e7349dc9",
+            //   },
+            //   height: 20,
+            //   width: 100,
+            // },
           },
-          // formatter: [
-          //     '{a|这段文本采用样式a}',
-          //     '{b|这段文本采用样式b}这段用默认样式{x|这段用样式x}'
-          // ].join('\n'),
 
           formatter: function (param) {
-            // return (
-            //     param.name + '     ' + param.value + 'b'
-            // )
-            // return  [
-            //     param.name + '     ' + param.value + 'b'
-            // ]
             return [
               `{a|${param.name}    ${param.value}}`,
               // '{b|}'
             ].join("\n");
           },
         },
-        // leaves: { // 叶子节点的特殊配置，如上面的树图实例中，叶子节点和非叶子节点的标签位置不同。
-        //     label: { // 描述了叶子节点所对应的文本标签的样式。
-        //         position: 'right',
-        //         verticalAlign: 'middle',
-        //         align: 'center',
-        //         color: '#B034FF',
-        //         width: 100,
-        //         height: 40,
-        //         lineHeight: 40,
-        //         borderWidth: 0.5,  // 边框宽度
-        //         borderRadius: 20,  // 边框圆角
-        //         borderColor: "#B034FF",   // 文字块的边框色
-        //         backgroundColor: "#fff",  // 文字块的背景色
-        //         rich: {
-        //             img1: {
-        //                 // backgroundColor: {
-        //                 //     image: Showers,
-        //                 // },
-        //                 height: 40
-        //             }
-        //         },
-        //         formatter: function (param) {
-        //             var res = "";
-        //             res += param.name + '{img1|}';
-        //             return res;
-        //         },
-        //     }
-        // },
         roam: true,
-        initialTreeDepth: 1, // 树图初始展开的层级（深度）
+        initialTreeDepth: 5, // 树图初始展开的层级（深度）
         expandAndCollapse: true, // 子树折叠和展开的交互，默认打开
         emphasis: {
           focus: "descendant",
@@ -849,12 +826,136 @@ const GMVDismantling = () => {
   };
 
   option && myChart.setOption(option);
-  myChart.on("click", function (params) {
-    console.log(myChart);
+  myChart.on("click", function (params: any) {
+    state.treeLevel = params.data.name
+    let data = {
+      end_date: searchData.date[1],
+      start_date: searchData.date[0],
+      product_manager: searchData.product_manager,
+      inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+      current_inventory: [params.data.name],
+      primary_category: "",
+      secondary_category: "",
+      tertiary_category: "",
+      leve: 0,
+    };
+    if (params.data.lv === 0) {
+      data.leve = 0
+      getSubGmvList(data).then((res) => {
+        if (res.code === 0) {
+          const childs = res.data.records?.map((i) => {
+            return {
+              name: i.primary_category,
+              value: i.payment_amount,
+              bfb: i.payment_amount_percentage,
+              children: [],
+              current: params.data.name,
+              lv: 1,
+            };
+          });
+          addDataToTree(state.tree[0], params.data.name, childs);
+          myChart.setOption(option);
+        }
+      });
+    } else if (params.data.lv === 1) {
+      data.current_inventory = [params.data.current];
+      data.primary_category = params.data.name;
+      data.leve = 1
+      getSubGmvList(data).then((res) => {
+        if (res.code === 0) {
+          if (res.data.records) {
+            const childs = res.data.records?.map((i) => {
+              return {
+                name: i.secondary_category,
+                current: params.data.current,
+                value: i.payment_amount,
+                bfb: i.payment_amount_percentage,
+                children: [],
+                primary: params.data.name,
+                lv: 2,
+              };
+            });
+            addDataToTree(state.tree[0], params.data.name, childs);
+            myChart.setOption(option);
+          } else {
+            addDataToTree(state.tree[0], params.data.name, []);
+          }
+        }
+      });
+    } else if (params.data.lv === 2) {
+      data.current_inventory = [params.data.current];
+      data.primary_category = params.data.primary;
+      data.secondary_category = params.data.name;
+      data.leve = 2
+      getSubGmvList(data).then((res) => {
+        if (res.code === 0) {
+          if (res.data.records) {
+            const childs = res.data.records?.map((i) => {
+              return {
+                name: i.tertiary_category,
+                value: i.payment_amount,
+                bfb: i.payment_amount_percentage,
+                children: [],
+                primary: params.data.primary,
+                secondary: params.data.name,
+                lv: 3,
+              };
+            });
+            addDataToTree(state.tree[0], params.data.name, childs);
+            myChart.setOption(option);
+          } else {
+            addDataToTree(state.tree[0], params.data.name, []);
+          }
+        }
+      });
+    }
+    getData2Copy(data)
+    // else if (params.data.lv === 3) {
+    //   data.current_inventory = [params.data.current];
+    //   data.primary_category = params.data.primary;
+    //   data.secondary_category = params.data.secondary;
+    //   data.tertiary_category = params.data.name;
+    //   data.leve = 2
+    //   getSubGmvList(data).then((res) => {
+    //     if (res.code === 0) {
+    //       if (res.data.records) {
+    //         const childs = res.data.records?.map((i) => {
+    //           return {
+    //             name: i.tertiary_category,
+    //             value: i.payment_amount,
+    //             children: [],
+    //             primary: params.data.primary,
+    //             secondary: params.data.secondary,
+    //             tertiary: params.data.name,
+    //             lv: 4,
+    //           };
+    //         });
+    //         addDataToTree(state.tree[0], params.data.name, childs);
+    //         myChart.setOption(option);
+    //       } else {
+    //         addDataToTree(state.tree[0], params.data.name, []);
+    //       }
+    //     }
+    //   });
+    // }
   });
   window.addEventListener("resize", () => {
     myChart.resize();
   });
+};
+// 添加数据到树形结构的函数
+const addDataToTree = (root: any, targetId: any, newData: any) => {
+  if (!root || !targetId) return; // 确保根节点不为空且目标ID有效
+
+  if (root.name === targetId) {
+    root.lv = 999;
+    root.children = newData; // 若当前节点与目标ID匹配，则直接在该节点上添加新数据
+    return;
+  } else {
+    for (let child of root.children) {
+      addDataToTree(child, targetId, newData); // 递归调用自身处理子节点
+    }
+  }
 };
 
 const getLevel = (arr) => {
@@ -980,11 +1081,9 @@ $echarts_bg_img: url("./images/_2.png");
       border: none;
 
       color: #fff;
-      background: linear-gradient(
-        180deg,
-        rgba(0, 72, 92, 1) 0%,
-        rgba(1, 190, 226, 1) 100%
-      );
+      background: linear-gradient(180deg,
+          rgba(0, 72, 92, 1) 0%,
+          rgba(1, 190, 226, 1) 100%);
     }
   }
 
@@ -1091,6 +1190,16 @@ $echarts_bg_img: url("./images/_2.png");
       height: 252px;
       background-image: $echarts_bg_img;
       background-size: 100% 100%;
+      position: relative;
+
+      .eharts_empty {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+      }
     }
   }
 
@@ -1116,45 +1225,17 @@ $echarts_bg_img: url("./images/_2.png");
     overflow: auto;
     margin-bottom: 10px;
     margin-top: 4px;
+
     // border: 1px solid #fff;
 
-    ::v-deep(.el-auto-resizer) {
-      .el-table-v2 {
-        .el-table-v2__main {
-          background: none;
-
-          .el-table-v2__header {
-            //表格头部
-            .el-table-v2__header-row {
-              .el-table-v2__header-cell {
-                background: none;
-              }
-            }
-          }
-
-          .el-table-v2__body {
-            // 表格主体内容
-            .el-table-v2__row:nth-child(2n) {
-              background-color: rgba(124, 145, 170, 0.5);
-            }
-
-            .el-table-v2__row:hover {
-              background-color: rgb(32, 96, 169);
-            }
-          }
-        }
-      }
-    }
   }
 
   ::v-deep(.el-overlay) {
     .el-overlay-dialog {
       .el-dialog {
-        background: linear-gradient(
-          116.95deg,
-          rgba(0, 13, 36, 1) 0%,
-          rgba(0, 82, 117, 1) 100%
-        );
+        background: linear-gradient(116.95deg,
+            rgba(0, 13, 36, 1) 0%,
+            rgba(0, 82, 117, 1) 100%);
 
         .el-dialog__header {
           border-bottom: 2px solid rgba(6, 132, 188, 1);

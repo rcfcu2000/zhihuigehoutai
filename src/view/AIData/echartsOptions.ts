@@ -44,7 +44,7 @@ const gmvPrductList = {
 }
 
 
-export const lineOptions1 = (arr: any) => {
+export const lineOptions1 = (arr: any, date: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
@@ -52,7 +52,7 @@ export const lineOptions1 = (arr: any) => {
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-            data: arr.map((i: { name: any; }) => i.name),
+            data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -66,7 +66,7 @@ export const lineOptions1 = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: arr[0]?.date,
+            data: date,
             axisLine: {
                 show: false,
 
@@ -95,7 +95,7 @@ export const lineOptions1 = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
             return {
                 name: i.name,
                 symbolSize: 1, // 设置数据点的大小为8像素
@@ -119,7 +119,7 @@ export const lineOptions = (arr: any) => {
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
-            data: arr.map((i: { name: any; }) => i.name),
+            data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -162,7 +162,7 @@ export const lineOptions = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
             return {
                 name: i.name,
                 stack: 'Total',
@@ -179,14 +179,14 @@ export const lineOptions = (arr: any) => {
 
 
 
-export const barOptions = (arr: any) => {
+export const barOptions = (arr: any, date: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
     return {
         tooltip: {
             trigger: 'axis'
         },
         legend: {
-            data: arr.map((i: { name: any; }) => i.name),
+            data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -201,7 +201,7 @@ export const barOptions = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: arr[0]?.date,
+            data: date,
             axisLine: {
                 show: false,
                 lineStyle: {
@@ -229,7 +229,7 @@ export const barOptions = (arr: any) => {
                 show: false,
             },
         },
-        series: arr.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
             return {
                 type: 'bar',
                 name: i.name,

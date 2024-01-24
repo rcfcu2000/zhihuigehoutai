@@ -63,6 +63,7 @@ export const getResponsibleList = (data) => {
     })
 }
 
+<<<<<<< HEAD
 
 
 // 获取推广分析所有数据
@@ -89,3 +90,13 @@ export const getPlanGetAlldata = (data) => {
         data
     })
 }
+=======
+// 获取下一级GMV拆分
+export const getSubGmvList = (data) => {
+    return service({
+        url: '/inventory/getSubGmvList',
+        method: 'post',
+        data
+    })
+}
+>>>>>>> e2ae78bdb8ae7f2390ad82c5ae8358a84c3b282e
