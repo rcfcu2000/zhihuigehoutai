@@ -211,29 +211,42 @@
         </div>
 
         <!-- 明细表格查询条件 -->
-        <div class="detailSearch">
+        <div class="detailSearch" :key="count">
             <el-form :inline="true" :model="searchTableData" size="small" class="form-inline" label-position="right">
                 <el-form-item label="出价方式：">
-                    <el-input v-model="searchTableData.bid_type" placeholder="" clearable />
+                    <el-select v-model="searchTableData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
+                        @change="selectChange" style="width: 240px">
+                        <el-option v-for="(item, index) in all.allData.bidTypeAnalysis.records" :key="index"
+                            :label="item.bid_type" :value="item.bid_type" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="货盘：">
-                    <el-select v-model="searchTableData.pallet" class="m-2" placeholder="Select" size="small" style="width: 240px">
-                        <!-- <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" /> -->
+                    <el-select v-model="searchTableData.pallet" class="m-2" placeholder="请选择" size="small" multiple
+                        @change="selectChange" style="width: 240px">
+                        <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index"
+                            :label="item.pallet" :value="item.pallet" />
                     </el-select>
-                    <el-input v-model="searchTableData.pallet" placeholder="" clearable />
                 </el-form-item>
                 <el-form-item label="关键词：">
-                    <el-input v-model="searchTableData.keyword_filter" placeholder="" clearable />
+                    <el-select v-model="searchTableData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
+                        @change="selectChange" style="width: 240px">
+                        <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
+                            :label="item.keyword" :value="item.keyword" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="人群：">
-                    <el-input v-model="searchTableData.audience_filter" placeholder="" clearable />
+                    <el-select v-model="searchTableData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
+                        @change="selectChange" style="width: 240px">
+                        <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index"
+                            :label="item.crowd" :value="item.crowd" />
+                    </el-select>
                 </el-form-item>
             </el-form>
         </div>
-        <!-- 商品明细 -->
-        <comtable :Commodity_detail="allData.Product" />
-        <!-- 计划明细 -->
-        <comtable :Commodity_detail="allData.Plan" />
+        <!-- 明细表格 -->
+        <template v-for="item,index in allData" :key="index">
+            <comtable :Commodity_detail="item" :comKey="index" />
+        </template>
 
     </div>
 </template>
@@ -246,12 +259,14 @@ import {
     getSubGmvList,
 } from '@/api/AIdata'
 
-import { getMonthFinalDay,getMonday,weaklast } from '@/utils/getDate.ts'
+import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
-
+const count = ref(0)
+const pageNum = ref(1)
+const pageSize = ref(20)
 const cities = [
     {
         label: -1,
@@ -291,80 +306,89 @@ const searchTableData = reactive({
     bid_type: [], // 出价方式
     pallet: [], // 货盘
 
+    "end_date": searchData.date[1], // 日期 - 数据统计的时间点
+    "start_date": searchData.date[0],
+    pageNum: pageNum,
+    pageSize: pageSize,
+
 })
 
 // 接口返回的全部数据
-const allData = reactive({
-    Product: {
-        componentTitle: '商品明细',
-        data: [],
-        column: [
-            { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true },
-            { title: '商品名称', width: 120, align: 'center', dataKey: 'product_name', key: 'product_name', },
-            { title: '推广GMV', width: 120, align: 'center', dataKey: 'gmv', key: 'gmv', },
-            { title: 'GMV全店占比', width: 120, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', },
-            { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
-            { title: '花费', width: 100, align: 'center', dataKey: 'cost', key: 'cost', },
-            { title: '花费全店占比', width: 120, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
-            { title: '花费趋势', width: 100, align: 'center', dataKey: 'cost_trend', key: 'cost_trend', },
-            { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', },
-            // { title: '推广ROI', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
-            // { title: '推广ROI趋势', width: 100, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', },
-            { title: '点击率', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', },
-            { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', },
-            { title: '转化率', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', },
-            // { title: '支付转化率', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
-            { title: '直接ROI', width: 100, align: 'center', dataKey: 'direct_roi', key: 'direct_roi', },
-            { title: '客单价', width: 100, align: 'center', dataKey: 'average_order_value', key: 'average_order_value', },
-            { title: '直接成交金额', width: 120, align: 'center', dataKey: 'direct_transaction_amount', key: 'direct_transaction_amount', },
-            { title: '直接成交笔数', width: 120, align: 'center', dataKey: 'direct_transaction_count', key: 'direct_transaction_count', },
-            { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', },
-            { title: '间接成交金额', width: 120, align: 'center', dataKey: 'indirect_transaction_amount', key: 'indirect_transaction_amount', },
-            { title: '间接成交笔数', width: 120, align: 'center', dataKey: 'indirect_transaction_count', key: 'indirect_transaction_count', },
-            { title: '老客占比', width: 100, align: 'center', dataKey: 'existing_customer_percentage', key: 'existing_customer_percentage', },
-            { title: '收藏加购率', width: 120, align: 'center', dataKey: 'favorite_add_to_cart_rate', key: 'favorite_add_to_cart_rate', },
-        ]
-    } as any,
-    Plan: {
-        componentTitle: '计划明细',
-        data: [],
-        column: [
-            { title: '本月货盘', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true },
-            { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', },
-            { title: '出价方式', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', },
-            { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', },
-            { title: '场景名称', width: 100, align: 'center', dataKey: 'campaign_scene', key: 'campaign_scene', },
+const allData = reactive([{
+    componentTitle: '商品明细',
+    data: [],
+    column: [
+        { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '' },
+        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_name', key: 'product_name', unit: '' },
+        { title: '推广GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', unit: '' },
+        { title: 'GMV全店占比(%)', width: 140, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', unit: '%' },
+        { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
+        { title: '花费', width: 100, align: 'center', dataKey: 'cost', key: 'cost', unit: '' },
+        { title: '花费全店占比(%)', width: 130, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', unit: '%' },
+        { title: '花费趋势', width: 100, align: 'center', dataKey: 'cost_trend', key: 'cost_trend', unit: '' },
+        { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
+        // { title: '推广ROI', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
+        // { title: '推广ROI趋势', width: 100, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', },
+        { title: '点击率(%)', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', unit: '%' },
+        { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', unit: '' },
+        { title: '转化率(%)', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%' },
+        // { title: '支付转化率', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
+        { title: '直接ROI', width: 100, align: 'center', dataKey: 'direct_roi', key: 'direct_roi', unit: '' },
+        { title: '客单价', width: 100, align: 'center', dataKey: 'average_order_value', key: 'average_order_value', unit: '' },
+        { title: '直接成交金额', width: 120, align: 'center', dataKey: 'direct_transaction_amount', key: 'direct_transaction_amount', unit: '' },
+        { title: '直接成交笔数', width: 120, align: 'center', dataKey: 'direct_transaction_count', key: 'direct_transaction_count', unit: '' },
+        { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', unit: '' },
+        { title: '间接成交金额', width: 120, align: 'center', dataKey: 'indirect_transaction_amount', key: 'indirect_transaction_amount', unit: '' },
+        { title: '间接成交笔数', width: 120, align: 'center', dataKey: 'indirect_transaction_count', key: 'indirect_transaction_count', unit: '' },
+        { title: '老客占比(%)', width: 120, align: 'center', dataKey: 'existing_customer_percentage', key: 'existing_customer_percentage', unit: '%' },
+        { title: '收藏加购率(%)', width: 120, align: 'center', dataKey: 'favorite_add_to_cart_rate', key: 'favorite_add_to_cart_rate', unit: '%' },
+    ]
+}, {
+    componentTitle: '计划明细',
+    data: [],
+    column: [
+        { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '' },
+        { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
+        { title: '出价方式', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
+        { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
+        { title: '场景名称', width: 100, align: 'center', dataKey: 'campaign_scene', key: 'campaign_scene', unit: '' },
 
-            { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
-            // { title: 'GMV趋势', width: 100, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
-            { title: '点击率', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', },
-            { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', },
-            { title: '转化率', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', },
-            { title: '每次点击成本', width: 120, align: 'center', dataKey: 'cpc', key: 'cpc', },
-            { title: '直接ROI', width: 100, align: 'center', dataKey: 'direct_roi', key: 'direct_roi', },
-            { title: '直接成交金额', width: 120, align: 'center', dataKey: 'direct_transaction_amount', key: 'direct_transaction_amount', },
-            { title: '直接成交笔数', width: 120, align: 'center', dataKey: 'direct_transaction_count', key: 'direct_transaction_count', },
-            { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', },
-            { title: '间接成交金额', width: 120, align: 'center', dataKey: 'indirect_transaction_amount', key: 'indirect_transaction_amount', },
-            { title: '间接成交笔数', width: 120, align: 'center', dataKey: 'indirect_transaction_count', key: 'indirect_transaction_count', },
-            { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', },
-            { title: 'ROI趋势', width: 100, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', },
-            { title: '花费', width: 100, align: 'center', dataKey: 'spend', key: 'spend', },
-            { title: '花费趋势', width: 100, align: 'center', dataKey: 'spend_trend', key: 'spend_trend', },
-            { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', },
+        { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
+        // { title: 'GMV趋势', width: 100, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
+        { title: '点击率(%)', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', unit: '%' },
+        { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', unit: '' },
+        { title: '转化率(%)', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%' },
+        { title: '每次点击成本', width: 120, align: 'center', dataKey: 'cpc', key: 'cpc', unit: '' },
+        { title: '直接ROI', width: 100, align: 'center', dataKey: 'direct_roi', key: 'direct_roi', unit: '' },
+        { title: '直接成交金额', width: 120, align: 'center', dataKey: 'direct_transaction_amount', key: 'direct_transaction_amount', unit: '' },
+        { title: '直接成交笔数', width: 120, align: 'center', dataKey: 'direct_transaction_count', key: 'direct_transaction_count', unit: '' },
+        { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', unit: '' },
+        { title: '间接成交金额', width: 120, align: 'center', dataKey: 'indirect_transaction_amount', key: 'indirect_transaction_amount', unit: '' },
+        { title: '间接成交笔数', width: 120, align: 'center', dataKey: 'indirect_transaction_count', key: 'indirect_transaction_count', unit: '' },
+        { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
+        { title: 'ROI趋势', width: 100, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', unit: '' },
+        { title: '花费', width: 100, align: 'center', dataKey: 'spend', key: 'spend', unit: '' },
+        { title: '花费趋势', width: 100, align: 'center', dataKey: 'spend_trend', key: 'spend_trend', unit: '' },
+        { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', unit: '' },
 
+        // { title: 'GMV全店占比', width: 100, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', },
+        // { title: '花费全店占比', width: 100, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
+        // { title: '支付转化率', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
+    ]
+}])
 
-            // { title: 'GMV全店占比', width: 100, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', },
-            // { title: '花费全店占比', width: 100, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
-            // { title: '支付转化率', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
-        ]
-    } as any,
-    allData: {}
+const all = reactive({
+    allData: {
+        bidTypeAnalysis: { records: [] },
+        palletCost: { records: [] },
+        keywordCost: { records: [] },
+        crowdSpend: { records: [] },
+    }
 })
 
 onMounted(async () => {
-    console.log(weaklast(),"weaklast(3)")
-    getAll()
+    getAll(searchTableData)
+    getDetail(searchTableData)
 })
 const getPlan = async () => {
 
@@ -411,37 +435,33 @@ const getData = async () => {
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
-const getAll = async () => {
-    const arr = {
-        "audience_filter": [""],  //  人群筛选
-        "bid_type": [""],  // 出价方式
-        // "current_inventory": [
-        //     "string"   // 当期货盘
-        // ],
-        "keyword_filter": [""],  // 关键词
-        "pallet": [""],  // 货盘字段
-        // "product_manager": [
-        //     "string"   // 商品负责人
-        // ],
-        // "scene_category": [
-        //     "string"  // 场景分类
-        // ],
-        // "shop_filter": "", // 店铺筛选字段，用于存储店铺筛选条件的详细信息
-        "end_date": "2023-01-21", // 日期 - 数据统计的时间点
-        "start_date": "2023-01-01",
+const getAll = async (arr: object) => {
+    const allRes = await getPromotionGetAlldata(arr)
+    if (allRes.code === 0) {
+        all.allData.bidTypeAnalysis.records = allRes.data.bidTypeAnalysis.records
+        all.allData.palletCost.records = allRes.data.palletCost.records
+        all.allData.keywordCost.records = allRes.data.keywordCost.records
+        all.allData.crowdSpend.records = allRes.data.crowdSpend.records
     }
-    const [proRes, planRes, allRes] = [await getProductGetAlldata(arr), await getPlanGetAlldata(arr), await getPromotionGetAlldata(arr)]
+    count.value++
+}
+
+const getDetail = async (arr: object) => {
+    const [proRes, planRes] = [await getProductGetAlldata(arr), await getPlanGetAlldata(arr)]
     if (proRes.code === 0) {
-        allData.Product.data = proRes.data
-        console.log(proRes, "Productalldata")
+        allData[0].data = proRes.data
     }
     if (planRes.code === 0) {
-        allData.Plan.data = planRes.data
+        allData[1].data = planRes.data
+        allData[1].data.records.forEach(element => {
+            element.pallet = element.campaign_name
+        });
     }
-    if (allRes.code === 0) {
-        allData.allData = allRes.data
-    }
-    console.log(allData, "结束时间")
+    pageNum.value++
+}
+
+const selectChange = () => {
+    getDetail(searchTableData)
 }
 
 
