@@ -1353,7 +1353,23 @@ $echarts_bg_img: url("./images/_2.png");
     }
   }
 }
+::v-deep(.el-input__wrapper) {
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid rgba(1, 229, 255, 1);
 
+    .el-range-input {
+        color: #fff;
+    }
+}
+
+::v-deep(.el-form-item__label) {
+    color: rgba(1, 229, 255, 1);
+    font-size: 16px;
+    font-weight: 400;
+    padding-right: 0;
+}
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
   width: 6px;
