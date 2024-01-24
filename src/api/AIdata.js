@@ -1,8 +1,8 @@
 /*
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
- * @LastEditors: dtl darksunnydong@qq.com
- * @LastEditTime: 2024-01-23 16:44:45
+ * @LastEditors: 603388675@qq.com 603388675@qq.com
+ * @LastEditTime: 2024-01-24 14:40:49
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -89,7 +89,7 @@ export const getPlanGetAlldata = (data) => {
         data
     })
 }
-// 获取下一级GMV拆分
+// 获取下一级GMV拆分 //货盘list
 export const getSubGmvList = (data) => {
     return service({
         url: '/inventory/getSubGmvList',
