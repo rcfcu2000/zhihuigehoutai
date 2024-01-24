@@ -273,7 +273,7 @@ export function weaklast(num: number) {
     let date = new Date();
     let frontDate = new Date()
     let year = date.getFullYear();
-    frontDate.setDate(frontDate.getDate() - 7)//前7天减7，前N天减N
+    frontDate.setDate(frontDate.getDate()+num)//前7天减7，前N天减N
     let dateArr1 = [frontDate.getMonth() + 1, frontDate.getDate()];
     let dateArr2 = [date.getMonth() + 1, date.getDate()];
     //开始格式是M,经过以下循环变为MM
