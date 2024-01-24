@@ -1,3 +1,11 @@
+/*
+ * @Author: dtl darksunnydong@qq.com
+ * @Date: 2024-01-22 15:52:53
+ * @LastEditors: dtl darksunnydong@qq.com
+ * @LastEditTime: 2024-01-23 16:44:45
+ * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import service from '@/utils/request'
 
 
@@ -50,6 +58,33 @@ export const getCategoriesList = (data) => {
 export const getResponsibleList = (data) => {
     return service({
         url: '/inventory/getResponsibleList',
+        method: 'post',
+        data
+    })
+}
+
+
+
+// 获取推广分析所有数据
+export const getPromotionGetAlldata = (data) => {
+    return service({
+        url: '/promotion/getAlldata',
+        method: 'post',
+        data
+    })
+}
+// 获取推广分析商品明细
+export const getProductGetAlldata = (data) => {
+    return service({
+        url: '/promotion/getProductListdata',
+        method: 'post',
+        data
+    })
+}
+// 获取推广分析计划明细
+export const getPlanGetAlldata = (data) => {
+    return service({
+        url: '/promotion/getPlanListdata',
         method: 'post',
         data
     })
