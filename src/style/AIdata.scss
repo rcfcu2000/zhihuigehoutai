@@ -64,3 +64,11 @@
 .aiData_table .el-table th.el-table__cell{
   background-color: transparent !important;
 }
+
+.el-table__row--striped {
+  background-color: rgb(7, 35, 82, 1) !important;
+}
+.el-table-fixed-column--left{
+  border-right: 1px solid rgb(16, 97, 197) !important;
+  background-color: rgb(26, 46, 161) !important;
+}

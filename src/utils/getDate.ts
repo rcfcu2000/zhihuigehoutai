@@ -97,6 +97,12 @@ export function getDate(dates: any) {
 }
 
 //周
+/**
+ * @description: 
+ * @param {any} type
+ * @param {any} dates 
+ * @return {*}
+ */
 export function getMonday(type: any, dates: any) {
     let now = new Date();
     let nowTime = now.getTime();
@@ -178,4 +184,111 @@ export function getYear(type: any, dates: any) {
         day = year + "-01-01/" + year + "-12-31";
     };
     return day;
+}
+
+
+// 返回年月日时分秒
+export function timestap(timestamp: any) {
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + "-";
+    var M =
+        (date.getMonth() + 1 < 10 ?
+            "0" + (date.getMonth() + 1) :
+            date.getMonth() + 1) + "-";
+    var D =
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + " ";
+    var h =
+        (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":";
+    var m =
+        (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
+        ":";
+    var s =
+        date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+    return Y + M + D + h + m + s;
+}
+// 返回年月日
+export function timestapYMD(timestamp: any) {
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + "-";
+    var M =
+        (date.getMonth() + 1 < 10 ?
+            "0" + (date.getMonth() + 1) :
+            date.getMonth() + 1) + "-";
+    var D =
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + "";
+    return Y + M + D;
+}
+// 返回年月
+export function timestapYM(timestamp: any) {
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + "-";
+    var M =
+        (date.getMonth() + 1 < 10 ?
+            "0" + (date.getMonth() + 1) :
+            date.getMonth() + 1);
+    return Y + M;
+}
+// 返回时分秒
+export function timestaphms(timestamp: any) {
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var h =
+        (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":";
+    var m =
+        (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
+        ":";
+    var s =
+        date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+    return h + m + s;
+}
+export function timestapY(timestamp: any) { //返回年
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear();
+    return Y;
+}
+export function timestapM(timestamp: any) { //返回月
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var M =
+        (date.getMonth() + 1 < 10 ?
+            "0" + (date.getMonth() + 1) :
+            date.getMonth() + 1);
+    return M;
+}
+export function timestapD(timestamp: any) { //返回日
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var D =
+        (date.getDate() < 10 ? "0" + date.getDate() : date.getDate());
+    return D;
+}
+export function timestapC(timestamp: any) { //返回时间戳
+    var times = new Date(timestamp);
+    return times.getTime() / 1000;
+}
+
+/**
+ * @description: 
+ * @param {number} num 天数
+ * @return {*}
+ */
+export function weaklast(num: number) {
+    let date = new Date();
+    let frontDate = new Date()
+    let year = date.getFullYear();
+    frontDate.setDate(frontDate.getDate() - 7)//前7天减7，前N天减N
+    let dateArr1 = [frontDate.getMonth() + 1, frontDate.getDate()];
+    let dateArr2 = [date.getMonth() + 1, date.getDate()];
+    //开始格式是M,经过以下循环变为MM
+    for (let i = 0; i < dateArr1.length; i++) {
+        if (dateArr1[i] >= 1 && dateArr1[i] <= 9) {
+            dateArr1[i] = "0" + dateArr1[i];
+        }
+    }
+    for (let i = 0; i < dateArr2.length; i++) {
+        if (dateArr2[i] >= 1 && dateArr2[i] <= 9) {
+            dateArr2[i] = "0" + dateArr2[i];
+        }
+    }
+    let starDate = year + "/" + dateArr1[0] + "/" + dateArr1[1] + " "
+    let endDate = year + "/" + dateArr2[0] + "/" + dateArr2[1] + " "
+    let time_list = [starDate, endDate]  //[2023-08-31,2023-09-07]
+    return time_list
 }

@@ -1,41 +1,33 @@
 <!--
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
- * @LastEditors: dtl darksunnydong@qq.com
- * @LastEditTime: 2024-01-23 18:00:53
+ * @LastEditors: 603388675@qq.com 603388675@qq.com
+ * @LastEditTime: 2024-01-24 13:45:05
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
     <div class="tableHead">
-        {{ }}
+        {{ componentTitle }}
     </div>
-    <div class="table">
-        <el-auto-resizer>
-            <template #default="{ height, width }">
-                <el-table-v2 header-class="tableHeadClass" :data="tableData" :columns="tableHead" :stripe="false"
-                    :width="width" :height="height" :row-height="20" />
-            </template>
-        </el-auto-resizer>
+    <div class="aiData_table table" :key="count">
+        <el-table :data="tableData" style="width: 100%" max-height="280">
+            <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
+                :fixed="head.fixed" :align="head.align" :width="head.width">
+            </el-table-column>
+        </el-table>
     </div>
-
-    <!-- <el-table-column v-for="(item, index) in tableHead" :key="index" :prop="item.prop" :label="item.name">
-            <template #default="scope">
-                <div>
-                    {{ scope.row[item.prop] }}
-                </div>
-            </template>
-        </el-table-column> -->
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref } from 'vue'
-const tableHead = ref([
+import { ref, reactive, watch, getCurrentInstance } from 'vue'
+const count = ref(0)
+let tableHead = ref([
     { key: 'date', dataKey: 'date', title: '日期', align: 'center', width: 150, fixed: true },
     { key: 'name', dataKey: 'name', title: '名称', align: 'center', width: 150 },
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
-const tableData = [
+let tableData = ref([
     {
         date: '2016-05-03',
         name: 'Tom',
@@ -56,9 +48,22 @@ const tableData = [
         name: 'Tom',
         address: 'No. 189, Grove St, Los Angeles',
     },
-]
+])
 
-const propData = defineProps([''])
+const propData = defineProps(['Commodity_detail'])
+const componentTitle = ref('')
+tableData = propData.Commodity_detail.data
+tableHead = propData.Commodity_detail.column
+// console.log(tableData,tableHead, "propData.Commodity_detail.data")
+watch(propData.Commodity_detail, (newD, oldD) => {
+    componentTitle.value = newD.componentTitle
+    tableHead = newD.column
+    tableData = newD.data.records
+    console.log(tableData, tableHead, "watch")
+    const instance = getCurrentInstance();
+    instance?.proxy?.$forceUpdate()
+    count.value++
+})
 
 </script>
 
@@ -70,7 +75,7 @@ const propData = defineProps([''])
     height: 43px;
     width: 100%;
     font-size: 24px;
-    padding-left: 5%;
+    padding-left: 2.5vw;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -92,6 +97,32 @@ const propData = defineProps([''])
 
 // rgb(16, 97, 197)
 
+::v-deep(.el-table) {
+    background: transparent;
+}
+
+::v-deep(.el-table-fixed-column--left) {
+    background: transparent !important;
+}
+
+::v-deep(.el-table tr) {
+    background: transparent;
+
+}
+
+::v-deep(.el-table.is-scrolling-left th.el-table-fixed-column--left) {
+    background: transparent;
+}
+
+::v-deep(.el-table th.el-table__cell) {
+    background: transparent;
+}
+
+::v-deep(.el-table-v2__row) {
+    border-bottom: none;
+    border-right: 1px solid rgb(16, 97, 197);
+}
+
 ::v-deep(.el-table-v2__header-cell) {
     background: transparent;
 }
@@ -106,6 +137,13 @@ const propData = defineProps([''])
     border-right: 1px solid rgb(16, 97, 197);
 }
 
+::v-deep(.el-table th.el-table__cell.is-leaf, .el-table td.el-table__cell){
+    border-bottom-color: rgb(16, 97, 197);
+}
+
+::v-deep(.el-table){
+    color: rgba(255,255,255,1)
+}
 .table {
     height: 280px;
     padding: 10px;
@@ -151,5 +189,4 @@ const propData = defineProps([''])
             }
         }
     }
-}
-</style>
+}</style>
