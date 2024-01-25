@@ -507,7 +507,6 @@ const getPromotionGetAll = async () => {
     if (res.code === 0) {
         state.titleData = res.data.promotionIndex1
         state.extendList = res.data.promotionIndex2.records
-        console.log(state.extendList)
     }
 }
 

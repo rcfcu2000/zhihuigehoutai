@@ -174,7 +174,82 @@ export const lineOptions = (arr: any) => {
         }),
     }
 }
+export const pieOptions = (arr: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'item'
+        },
+        title: {
+            text: '本月货盘',
+            right: 20,
+            top: "36%",
+        },
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: 0,
+            top: "40%",
+        },
+        series: [
+            {
+                name: 'Access From',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                // adjust the start angle
 
+                label: {
+                    show: true,
+                    formatter(param) {
+                        // correct the percentage
+                        return param.name + ' (' + param.percent * 2 + '%)';
+                    }
+                },
+                data: [
+                    { value: 1048, name: 'S' },
+                    { value: 735, name: 'A' },
+                    { value: 580, name: 'B' },
+                    { value: 484, name: 'C' },
+                    { value: 300, name: 'D' },
+
+                ]
+            }
+        ]
+    }
+}
+
+export const barOptionsX = (arr: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+        },
+        series: [
+            {
+                name: '2011',
+                type: 'bar',
+                data: [18203, 23489, 29034, 104970, 131744, 630230]
+            },
+        ]
+    }
+}
 
 
 export const barOptions = (arr: any, date: any) => {

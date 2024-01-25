@@ -302,6 +302,11 @@
             <span>{{ scope.row.tertiary_category }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="商品名称" width="150">
+          <template #default="scope">
+            <span>{{ scope.row.product_name }}</span>
+          </template>
+        </el-table-column>
         <template #empty>
           <div class="flex items-center justify-center h-100%">
             <el-empty />
