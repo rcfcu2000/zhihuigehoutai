@@ -287,8 +287,8 @@ export function weaklast(num: number) {
             dateArr2[i] = "0" + dateArr2[i];
         }
     }
-    let starDate = year + "-" + dateArr1[0] + "-" + dateArr1[1] + " "
-    let endDate = year + "-" + dateArr2[0] + "-" + dateArr2[1] + " "
+    let starDate = year + "-" + dateArr1[0] + "-" + dateArr1[1]
+    let endDate = year + "-" + dateArr2[0] + "-" + dateArr2[1]
     let time_list = [starDate, endDate]  //[2023-08-31,2023-09-07]
     return time_list
 }
