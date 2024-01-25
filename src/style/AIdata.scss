@@ -130,6 +130,7 @@
 
 /* ---el-table滚动条公共样式--- */
 .aiData_table .el-scrollbar {
+
   // 横向滚动条
   .el-scrollbar__bar.is-horizontal .el-scrollbar__thumb {
     opacity: 1; // 默认滚动条自带透明度
@@ -138,6 +139,7 @@
     background-color: rgba(136, 219, 255, 1); // 滑块背景色
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.15); // 滑块阴影
   }
+
   // 纵向滚动条
   .el-scrollbar__bar.is-vertical .el-scrollbar__thumb {
     opacity: 1;
@@ -146,4 +148,13 @@
     background-color: rgba(136, 219, 255, 1);
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
   }
+}
+
+.text_hidden {
+  white-space: nowrap;
+  /* 防止换行 */
+  overflow: hidden;
+  /* 隐藏超出部分 */
+  text-overflow: ellipsis;
+  /* 添加省略号 */
 }

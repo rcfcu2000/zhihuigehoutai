@@ -7,7 +7,7 @@
                     <div class="search_line">
                         负责人
                         <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择"
-                            @change="getData2" size="small">
+                            @change="getData2" size="small" multiple>
                             <el-option v-for="item in state.responsibleList" :key="item.responsible"
                                 :label="item.responsible" :value="item.responsible" />
                         </el-select>
@@ -38,7 +38,7 @@
                 <div class="search_right">
                     <div class="search_line">
                         请选择起止时间
-                        <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+                        <el-date-picker @change="getData2()" v-model="searchData.date" size="small" format="YYYY/MM/DD"
                             value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                             start-placeholder="开始时间" end-placeholder="结束时间" />
                     </div>
@@ -275,30 +275,30 @@
 
         <!-- 明细表格查询条件 -->
         <div class="detailSearch" :key="count">
-            <el-form :inline="true" :model="searchTableData" size="small" class="form-inline" label-position="right">
+            <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
                 <el-form-item label="出价方式：">
-                    <el-select v-model="searchTableData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.bidTypeAnalysis.records" :key="index"
                             :label="item.bid_type" :value="item.bid_type" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="货盘：">
-                    <el-select v-model="searchTableData.pallet" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
                             :value="item.pallet" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词：">
-                    <el-select v-model="searchTableData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="人群：">
-                    <el-select v-model="searchTableData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
                             :value="item.crowd" />
@@ -307,9 +307,11 @@
             </el-form>
         </div>
         <!-- 明细表格 -->
-        <template v-for="item, index in allData" :key="index">
-            <comtable :Commodity_detail="item" :comKey="index" />
-        </template>
+        <TransitionGroup name="list" tag="comtable">
+            <template v-for="item, index in allData" :key="index">
+                <comtable :Commodity_detail="item" :comKey="index" />
+            </template>
+        </TransitionGroup>
 
     </div>
 </template>
@@ -354,6 +356,17 @@ const searchData = reactive({
     all: 999 as any,
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
+
+
+    // 明细表格
+    end_date: '',
+    start_date: '',
+    keyword_filter: [], // 关键词
+    audience_filter: '', // 人群
+    bid_type: [], // 出价方式
+    pallet: [], // 货盘
+    pageNum: pageNum,
+    pageSize: pageSize,
 })
 
 const state = reactive({
@@ -380,19 +393,6 @@ const state = reactive({
     echartsData4: [] as any,
 })
 
-const searchTableData = reactive({
-    // 明细表格
-    keyword_filter: [], // 关键词
-    audience_filter: '', // 人群
-    bid_type: [], // 出价方式
-    pallet: [], // 货盘
-
-    "end_date": searchData.date[1], // 日期 - 数据统计的时间点
-    "start_date": searchData.date[0],
-    pageNum: pageNum,
-    pageSize: pageSize,
-
-})
 
 // 接口返回的全部数据
 const allData = reactive([{
@@ -400,7 +400,7 @@ const allData = reactive([{
     data: [],
     column: [
         { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '' },
-        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_name', key: 'product_name', unit: '' },
+        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '' },
         { title: '推广GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', unit: '' },
         { title: 'GMV全店占比(%)', width: 140, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', unit: '%' },
         { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
@@ -468,9 +468,9 @@ const all = reactive({
 })
 
 onMounted(async () => {
-    getAll(searchTableData)
+    getAll(searchData)
     getData()
-    getDetail(searchTableData)
+    getDetail(searchData)
 })
 const getPlan = async () => {
 
@@ -486,7 +486,7 @@ const getEchartsData = async () => {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
         current_inventory: [],
-        product_manager: [searchData.product_manager],
+        product_manager: searchData.product_manager,
         inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
     };
     const res = await getSearchdata(data)
@@ -509,20 +509,22 @@ const changeCheckGroup = (type: string) => {
 };
 
 const getData2 = async () => {
+    pageNum.value = 1
     await getPromotionGetAll()
     await getEchartsData()
+    await selectChange()
 };
 
 const getData = async () => {
     const resp1 = await getResponsibleList();
     if (resp1.code === 0) {
         state.responsibleList = resp1.data.records;
-        searchData.product_manager = resp1.data.records[0].responsible;
+        searchData.product_manager = [resp1.data.records[0].responsible];
         let data = {
             end_date: searchData.date[1],
             start_date: searchData.date[0],
             current_inventory: [],
-            product_manager: searchData.product_manager,
+            product_manager: String(searchData.product_manager),
             inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
         };
         const resp2 = await getSubGmvList(data);
@@ -539,7 +541,7 @@ const getPromotionGetAll = async () => {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
         current_inventory: [],
-        product_manager: [searchData.product_manager],
+        product_manager: searchData.product_manager,
         inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
     };
     const res = await getPromotionGetAlldata(data);
@@ -605,21 +607,25 @@ const getAll = async (arr: object) => {
 }
 
 const getDetail = async (arr: object) => {
+    // arr.product_manager = [arr.product_manager]
+    arr.end_date = arr.date[1]
+    arr.start_date = arr.date[0]
     const [proRes, planRes] = [await getProductGetAlldata(arr), await getPlanGetAlldata(arr)]
     if (proRes.code === 0) {
-        allData[0].data = proRes.data
+        allData[0].data = proRes.data.records
     }
     if (planRes.code === 0) {
-        allData[1].data = planRes.data
-        allData[1].data.records.forEach(element => {
+        allData[1].data = planRes.data.records
+        allData[1].data.forEach(element => {
             element.pallet = element.campaign_name
         });
     }
     pageNum.value++
 }
 
+// 筛选条件改变时
 const selectChange = () => {
-    getDetail(searchTableData)
+    getDetail(searchData)
 }
 
 

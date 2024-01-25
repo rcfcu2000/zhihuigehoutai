@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-25 14:28:12
+ * @LastEditTime: 2024-01-25 18:39:32
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,13 +17,34 @@
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
                 :fixed="head.fixed" :align="head.align" :width="head.width">
                 <template #default="scope">
-                    <!-- 趋势折线 -->
-
-                    <div
-                        v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend' || scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend'">
-                        <div :id="componentTitle + propData.comKey + scope.$index" style="width: 100px;height: 30px;">
+                    <!-- 推广分析页 趋势折线 -->
+                    <div v-if="componentTitle == '商品明细'">
+                        <div v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend'">
+                            <div :id="scope.row.product_id" style="width: 10dvw;height: 30px;">
+                            </div>
                         </div>
                     </div>
+                    <div v-if="componentTitle == '计划明细'">
+                        <div v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend'">
+                            <div :id="scope.row.plan_id" style="width: 10dvw;height: 30px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
+                        class="text_hidden">
+                        {{ scope.row.product_alias }}
+                    </div>
+
+                    <div v-else-if="head.unit == '%'">
+                        <!-- {{ persentNum(scope.row) }} -->
+                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                    </div>
+
+                    <div v-else>
+                        {{ floatNum(scope.row[scope.column.property]) }}
+                    </div>
+
                 </template>
             </el-table-column>
         </el-table>
@@ -34,6 +55,7 @@
 import { ref, reactive, watch, getCurrentInstance, nextTick } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { persentNum, floatNum } from "@/utils/format.js"
 
 import * as echarts from 'echarts';
 
@@ -76,19 +98,18 @@ const lineData = () => {
         let num = parseInt(Math.random() * (max - min + 1) + min)
         arr.push(num)
     }
-    console.log(arr, "linedata")
     return arr
 }
 
 const propData = defineProps(['Commodity_detail', 'comKey'])
 const componentTitle = ref('')
-tableData = propData.Commodity_detail.data.records
+tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
 watch(propData.Commodity_detail, (newD, oldD) => {
     componentTitle.value = newD.componentTitle
     console.log(newD, newD, "watch")
     tableHead = newD.column
-    tableData = newD.data.records
+    tableData = newD.data
 
     let chartDom = document.getElementById('echarts');
     let myChart = echarts.init(chartDom);
@@ -101,18 +122,33 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     option && myChart.setOption(option);
     EleResize.on(chartDom, listener);
     count.value++
-    // nextTick(() => {
-    //     tableData.forEach((element, index) => {
-    //         let chartDom = document.getElementById(componentTitle.value + propData.comKey + index);
-    //         let myChart = echarts.init(chartDom);
-    //         let option = table_lineOptions(lineData());
-    //         option && myChart.setOption(option);
-    //         count.value++
-    //     });
-    //     const instance = getCurrentInstance();
-    //     instance?.proxy?.$forceUpdate()
-    // })
+    nextTick(() => {
+        tableData.forEach((element, index) => {
+            let dom: any
+            if(element.product_id){
+                dom = element.product_id
+            }else if(element.plan_id){
+                dom = element.plan_id
+            }
+            console.log(dom,"dommmmmmmmmmmmmmmmmmm")
+            let chartDom = document.getElementById(dom);
+            let myChart = echarts.init(chartDom);
+            let option = table_lineOptions(lineData());
+            option && myChart.setOption(option);
+            let listener = function () {
+                if (myChart) {
+                    myChart.resize();
+                }
+            };
+            option && myChart.setOption(option);
+            EleResize.on(chartDom, listener);
+            count.value++
+        });
+        const instance = getCurrentInstance();
+        instance?.proxy?.$forceUpdate()
+    })
 })
+
 
 </script>
 

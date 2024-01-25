@@ -26,3 +26,16 @@ export const getDictFunc = async(type) => {
   const dicts = await getDict(type)
   return dicts
 }
+
+
+// 百分比数字换算
+export const persentNum = (num) => {
+  let n = num * 100
+  return n.toFixed(2)
+}
+
+// 小数后两位
+export const floatNum = (num) => {
+  num = Number(num)
+  return num.toFixed(2)
+}
