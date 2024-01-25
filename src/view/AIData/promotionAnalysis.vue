@@ -214,7 +214,7 @@
                         </el-table-column>
                         <el-table-column label="点击量">
                             <template #default="scope">
-                                <span> {{ parseFloat((scope.row.clicks * 100).toFixed(2)) }}%</span>
+                                <span> {{ parseFloat((scope.row.clicks).toFixed(2)) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点击率">
@@ -492,11 +492,14 @@ const getEchartsData = async () => {
     const res = await getSearchdata(data)
     if (res.code === 0) {
         state.tableData = res.data.bidTypeAnalysis.records
+        state.echartsData2 = res.data.palletCost.records
+        state.echartsData3 = res.data.keywordCost.records
+        state.echartsData4 = res.data.crowdSpend.records
+        await echarts2()
+        await echarts3()
+        await echarts4()
     }
-    console.log(res)
-    await echarts2()
-    await echarts3()
-    await echarts4()
+
 }
 
 const changeCheckGroup = (type: string) => {
@@ -557,7 +560,7 @@ const echarts2 = async () => {
     const chartDom = document.getElementById("PromtionEcharts2") as HTMLElement;
     const myChart = echarts.init(chartDom);
 
-    const arr = []
+    const arr = state.echartsData2
     const option = pieOptions(arr);
     option && myChart.setOption(option);
 
@@ -570,7 +573,14 @@ const echarts3 = async () => {
     const chartDom = document.getElementById("PromtionEcharts3") as HTMLElement;
     const myChart = echarts.init(chartDom);
 
-    const arr = []
+    const arr = state.echartsData3?.map(i => {
+        return {
+            name: i.keyword,
+            value: i.cost,
+            zhanbi: i.cost_percentage,
+            roi: i.roi
+        }
+    })
     const option = barOptionsX(arr);
     option && myChart.setOption(option);
 
@@ -583,7 +593,14 @@ const echarts4 = async () => {
     const chartDom = document.getElementById("PromtionEcharts4") as HTMLElement;
     const myChart = echarts.init(chartDom);
 
-    const arr = []
+    const arr = state.echartsData4?.map(i => {
+        return {
+            name: i.crowd,
+            value: i.spend,
+            zhanbi: i.spend_percentage,
+            roi: i.roi
+        }
+    })
     const option = barOptionsX(arr);
     option && myChart.setOption(option);
 

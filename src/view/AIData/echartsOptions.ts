@@ -184,7 +184,16 @@ export const pieOptions = (arr: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
-            trigger: 'item'
+            trigger: 'item',
+            formatter: function (params) {
+                console.log(params.name)
+                return '<div>' + params.name + '<br>'
+                    + '花费' + " : " + params.value + ' (' + params.value + ') %' + '<br/>'
+                    + 'GMV' + " : " + params.data.gmv + ' (' + params.data.gmv + ') %' + '<br/>'
+                    + 'ROI' + " : " + params.data.roi
+                    + '</div>';
+            }
+
         },
         title: {
             text: '本月货盘',
@@ -205,7 +214,6 @@ export const pieOptions = (arr: any) => {
         },
         series: [
             {
-                name: 'Access From',
                 type: 'pie',
                 radius: ['40%', '60%'],
                 // adjust the start angle
@@ -217,18 +225,25 @@ export const pieOptions = (arr: any) => {
                         fontWeight: 'bolder'
                     },
                     formatter(param) {
-                        // correct the percentage
                         return param.name + ' (' + param.percent + '%)';
                     }
                 },
-                data: [
-                    { value: 1048, name: 'S' },
-                    { value: 735, name: 'A' },
-                    { value: 580, name: 'B' },
-                    { value: 484, name: 'C' },
-                    { value: 300, name: 'D' },
+                data: arr.map(i => {
+                    return {
+                        value: i.cost,
+                        name: i.pallet,
+                        gmv: i.gmv,
+                        roi: i.roi,
+                    }
+                })
+                // data: [
+                //     { value: 1048, name: 'S' },
+                //     { value: 735, name: 'A' },
+                //     { value: 580, name: 'B' },
+                //     { value: 484, name: 'C' },
+                //     { value: 300, name: 'D' },
 
-                ]
+                // ]
             }
         ]
     }
@@ -241,6 +256,14 @@ export const barOptionsX = (arr: any) => {
             trigger: 'axis',
             axisPointer: {
                 type: 'shadow'
+            },
+            formatter: function (params) {
+                console.log(params[0])
+                return '<div>' + params[0].name + '<br>'
+                    + '花费' + " : " + ' (' + params[0].value + ') %' + '<br/>'
+                    + '花费占比' + " : " + ' (' + params[0].data.zhanbi + ') %' + '<br/>'
+                    + 'ROI' + " : " + params[0].data.roi
+                    + '</div>';
             }
         },
         grid: {
@@ -295,7 +318,8 @@ export const barOptionsX = (arr: any) => {
         yAxis: {
             type: 'category',
             // show:false,
-            data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World'],
+            data: arr.map(i => i.name),
+            // data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World'],
             axisLabel: {
                 color: '#fff'
             },
@@ -312,17 +336,18 @@ export const barOptionsX = (arr: any) => {
                 show: false // 不显示网格线
             },
         },
-        series: [
-            {
-                type: 'bar',
-                data: [18203, 23489, 29034, 104970, 131744, 630230, 18203, 23489, 29034, 104970, 131744, 630230, 18203, 23489, 29034, 104970, 131744, 630230, 18203, 23489, 29034, 104970, 131744, 630230, 18203, 23489, 29034, 104970, 131744, 630230],
-                barCategoryGap: "100%",
-                barWidth: fontSize(0.1),
-                itemStyle: {
-                    color: '#01E5FF',
-                }
-            },
-        ]
+        series:
+            [
+                {
+                    type: 'bar',
+                    barCategoryGap: "100%",
+                    data: arr,
+                    barWidth: fontSize(0.1),
+                    itemStyle: {
+                        color: '#01E5FF',
+                    }
+                },
+            ]
     }
 }
 
