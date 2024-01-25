@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-24 13:45:05
+ * @LastEditTime: 2024-01-24 18:29:03
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -11,16 +11,30 @@
         {{ componentTitle }}
     </div>
     <div class="aiData_table table" :key="count">
-        <el-table :data="tableData" style="width: 100%" max-height="280">
+        <el-table :data="tableData" style="width: 100%;height: 280px;">
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
                 :fixed="head.fixed" :align="head.align" :width="head.width">
+                <template #default="scope">
+                    <!-- 趋势折线 -->
+
+                    <div
+                        v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend' || scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend'">
+                        <div :id="componentTitle + propData.comKey + scope.$index" style="width: 100px;height: 30px;">
+                        </div>
+                    </div>
+                </template>
             </el-table-column>
         </el-table>
     </div>
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref, reactive, watch, getCurrentInstance } from 'vue'
+import { ref, reactive, watch, getCurrentInstance, nextTick } from 'vue'
+import { table_lineOptions } from "../echartsOptions"
+
+import * as echarts from 'echarts';
+
+
 const count = ref(0)
 let tableHead = ref([
     { key: 'date', dataKey: 'date', title: '日期', align: 'center', width: 150, fixed: true },
@@ -50,19 +64,38 @@ let tableData = ref([
     },
 ])
 
-const propData = defineProps(['Commodity_detail'])
+// mock趋势折线数据
+const lineData = () => {
+    let arr = []
+    let max = 500
+    let min = 100
+    for (let i = 0; i < 15; i++) {
+        let num = parseInt(Math.random() * (max - min + 1) + min)
+        arr.push(num)
+    }
+    return arr
+}
+
+const propData = defineProps(['Commodity_detail', 'comKey'])
 const componentTitle = ref('')
-tableData = propData.Commodity_detail.data
+tableData = propData.Commodity_detail.data.records
 tableHead = propData.Commodity_detail.column
-// console.log(tableData,tableHead, "propData.Commodity_detail.data")
 watch(propData.Commodity_detail, (newD, oldD) => {
     componentTitle.value = newD.componentTitle
+    console.log(newD, newD, "watch")
     tableHead = newD.column
     tableData = newD.data.records
-    console.log(tableData, tableHead, "watch")
-    const instance = getCurrentInstance();
-    instance?.proxy?.$forceUpdate()
-    count.value++
+    nextTick(() => {
+        tableData.forEach((element, index) => {
+            let chartDom = document.getElementById(componentTitle.value + propData.comKey + index);
+            let myChart = echarts.init(chartDom);
+            let option = table_lineOptions(lineData());
+            option && myChart.setOption(option);
+            count.value++
+        });
+        const instance = getCurrentInstance();
+        instance?.proxy?.$forceUpdate()
+    })
 })
 
 </script>
@@ -137,13 +170,14 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     border-right: 1px solid rgb(16, 97, 197);
 }
 
-::v-deep(.el-table th.el-table__cell.is-leaf, .el-table td.el-table__cell){
+::v-deep(.el-table th.el-table__cell.is-leaf, .el-table td.el-table__cell) {
     border-bottom-color: rgb(16, 97, 197);
 }
 
-::v-deep(.el-table){
-    color: rgba(255,255,255,1)
+::v-deep(.el-table) {
+    color: rgba(255, 255, 255, 1)
 }
+
 .table {
     height: 280px;
     padding: 10px;
@@ -189,4 +223,5 @@ watch(propData.Commodity_detail, (newD, oldD) => {
             }
         }
     }
-}</style>
+}
+</style>

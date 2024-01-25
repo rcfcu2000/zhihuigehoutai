@@ -315,3 +315,23 @@ export const barOptions = (arr: any, date: any) => {
         }),
     }
 }
+
+// 用于表格内的折线
+export const table_lineOptions = (arr: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        xAxis: {
+            type: 'category',
+            show: false
+        },
+        yAxis: {
+            show: false,
+        },
+        series: [{
+            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            type: "line",
+            symbolSize: 0,
+            smooth: true
+        }]
+    }
+}
