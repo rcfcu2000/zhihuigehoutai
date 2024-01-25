@@ -131,7 +131,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                {{ parseFloat((state.titleData.promotion_gmv_percentage * 100).toFixed(2)) }}%
+                                {{ parseFloat((state.titleData.promotion_gmv_percentage).toFixed(2)) }}
                             </span>
                             <span class="ctn_name">
                                 推广ROI
@@ -192,54 +192,54 @@
                 </div>
                 <div class="echarts_size aiData_table" style="box-sizing: border-box; padding: 10px;">
                     <el-table :data="state.tableData" max-height="350px" style="width: 100%">
-                        <el-table-column label="出价类型">
+                        <el-table-column label="出价类型" show-overflow-tooltip>
                             <template #default="scope">
-                                <span>{{ scope.row.product_id }}</span>
+                                <span>{{ scope.row.bid_type }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="花费">
                             <template #default="scope">
-                                <span>{{ scope.row.product_abbreviation }}</span>
+                                <span>{{ scope.row.spend }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="GMV">
                             <template #default="scope">
-                                <span>{{ scope.row.product_category }}</span>
+                                <span>{{ scope.row.gmv }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="GMV占比">
                             <template #default="scope">
-                                <span> {{ parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</span>
+                                <span> {{ parseFloat((scope.row.gmv_percentage * 100).toFixed(2)) }} %</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点击量">
                             <template #default="scope">
-                                <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
+                                <span> {{ parseFloat((scope.row.clicks * 100).toFixed(2)) }}%</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点击率">
                             <template #default="scope">
-                                <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
+                                <span> {{ parseFloat((scope.row.click_through_rate * 100).toFixed(2)) }}%</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="加购成本">
                             <template #default="scope">
-                                <span>{{ scope.row.current_inventory }}</span>
+                                <span>{{ scope.row.add_to_cart_cost }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="推广ROI">
                             <template #default="scope">
-                                <span>{{ scope.row.last_period_stockpile }}</span>
+                                <span>{{ scope.row.promotion_roi }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="成交成本">
                             <template #default="scope">
-                                <span>{{ scope.row.stockpile_change }}</span>
+                                <span>{{ scope.row.transaction_cost }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="推广转化率">
                             <template #default="scope">
-                                <span>{{ scope.row.stockpile_change }}</span>
+                                <span>{{ scope.row.conversion_rate }}</span>
                             </template>
                         </el-table-column>
                         <template #empty>
@@ -286,8 +286,8 @@
                 <el-form-item label="货盘：">
                     <el-select v-model="searchTableData.pallet" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
-                        <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index"
-                            :label="item.pallet" :value="item.pallet" />
+                        <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
+                            :value="item.pallet" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词：">
@@ -300,14 +300,14 @@
                 <el-form-item label="人群：">
                     <el-select v-model="searchTableData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
-                        <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index"
-                            :label="item.crowd" :value="item.crowd" />
+                        <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
+                            :value="item.crowd" />
                     </el-select>
                 </el-form-item>
             </el-form>
         </div>
         <!-- 明细表格 -->
-        <template v-for="item,index in allData" :key="index">
+        <template v-for="item, index in allData" :key="index">
             <comtable :Commodity_detail="item" :comKey="index" />
         </template>
 
@@ -324,6 +324,7 @@ import {
 } from '@/api/AIdata'
 
 import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
+import { pieOptions, barOptionsX } from "./echartsOptions";
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
@@ -352,7 +353,7 @@ const searchData = reactive({
     inventory_change: [],
     all: 999 as any,
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
+    date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
 })
 
 const state = reactive({
@@ -468,6 +469,7 @@ const all = reactive({
 
 onMounted(async () => {
     getAll(searchTableData)
+    getData()
     getDetail(searchTableData)
 })
 const getPlan = async () => {
@@ -479,8 +481,22 @@ const getProduct = async () => {
 }
 
 // 获取四个图表数据
-const getEcharts = async () => {
-
+const getEchartsData = async () => {
+    let data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        current_inventory: [],
+        product_manager: [searchData.product_manager],
+        inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+    };
+    const res = await getSearchdata(data)
+    if (res.code === 0) {
+        state.tableData = res.data.bidTypeAnalysis.records
+    }
+    console.log(res)
+    await echarts2()
+    await echarts3()
+    await echarts4()
 }
 
 const changeCheckGroup = (type: string) => {
@@ -493,7 +509,8 @@ const changeCheckGroup = (type: string) => {
 };
 
 const getData2 = async () => {
-    getPromotionGetAll()
+    await getPromotionGetAll()
+    await getEchartsData()
 };
 
 const getData = async () => {
@@ -529,8 +546,48 @@ const getPromotionGetAll = async () => {
     if (res.code === 0) {
         state.titleData = res.data.promotionIndex1
         state.extendList = res.data.promotionIndex2.records
-        console.log(state.extendList)
     }
+}
+
+
+
+const echarts2 = async () => {
+    const chartDom = document.getElementById("PromtionEcharts2") as HTMLElement;
+    const myChart = echarts.init(chartDom);
+
+    const arr = []
+    const option = pieOptions(arr);
+    option && myChart.setOption(option);
+
+    window.addEventListener("resize", () => {
+        myChart.resize();
+    });
+}
+
+const echarts3 = async () => {
+    const chartDom = document.getElementById("PromtionEcharts3") as HTMLElement;
+    const myChart = echarts.init(chartDom);
+
+    const arr = []
+    const option = barOptionsX(arr);
+    option && myChart.setOption(option);
+
+    window.addEventListener("resize", () => {
+        myChart.resize();
+    });
+}
+
+const echarts4 = async () => {
+    const chartDom = document.getElementById("PromtionEcharts4") as HTMLElement;
+    const myChart = echarts.init(chartDom);
+
+    const arr = []
+    const option = barOptionsX(arr);
+    option && myChart.setOption(option);
+
+    window.addEventListener("resize", () => {
+        myChart.resize();
+    });
 }
 
 const disabledDate = (time: Date) => {
@@ -748,6 +805,8 @@ $echarts_bg_img2: url('./images/_2.png');
                 background-image: $echarts_bg_img1;
                 object-fit: cover;
                 background-size: 100% 100%;
+                padding: 10px 10px;
+                box-sizing: border-box;
             }
         }
     }
