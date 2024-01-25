@@ -243,8 +243,26 @@ export const barOptions = (arr: any, date: any) => {
 
 // 用于表格内的折线
 export const table_lineOptions = (arr: any) => {
-    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    const backColor = ['#046991', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
+        color: backColor,
+        tooltip: {
+            trigger: 'axis',
+            position: function (pos, params, dom, rect, size) {
+                // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
+                var obj = { top: 35 };
+                obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+                return obj;
+            },
+            formatter: '{c}'
+        },
+        grid: {
+            left: '-25%',
+            right: '5%',
+            bottom: '-50%',
+            top: '10%',
+            containLabel: true
+        },
         xAxis: {
             type: 'category',
             show: false
@@ -253,7 +271,7 @@ export const table_lineOptions = (arr: any) => {
             show: false,
         },
         series: [{
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            data: arr,
             type: "line",
             symbolSize: 0,
             smooth: true

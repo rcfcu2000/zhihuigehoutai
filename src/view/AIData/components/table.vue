@@ -2,13 +2,15 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-24 18:29:03
+ * @LastEditTime: 2024-01-25 14:28:12
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
     <div class="tableHead">
         {{ componentTitle }}
+    </div>
+    <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
         <el-table :data="tableData" style="width: 100%;height: 280px;">
@@ -31,6 +33,7 @@
 <script setup lang="ts" name="comTable">
 import { ref, reactive, watch, getCurrentInstance, nextTick } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
+import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 
 import * as echarts from 'echarts';
 
@@ -67,12 +70,13 @@ let tableData = ref([
 // mock趋势折线数据
 const lineData = () => {
     let arr = []
-    let max = 500
-    let min = 100
+    let max = 5000
+    let min = 1
     for (let i = 0; i < 15; i++) {
         let num = parseInt(Math.random() * (max - min + 1) + min)
         arr.push(num)
     }
+    console.log(arr, "linedata")
     return arr
 }
 
@@ -85,17 +89,29 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     console.log(newD, newD, "watch")
     tableHead = newD.column
     tableData = newD.data.records
-    nextTick(() => {
-        tableData.forEach((element, index) => {
-            let chartDom = document.getElementById(componentTitle.value + propData.comKey + index);
-            let myChart = echarts.init(chartDom);
-            let option = table_lineOptions(lineData());
-            option && myChart.setOption(option);
-            count.value++
-        });
-        const instance = getCurrentInstance();
-        instance?.proxy?.$forceUpdate()
-    })
+
+    let chartDom = document.getElementById('echarts');
+    let myChart = echarts.init(chartDom);
+    let option = table_lineOptions(lineData());
+    let listener = function () {
+        if (myChart) {
+            myChart.resize();
+        }
+    };
+    option && myChart.setOption(option);
+    EleResize.on(chartDom, listener);
+    count.value++
+    // nextTick(() => {
+    //     tableData.forEach((element, index) => {
+    //         let chartDom = document.getElementById(componentTitle.value + propData.comKey + index);
+    //         let myChart = echarts.init(chartDom);
+    //         let option = table_lineOptions(lineData());
+    //         option && myChart.setOption(option);
+    //         count.value++
+    //     });
+    //     const instance = getCurrentInstance();
+    //     instance?.proxy?.$forceUpdate()
+    // })
 })
 
 </script>
