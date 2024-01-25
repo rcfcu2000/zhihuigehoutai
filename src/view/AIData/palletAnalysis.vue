@@ -199,23 +199,23 @@
     <div class="table_title">商品明细</div>
     <div class="aiData_table table">
       <el-table :data="state.tableData" max-height="450">
-        <el-table-column label="商品ID" width="150">
+        <el-table-column label="商品ID">
           <template #default="scope">
             <span>{{ scope.row.product_id }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="商品简称" width="150">
+        <el-table-column label="商品简称" show-overflow-tooltip>
           <template #default="scope">
             <span>{{ scope.row.product_abbreviation }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="GMV" width="150" sortable :sort-method="sortGmv">
+        <el-table-column label="GMV" sortable :sort-method="sortGmv">
           <template #default="scope">
             <span>{{ scope.row.gmv }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="净利润率" width="150">
+        <el-table-column label="净利润率">
           <template #default="scope">
             <div class="alcenter">
               <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
@@ -232,77 +232,80 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="产品分类" width="150">
+        <el-table-column label="产品分类">
           <template #default="scope">
             <span>{{ scope.row.product_category }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="搜索访客占比" width="150">
+        <el-table-column label="搜索访客占比">
           <template #default="scope">
-            <span> {{ parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</span>
+            <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
+              parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
           </template>
         </el-table-column>
-        <el-table-column label="搜索GMV占比" width="150">
+        <el-table-column label="搜索GMV占比">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="老客占比" width="150">
+        <el-table-column label="老客占比">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="本月货盘" width="150">
+        <el-table-column label="本月货盘">
           <template #default="scope">
             <span>{{ scope.row.current_inventory }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="上月货盘" width="150">
+        <el-table-column label="上月货盘">
           <template #default="scope">
             <span>{{ scope.row.last_period_stockpile }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="盘货变化" width="150">
+        <el-table-column label="盘货变化">
           <template #default="scope">
-            <span>{{ scope.row.stockpile_change }}</span>
+            <div v-if="scope.row.stockpile_change === 1" style="width: 100%; background-color: #01E5FF;">上升</div>
+            <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降</div>
+            <div v-else>持平</div>
           </template>
         </el-table-column>
-        <el-table-column label="客单价" width="150">
+        <el-table-column label="客单价">
           <template #default="scope">
-            <span>{{ scope.row.unit_price }}</span>
+            <span>{{ parseFloat((scope.row.unit_price).toFixed(2)) }} </span>
           </template>
         </el-table-column>
-        <el-table-column label="预估毛利率" width="150">
+        <el-table-column label="预估毛利率">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="支付转化率" width="150">
+        <el-table-column label="支付转化率">
           <template #default="scope">
             <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
-        <el-table-column label="收藏率" width="150">
+        <el-table-column label="收藏率">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
-        <el-table-column label="加购率" width="150">
+        <el-table-column label="加购率">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="连带率" width="150">
+        <el-table-column label="连带率">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="三级类目" width="150">
+        <el-table-column label="三级类目">
           <template #default="scope">
             <span>{{ scope.row.tertiary_category }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" width="150">
+        <el-table-column label="商品名称" show-overflow-tooltip>
           <template #default="scope">
             <span>{{ scope.row.product_name }}</span>
           </template>
@@ -372,7 +375,7 @@ import {
   getCategoriesList,
   getSubGmvList,
 } from "@/api/AIdata";
-import { getMonthFinalDay } from "@/utils/getDate";
+import { getMonthFinalDay,weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
@@ -437,7 +440,7 @@ const searchData = reactive({
   inventory_change: [],
   all: 999 as any,
   // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-  date: [getMonthFinalDay("6").beginDate, getMonthFinalDay("0").beginDate],
+  date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
 });
 
 // 调整价格区间data
@@ -684,7 +687,7 @@ const contrastGMV = () => {
   ];
   const option = lineOptions(arr);
   option && myChart.setOption(option);
-
+  myChart.hideLoading();
   window.addEventListener("resize", () => {
     myChart.resize();
   });
@@ -704,8 +707,8 @@ const contrastVisitor = () => {
     },
   ];
   const option = lineOptions(arr);
+  myChart.hideLoading();
   option && myChart.setOption(option);
-
   window.addEventListener("resize", () => {
     myChart.resize();
   });
@@ -725,7 +728,6 @@ const palletTrend = () => {
     const date = arr[0]?.date
     const option = lineOptions1(arr, date);
     option && myChart.setOption(option);
-
   }
   window.addEventListener("resize", () => {
     myChart.resize();
@@ -750,6 +752,7 @@ const newOldContrast = () => {
     },
   ];
   const option = lineOptions1(arr, date);
+  myChart.hideLoading();
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -768,6 +771,7 @@ const unitPriceGMV = () => {
   });
   const date = arr?.map(i => i.date)
   const option = barOptions(arr, date[0]);
+  myChart.hideLoading();
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -786,6 +790,7 @@ const unitPriceTrend = () => {
   });
   const date = arr?.map(i => i.date)
   const option = barOptions(arr, date[0]);
+  myChart.hideLoading();
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -1032,7 +1037,8 @@ $echarts_bg_img: url("./images/_2.png");
   background-image: url("./images/bc.jpg");
   background-size: 100% 100%;
   color: #fff;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   ::v-deep(.el-checkbox) {
     margin: 0 10px;
@@ -1266,12 +1272,19 @@ $echarts_bg_img: url("./images/_2.png");
   }
 
   .table {
-    height: 432px;
+    height: 470px;
     padding: 10px;
     width: 98%;
+    box-sizing: border-box;
     overflow: auto;
     margin-bottom: 10px;
     margin-top: 4px;
+    overflow-x: hidden;
+
+    .backgroundBlue {
+      width: 100%;
+      background-color: #01E5FF;
+    }
 
     .alcenter {
       display: flex;
@@ -1358,23 +1371,25 @@ $echarts_bg_img: url("./images/_2.png");
     }
   }
 }
-::v-deep(.el-input__wrapper) {
-    background: transparent !important;
-    box-shadow: none;
-    border-radius: 0;
-    border: 1px solid rgba(1, 229, 255, 1);
 
-    .el-range-input {
-        color: #fff;
-    }
+::v-deep(.el-input__wrapper) {
+  background: transparent !important;
+  box-shadow: none;
+  border-radius: 0;
+  border: 1px solid rgba(1, 229, 255, 1);
+
+  .el-range-input {
+    color: #fff;
+  }
 }
 
 ::v-deep(.el-form-item__label) {
-    color: rgba(1, 229, 255, 1);
-    font-size: 16px;
-    font-weight: 400;
-    padding-right: 0;
+  color: rgba(1, 229, 255, 1);
+  font-size: 16px;
+  font-weight: 400;
+  padding-right: 0;
 }
+
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
   width: 6px;
