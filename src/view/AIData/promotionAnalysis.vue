@@ -191,7 +191,7 @@
                     出价类型分析
                 </div>
                 <div class="echarts_size aiData_table" style="box-sizing: border-box; padding: 10px;">
-                    <el-table :data="state.tableData" max-height="350px" style="width: 100%">
+                    <el-table :data="state.tableData" max-height="350px" style="width: 100%" @row-click="tableRwoClick">
                         <el-table-column label="出价类型" show-overflow-tooltip>
                             <template #default="scope">
                                 <span>{{ scope.row.bid_type }}</span>
@@ -276,28 +276,28 @@
         <!-- 明细表格查询条件 -->
         <div class="detailSearch" :key="count">
             <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
-                <el-form-item label="出价方式：">
+                <el-form-item label="出价方式：" v-if="state.tableSearchLv === 1">
                     <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.bidTypeAnalysis.records" :key="index"
                             :label="item.bid_type" :value="item.bid_type" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="货盘：">
+                <el-form-item label="货盘：" v-if="state.tableSearchLv === 2">
                     <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
                             :value="item.pallet" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="关键词：">
+                <el-form-item label="关键词：" v-if="state.tableSearchLv === 3">
                     <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="人群：">
+                <el-form-item label="人群：" v-if="state.tableSearchLv === 4">
                     <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
@@ -362,7 +362,7 @@ const searchData = reactive({
     end_date: '',
     start_date: '',
     keyword_filter: [], // 关键词
-    audience_filter: '', // 人群
+    audience_filter: [], // 人群
     bid_type: [], // 出价方式
     pallet: [], // 货盘
     pageNum: pageNum,
@@ -391,6 +391,7 @@ const state = reactive({
     echartsData2: [] as any,
     echartsData3: [] as any,
     echartsData4: [] as any,
+    tableSearchLv: 1,
 })
 
 
@@ -474,6 +475,16 @@ onMounted(async () => {
 })
 const getPlan = async () => {
 
+}
+
+const tableRwoClick = async (row, column, event) => {
+    allData[0].data = []
+    state.tableSearchLv = 1;
+    searchData.keyword_filter = [], // 关键词
+        searchData.audience_filter = [], // 人群
+        searchData.pallet = [], // 货盘
+        searchData.bid_type = [column];
+    await selectChange()
 }
 
 const getProduct = async () => {
@@ -563,7 +574,15 @@ const echarts2 = async () => {
     const arr = state.echartsData2
     const option = pieOptions(arr);
     option && myChart.setOption(option);
-
+    myChart.on("click", function (params: any) {
+        allData[0].data = []
+        searchData.keyword_filter = [], // 关键词
+            searchData.audience_filter = [], // 人群
+            searchData.bid_type = [], // 出价方式
+            state.tableSearchLv = 2;
+        searchData.pallet = [params.name]
+        selectChange()
+    })
     window.addEventListener("resize", () => {
         myChart.resize();
     });
@@ -583,7 +602,15 @@ const echarts3 = async () => {
     })
     const option = barOptionsX(arr);
     option && myChart.setOption(option);
-
+    myChart.on("click", function (params: any) {
+        allData[0].data = []
+        searchData.audience_filter = [], // 人群
+            searchData.bid_type = [], // 出价方式
+            searchData.pallet = [], // 货盘
+            state.tableSearchLv = 3;
+        searchData.keyword_filter = [params.name]
+        selectChange()
+    })
     window.addEventListener("resize", () => {
         myChart.resize();
     });
@@ -603,7 +630,15 @@ const echarts4 = async () => {
     })
     const option = barOptionsX(arr);
     option && myChart.setOption(option);
-
+    myChart.on("click", function (params: any) {
+        allData[0].data = []
+        searchData.keyword_filter = [], // 关键词
+            searchData.bid_type = [], // 出价方式
+            searchData.pallet = [], // 货盘
+            state.tableSearchLv = 4;
+        searchData.audience_filter = [params.name]
+        selectChange()
+    })
     window.addEventListener("resize", () => {
         myChart.resize();
     });
