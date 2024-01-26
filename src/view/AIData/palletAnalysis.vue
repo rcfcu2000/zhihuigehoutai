@@ -1068,11 +1068,6 @@ $echarts_bg_img: url("./images/_2.png");
         flex: 0.35;
         // justify-content: space-between;
 
-        .search_line:last-child {
-          width: 400px;
-          display: flex;
-          align-items: center;
-        }
       }
 
       .search_right {
