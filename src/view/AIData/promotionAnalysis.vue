@@ -23,12 +23,9 @@
                     <div class="search_line">
                         货盘变化
                         <div class="line">
-                            <el-radio-group v-model="searchData.all" @change="changeCheckGroup('999')" class="ml-4">
-                                <el-radio :label="999" border size="small">全部</el-radio>
-                            </el-radio-group>
-                            <el-checkbox-group v-model="searchData.inventory_change" size="small"
+                            <el-checkbox-group v-model="searchData.scene_category" size="small"
                                 @change="changeCheckGroup('dx')">
-                                <el-checkbox border v-for="(item, index) in cities" :key="item.label" :label="item.label">{{
+                                <el-checkbox border v-for="(item, index) in cities" :key="item.value" :label="item.value">{{
                                     item.value
                                 }}</el-checkbox>
                             </el-checkbox-group>
@@ -186,12 +183,12 @@
             </div>
         </div>
         <div class="echarts_ctn">
-            <div class="echarts_box">
+            <div class="echarts_box" style=" width:25%;">
                 <div class="echarts_title">
                     出价类型分析
                 </div>
                 <div class="echarts_size aiData_table" style="box-sizing: border-box; padding: 10px;">
-                    <el-table :data="state.tableData" max-height="350px" style="width: 100%" @row-click="tableRwoClick">
+                    <el-table :data="state.tableData" height="100%" style="width: 100%" @row-click="tableRwoClick">
                         <el-table-column label="出价类型" show-overflow-tooltip>
                             <template #default="scope">
                                 <span>{{ scope.row.bid_type }}</span>
@@ -337,15 +334,12 @@ const pageNum_plan = ref(1)
 const pageSize = ref(20)
 const cities = [
     {
-        label: -1,
         value: "场景推广",
     },
     {
-        label: 0,
         value: "精准人群推广",
     },
     {
-        label: 1,
         value: "关键词推广",
     },
 ];
@@ -353,8 +347,7 @@ const cities = [
 const searchData = reactive({
     product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
     current_inventory: [], // string 当期货盘
-    inventory_change: [],
-    all: 999 as any,
+    scene_category: [],
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
 
@@ -501,7 +494,7 @@ const getEchartsData = async () => {
         start_date: searchData.date[0],
         current_inventory: [],
         product_manager: searchData.product_manager,
-        inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+        scene_category: searchData.scene_category,
     };
     const res = await getSearchdata(data)
     if (res.code === 0) {
@@ -517,11 +510,6 @@ const getEchartsData = async () => {
 }
 
 const changeCheckGroup = (type: string) => {
-    if (type === "999") {
-        searchData.inventory_change = [];
-    } else {
-        searchData.all = null;
-    }
     getData2();
 };
 
@@ -544,7 +532,7 @@ const getData = async () => {
             start_date: searchData.date[0],
             current_inventory: [],
             product_manager: String(searchData.product_manager),
-            inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+            scene_category: searchData.scene_category,
         };
         const resp2 = await getSubGmvList(data);
         if (resp2.code === 0) {
@@ -568,7 +556,7 @@ const getPromotionGetAll = async () => {
         start_date: searchData.date[0],
         current_inventory: [],
         product_manager: searchData.product_manager,
-        inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+        scene_category: searchData.scene_category,
     };
     const res = await getPromotionGetAlldata(data);
     if (res.code === 0) {
@@ -677,7 +665,7 @@ const getDetailPro = async (arr: object) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0) {
-        allData[0].data = [...allData[0].data,...proRes.data.records]
+        allData[0].data = [...allData[0].data, ...proRes.data.records]
     }
     pageNum_pro.value++
 }
@@ -967,6 +955,7 @@ $echarts_bg_img2: url('./images/_2.png');
     box-shadow: none;
     border-radius: 0;
     border: 1px solid rgba(1, 229, 255, 1);
+    width: 200px;
 
     .el-range-input {
         color: #fff;

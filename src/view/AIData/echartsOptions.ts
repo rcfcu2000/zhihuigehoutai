@@ -104,7 +104,10 @@ export const lineOptions1 = (arr: any, date: any) => {
             axisLabel: {
                 show: true,
                 color: '#fff'
-            }
+            },
+            axisTick: {
+                show: false,
+            },
         },
         yAxis: {
             type: 'value',
@@ -168,7 +171,10 @@ export const lineOptions = (arr: any) => {
             axisLabel: {
                 show: true,
                 color: '#fff'
-            }
+            },
+            axisTick: {
+                show: false,
+            },
         },
         yAxis: {
             type: 'value',
@@ -426,7 +432,10 @@ export const barOptions = (arr: any, date: any) => {
             axisLabel: {
                 show: true,
                 color: '#fff'
-            }
+            },
+            axisTick: {
+                show: false,
+            },
         },
         yAxis: {
             type: 'value',
