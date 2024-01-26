@@ -26,6 +26,27 @@ function getRecentDates(monthsOffset: number): string[] {
 }
 
 
+const by = function (name) {
+    return function (o, p) {
+        var a, b;
+        if (typeof o === "object" && typeof p === "object" && o && p) {
+            a = o[name];
+            b = p[name];
+            if (a === b) {
+                return 0;
+            }
+            if (typeof a === typeof b) {
+                return a > b ? -1 : 1;
+            }
+            return typeof a > typeof b ? -1 : 1;
+        }
+        else {
+            throw ("error");
+        }
+    }
+}
+
+
 const gmvPrductList = {
     recoreds: [
         {
@@ -186,10 +207,9 @@ export const pieOptions = (arr: any) => {
         tooltip: {
             trigger: 'item',
             formatter: function (params) {
-                console.log(params.name)
                 return '<div>' + params.name + '<br>'
-                    + '花费' + " : " + params.value + ' (' + params.value + ') %' + '<br/>'
-                    + 'GMV' + " : " + params.data.gmv + ' (' + params.data.gmv + ') %' + '<br/>'
+                    + '花费' + " : " + params.value + ' (' + parseFloat((params.data.cost_rate * 100).toFixed(2)) + ') %' + '<br/>'
+                    + 'GMV' + " : " + params.data.gmv + ' (' + parseFloat((params.data.gmv_rate * 100).toFixed(2)) + ') %' + '<br/>'
                     + 'ROI' + " : " + params.data.roi
                     + '</div>';
             }
@@ -216,6 +236,7 @@ export const pieOptions = (arr: any) => {
             {
                 type: 'pie',
                 radius: ['40%', '60%'],
+                center: ['40%', '60%'],
                 // adjust the start angle
                 label: {
                     show: true,
@@ -234,8 +255,18 @@ export const pieOptions = (arr: any) => {
                         name: i.pallet,
                         gmv: i.gmv,
                         roi: i.roi,
+                        cost_rate: i.cost_rate,
+                        gmv_rate: i.gmv_rate,
                     }
-                })
+                }),
+                itemStyle: {
+                    // color: backColor,
+                    normal: {
+                        color: function (colors) {
+                            return backColor[colors.dataIndex];
+                        }
+                    }
+                },
                 // data: [
                 //     { value: 1048, name: 'S' },
                 //     { value: 735, name: 'A' },
@@ -250,18 +281,21 @@ export const pieOptions = (arr: any) => {
 }
 //横轴柱状图
 export const barOptionsX = (arr: any) => {
-    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    // console.log(arr)
+    arr = arr.sort(by("value"))
+    // console.log(arr.sort(by("value")))
     return {
         tooltip: {
             trigger: 'axis',
+
             axisPointer: {
                 type: 'shadow'
             },
             formatter: function (params) {
                 return '<div>' + params[0].name + '<br>'
-                    + '花费' + " : " + ' (' + params[0].value + ') %' + '<br/>'
-                    + '花费占比' + " : " + ' (' + params[0].data.zhanbi + ') %' + '<br/>'
-                    + 'ROI' + " : " + params[0].data.roi
+                    + '花费' + " : " + params[0].value + '<br/>'
+                    + '花费占比' + " : " + parseFloat((params[0].data.zhanbi * 100).toFixed(2)) + ' %' + '<br/>'
+                    + 'ROI' + " : " + parseFloat((params[0].data.roi * 100).toFixed(2))
                     + '</div>';
             }
         },
@@ -283,44 +317,53 @@ export const barOptionsX = (arr: any) => {
         },
         dataZoom: [
             {
-                start: 0,//默认为0
-                end: 100,//默认为100
+                start: 0,
+                end: 10,
                 type: 'slider',
-                maxValueSpan: 9,//显示数据的条数(默认显示10个)
                 show: true,
-                //    yAxisIndex: [0],
+
                 handleSize: 0,//滑动条的 左右2个滑动条的大小
                 height: '80%',//组件高度
                 left: 600, //左边的距离
                 right: 8,//右边的距离
                 top: 50,//上边边的距离
-                startValue: 5,
-                endValue: 5,
                 borderColor: "none",
                 fillerColor: '#909399',//滑动块的颜色
                 backgroundColor: 'rgba(13,33,117,0.5)',//两边未选中的滑动条区域的颜色
                 showDataShadow: false,//是否显示数据阴影 默认auto
                 showDetail: false,//即拖拽时候是否显示详细数值信息 默认true
                 realtime: false, //是否实时更新
+                minValueSpan: 10,  // 放大到最少几个
+                maxValueSpan: 10,  //  缩小到最多几个
                 filterMode: 'filter',
                 yAxisIndex: [0, 1],//控制的y轴
             },
             //滑块的属性
             {
-                type: 'inside',
+                type: "inside",
+                zoomOnMouseWheel: false,  // 关闭滚轮缩放
+                moveOnMouseWheel: true, // 开启滚轮平移
+                moveOnMouseMove: true, // 鼠标移动能触发数据窗口平移
                 show: true,
                 yAxisIndex: [0, 1],
-                start: 1,//默认为1
-                end: 9,//默认为100
+                start: 0,
+                end: 10,
             },
         ],
         yAxis: {
             type: 'category',
+            inverse: true,
             // show:false,
             data: arr.map(i => i.name),
             // data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World'],
             axisLabel: {
-                color: '#fff'
+                color: '#fff',
+                formatter: function (value) {
+                    if (value.length > 4) {
+                        return `${value.slice(0, 4)}...`
+                    }
+                    return value
+                },
             },
             axisTick: {
                 show: false // 不显示坐标轴刻度线
@@ -328,12 +371,12 @@ export const barOptionsX = (arr: any) => {
             axisLine: {
                 show: false, // 不显示坐标轴线
             },
-            // axisLabel: {
-            //     show: false, // 不显示坐标轴上的文字
-            // },
             splitLine: {
                 show: false // 不显示网格线
             },
+            // formatter(param) {
+            //     return param.name + ' (' + '%)';
+            // }
         },
         series:
             [
@@ -349,8 +392,6 @@ export const barOptionsX = (arr: any) => {
             ]
     }
 }
-
-
 
 // 默认堆积柱状图
 export const barOptions = (arr: any, date: any) => {
@@ -575,19 +616,19 @@ export const wordsCloud = (arr: Array) => {
                 // Style of single text
                 textStyle: {
                 }
-            },{
+            }, {
                 name: 'Farraham',
                 value: 66,
                 // Style of single text
                 textStyle: {
                 }
-            },{
+            }, {
                 name: 'Abraham',
                 value: 36,
                 // Style of single text
                 textStyle: {
                 }
-            },{
+            }, {
                 name: 'Farrah',
                 value: 166,
                 // Style of single text

@@ -210,12 +210,12 @@
             <span>{{ scope.row.product_abbreviation }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="GMV" sortable :sort-method="sortGmv">
+        <el-table-column label="GMV" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')">
           <template #default="scope">
             <span>{{ scope.row.gmv }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="净利润率">
+        <el-table-column label="净利润率" sortable :sort-method="(a, b) => sortList(a, b, 'net_profit_margin')">
           <template #default="scope">
             <div class="alcenter">
               <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
@@ -237,18 +237,18 @@
             <span>{{ scope.row.product_category }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="搜索访客占比">
+        <el-table-column label="搜索访客占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_visitor_ratio')">
           <template #default="scope">
             <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
               parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
           </template>
         </el-table-column>
-        <el-table-column label="搜索GMV占比">
+        <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="老客占比">
+        <el-table-column label="老客占比" sortable :sort-method="(a, b) => sortList(a, b, 'returning_customer_ratio')">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
           </template>
@@ -270,32 +270,32 @@
             <div v-else>持平</div>
           </template>
         </el-table-column>
-        <el-table-column label="客单价">
+        <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')">
           <template #default="scope">
             <span>{{ parseFloat((scope.row.unit_price).toFixed(2)) }} </span>
           </template>
         </el-table-column>
-        <el-table-column label="预估毛利率">
+        <el-table-column label="预估毛利率" sortable :sort-method="(a, b) => sortList(a, b, 'estimated_gross_profit_margin')">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="支付转化率">
+        <el-table-column label="支付转化率" sortable :sort-method="(a, b) => sortList(a, b, 'payment_conversion_rate')">
           <template #default="scope">
             <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
-        <el-table-column label="收藏率">
+        <el-table-column label="收藏率" sortable :sort-method="(a, b) => sortList(a, b, 'collection_rate')">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
-        <el-table-column label="加购率">
+        <el-table-column label="加购率" sortable :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="连带率">
+        <el-table-column label="连带率" sortable :sort-method="(a, b) => sortList(a, b, 'attachment_rate')">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
           </template>
@@ -375,7 +375,7 @@ import {
   getCategoriesList,
   getSubGmvList,
 } from "@/api/AIdata";
-import { getMonthFinalDay,weaklast } from "@/utils/getDate";
+import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
@@ -660,9 +660,9 @@ const getEchartsData2 = () => {
   // GMVDismantling();
 };
 
-const sortGmv = (obj1, obj2) => {
-  let val1 = obj1.gmv
-  let val2 = obj2.gmv
+const sortList = (obj1, obj2, name: string) => {
+  let val1 = obj1[name]
+  let val2 = obj2[name]
   return val1 - val2
 }
 
