@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 13:29:26
+ * @LastEditTime: 2024-01-26 13:55:32
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,7 +13,8 @@
     <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
-        <el-table :id="comKey" :data="tableData" border style="width: 100%;height: 280px;" v-vTablescroll="loadMore">
+        <el-table :id="'table' + comKey" :data="tableData" border style="width: 100%;height: 280px;"
+            v-vTablescroll="loadMore">
             <el-table-column v-for="head, index in        tableHead       " :key="index" :prop="head.dataKey"
                 :label="head.title" :fixed="head.fixed" :align="head.align" :width="head.width" :filters="head.filters"
                 :filter-method="filterTag">
@@ -156,14 +157,6 @@ const filterTag = (value: string, row: User) => {
 let randomStrings = []
 
 onMounted(() => {
-    let table = document.getElementById(propData.comKey)
-    table.addEventListener(
-        "scroll",
-        (res) => {
-            loadMore(res)
-        },
-        true
-    );
 })
 
 watch(propData.Commodity_detail, (newD, oldD) => {
@@ -184,6 +177,17 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     EleResize.on(chartDom, listener);
     count.value++
     nextTick(() => {
+
+        let table = document.getElementById('table' + propData.comKey)
+        console.log(table, "tab")
+        table.addEventListener(
+            "scroll",
+            (res) => {
+                loadMore(res)
+            },
+            true
+        );
+
         randomStrings.forEach((element, index) => {
             let dom: any
             // if (element.product_id) {
@@ -212,11 +216,14 @@ watch(propData.Commodity_detail, (newD, oldD) => {
 })
 
 const loadMore = (res) => {
-    if (res.target.scrollTop && ((res.target.scrollHeight - 20) <= (res.target.scrollTop + res.target.clientHeight))) {
-        if (componentTitle == "商品明细") {
+    console.log(componentTitle.value,(res.target.scrollTop + res.target.clientHeight), (res.target.scrollHeight - 20), res.target.scrollTop, "ressssssssss")
+    if (res.target.scrollTop && ((res.target.scrollHeight - 100) <= (res.target.scrollTop + res.target.clientHeight))) {
+        if (componentTitle.value == "商品明细") {
+            console.log('商品明细')
             emit('loadMore', 'product')
         }
-        if (componentTitle == "计划明细") {
+        if (componentTitle.value == "计划明细") {
+            console.log('计划明细')
             emit('loadMore', 'plan')
         }
     }

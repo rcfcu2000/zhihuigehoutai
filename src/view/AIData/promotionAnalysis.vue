@@ -306,6 +306,39 @@
                 </el-form-item>
             </el-form>
         </div>
+
+        <!-- 商品明细 -->
+        <!-- <el-table id="table0" :data="allData[0].data" border style="width: 100%;height: 280px;">
+            <el-table-column v-for="head, index in allData[0].column" :key="index" :prop="head.dataKey" :label="head.title"
+                :fixed="head.fixed" :align="head.align" :width="head.width" :filters="head.filters"
+                :filter-method="filterTag">
+                <template #default="scope">
+                    <div v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend'">
+                        <div :ref="generateRandomString()" style="width: 10dvw;height: 30px;">
+                        </div>
+                    </div>
+
+                    <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
+                        class="text_hidden">
+                        {{ scope.row.product_alias }}
+                    </div>
+
+                    <div v-else-if="head.unit == '%'">
+                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                    </div>
+
+                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
+                        {{ scope.row[scope.column.property] }}
+                    </div>
+
+                    <div v-else>
+                        {{ floatNum(scope.row[scope.column.property]) }}
+                    </div>
+
+                </template>
+            </el-table-column>
+        </el-table> -->
+
         <!-- 明细表格 -->
         <TransitionGroup name="list" tag="comtable">
             <template v-for="item, index in allData" :key="index">
@@ -331,6 +364,9 @@ import { reactive, onMounted, onUnmounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
+
+import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { persentNum, floatNum } from "@/utils/format.js"
 const count = ref(0)
 const pageNum_pro = ref(1)
 const pageNum_plan = ref(1)
@@ -472,8 +508,8 @@ const all = reactive({
 onMounted(async () => {
     getAll(searchData)
     getData()
-    getDetailPro(searchData)
-    getDetailPlan(searchData)
+    // getDetailPro(searchData)
+    // getDetailPlan(searchData)
 })
 const getPlan = async () => {
 
@@ -546,7 +582,6 @@ const getData = async () => {
                 current_inventory.push(obj)
             })
             await getData2();
-
         }
     }
 }
@@ -635,6 +670,33 @@ const getAll = async (arr: object) => {
     count.value++
 }
 
+const filterTag = (value: string, row: User) => {
+    return row.pallet === value
+}
+
+let randomStrings = []
+// 不重复随机数
+/**
+ * @description: 
+ * @param {*} min 最小数
+ * @param {*} max 最大数
+ * @param {*} count 生成数量
+ * @return {*}
+ * 调用函数生成长度为10的随机字符串
+ * console.log(generateRandomString(10));
+ */
+const generateRandomString = () => {
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; // 包含所有大小写字母和数字的字符集合
+    var result = '';
+
+    for (var i = 0; i < 15; i++) {
+        var randomIndex = Math.floor(Math.random() * characters.length); // 获取随机索引值
+        result += characters[randomIndex]; // 根据索引从字符集合中选择对应位置的字符并添加到结果字符串中
+    }
+    randomStrings.push(result)
+    return result;
+}
+
 const getDetailPro = async (arr: object) => {
     arr.pageNum = pageNum_pro
     // arr.product_manager = [arr.product_manager]
@@ -642,7 +704,7 @@ const getDetailPro = async (arr: object) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0) {
-        allData[0].data = [...allData[0].data,...proRes.data.records]
+        allData[0].data = [...allData[0].data, ...proRes.data.records]
     }
     pageNum_pro.value++
 }
