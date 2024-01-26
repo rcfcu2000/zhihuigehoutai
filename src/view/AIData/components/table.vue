@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-25 18:39:32
+ * @LastEditTime: 2024-01-26 13:29:26
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,36 +13,81 @@
     <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
-        <el-table :data="tableData" style="width: 100%;height: 280px;">
-            <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
-                :fixed="head.fixed" :align="head.align" :width="head.width">
+        <el-table :id="comKey" :data="tableData" border style="width: 100%;height: 280px;" v-vTablescroll="loadMore">
+            <el-table-column v-for="head, index in        tableHead       " :key="index" :prop="head.dataKey"
+                :label="head.title" :fixed="head.fixed" :align="head.align" :width="head.width" :filters="head.filters"
+                :filter-method="filterTag">
                 <template #default="scope">
                     <!-- 推广分析页 趋势折线 -->
                     <div v-if="componentTitle == '商品明细'">
                         <div v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend'">
-                            <div :id="scope.row.product_id" style="width: 10dvw;height: 30px;">
+                            <!-- <div :id="scope.row.product_id" style="width: 10dvw;height: 30px;"> -->
+                            <div :ref="generateRandomString()" style="width: 10dvw;height: 30px;">
                             </div>
+                            <!-- <script setup>
+                                import { watchEffect } from 'vue';
+                                      watchEffect(() => {
+                                        const chart = echarts.init(chartContainer);
+                                        // 根据row数据生成相关配置
+                                        const options = table_lineOptions(lineData());
+                                        // 将配置选项设置到图表上
+                                        chart.setOption(options);
+                                      });
+                            </script> -->
+                        </div>
+
+                        <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
+                            class="text_hidden">
+                            {{ scope.row.product_alias }}
+                        </div>
+
+                        <div v-else-if="head.unit == '%'">
+                            <!-- {{ persentNum(scope.row) }} -->
+                            {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                        </div>
+
+                        <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
+                            {{ scope.row[scope.column.property] }}
+                        </div>
+
+                        <div v-else>
+                            {{ floatNum(scope.row[scope.column.property]) }}
                         </div>
                     </div>
                     <div v-if="componentTitle == '计划明细'">
                         <div v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend'">
-                            <div :id="scope.row.plan_id" style="width: 10dvw;height: 30px;">
+                            <!-- <div :id="scope.row.plan_id" style="width: 10dvw;height: 30px;"> -->
+                            <div :ref="generateRandomString()" style="width: 10dvw;height: 30px;">
                             </div>
+                            <!-- <script setup>
+                                import { watchEffect } from 'vue';
+                                      watchEffect(() => {
+                                        const chart = echarts.init(chartContainer);
+                                        // 根据row数据生成相关配置
+                                        const options = table_lineOptions(lineData());
+                                        // 将配置选项设置到图表上
+                                        chart.setOption(options);
+                                      });
+                            </script> -->
                         </div>
-                    </div>
 
-                    <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
-                        class="text_hidden">
-                        {{ scope.row.product_alias }}
-                    </div>
+                        <!-- <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
+                            class="text_hidden">
+                            {{ scope.row.product_alias }}
+                        </div> -->
 
-                    <div v-else-if="head.unit == '%'">
-                        <!-- {{ persentNum(scope.row) }} -->
-                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
-                    </div>
+                        <div v-else-if="head.unit == '%'">
+                            <!-- {{ persentNum(scope.row) }} -->
+                            {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                        </div>
 
-                    <div v-else>
-                        {{ floatNum(scope.row[scope.column.property]) }}
+                        <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden">
+                            {{ scope.row[scope.column.property] }}
+                        </div>
+
+                        <div v-else>
+                            {{ floatNum(scope.row[scope.column.property]) }}
+                        </div>
                     </div>
 
                 </template>
@@ -52,13 +97,12 @@
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref, reactive, watch, getCurrentInstance, nextTick } from 'vue'
+import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum } from "@/utils/format.js"
 
 import * as echarts from 'echarts';
-
 
 const count = ref(0)
 let tableHead = ref([
@@ -102,12 +146,29 @@ const lineData = () => {
 }
 
 const propData = defineProps(['Commodity_detail', 'comKey'])
+const emit = defineEmits(['loadMore'])
 const componentTitle = ref('')
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
+const filterTag = (value: string, row: User) => {
+    return row.pallet === value
+}
+let randomStrings = []
+
+onMounted(() => {
+    let table = document.getElementById(propData.comKey)
+    table.addEventListener(
+        "scroll",
+        (res) => {
+            loadMore(res)
+        },
+        true
+    );
+})
+
 watch(propData.Commodity_detail, (newD, oldD) => {
     componentTitle.value = newD.componentTitle
-    console.log(newD, newD, "watch")
+    // console.log(newD, newD, "watch")
     tableHead = newD.column
     tableData = newD.data
 
@@ -123,31 +184,66 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     EleResize.on(chartDom, listener);
     count.value++
     nextTick(() => {
-        tableData.forEach((element, index) => {
+        randomStrings.forEach((element, index) => {
             let dom: any
-            if(element.product_id){
-                dom = element.product_id
-            }else if(element.plan_id){
-                dom = element.plan_id
-            }
-            console.log(dom,"dommmmmmmmmmmmmmmmmmm")
-            let chartDom = document.getElementById(dom);
-            let myChart = echarts.init(chartDom);
-            let option = table_lineOptions(lineData());
-            option && myChart.setOption(option);
-            let listener = function () {
-                if (myChart) {
-                    myChart.resize();
-                }
-            };
-            option && myChart.setOption(option);
-            EleResize.on(chartDom, listener);
+            // if (element.product_id) {
+            //     dom = element.product_id
+            // } else if (element.plan_id) {
+            //     dom = element.plan_id
+            // }
+            // console.log(typeof element, element, index, "dommmmmmmmmmmmmmmmmmm")
+            // let chartDom = document.getElementById(`${element}`);
+            // console.log(chartDom, "dommmmmmmmmmmmmmmmmmm")
+            // let myChart = echarts.init(chartDom);
+            // let option = table_lineOptions(lineData());
+            // option && myChart.setOption(option);
+            // let listener = function () {
+            //     if (myChart) {
+            //         myChart.resize();
+            //     }
+            // };
+            // option && myChart.setOption(option);
+            // EleResize.on(chartDom, listener);
             count.value++
         });
         const instance = getCurrentInstance();
         instance?.proxy?.$forceUpdate()
     })
 })
+
+const loadMore = (res) => {
+    if (res.target.scrollTop && ((res.target.scrollHeight - 20) <= (res.target.scrollTop + res.target.clientHeight))) {
+        if (componentTitle == "商品明细") {
+            emit('loadMore', 'product')
+        }
+        if (componentTitle == "计划明细") {
+            emit('loadMore', 'plan')
+        }
+    }
+}
+
+
+// 不重复随机数
+/**
+ * @description: 
+ * @param {*} min 最小数
+ * @param {*} max 最大数
+ * @param {*} count 生成数量
+ * @return {*}
+ * 调用函数生成长度为10的随机字符串
+ * console.log(generateRandomString(10));
+ */
+const generateRandomString = () => {
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; // 包含所有大小写字母和数字的字符集合
+    var result = '';
+
+    for (var i = 0; i < 15; i++) {
+        var randomIndex = Math.floor(Math.random() * characters.length); // 获取随机索引值
+        result += characters[randomIndex]; // 根据索引从字符集合中选择对应位置的字符并添加到结果字符串中
+    }
+    randomStrings.push(result)
+    return result;
+}
 
 
 </script>

@@ -309,7 +309,7 @@
         <!-- 明细表格 -->
         <TransitionGroup name="list" tag="comtable">
             <template v-for="item, index in allData" :key="index">
-                <comtable :Commodity_detail="item" :comKey="index" />
+                <comtable :Commodity_detail="item" :comKey="index" @load-more="loadMore" />
             </template>
         </TransitionGroup>
 
@@ -332,7 +332,8 @@ import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
 const count = ref(0)
-const pageNum = ref(1)
+const pageNum_pro = ref(1)
+const pageNum_plan = ref(1)
 const pageSize = ref(20)
 const cities = [
     {
@@ -365,7 +366,7 @@ const searchData = reactive({
     audience_filter: [], // 人群
     bid_type: [], // 出价方式
     pallet: [], // 货盘
-    pageNum: pageNum,
+    pageNum: 1,
     pageSize: pageSize,
 })
 
@@ -394,14 +395,15 @@ const state = reactive({
     tableSearchLv: 1,
 })
 
+const current_inventory = reactive([])
 
 // 接口返回的全部数据
 const allData = reactive([{
     componentTitle: '商品明细',
     data: [],
     column: [
-        { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '' },
-        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '' },
+        { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '', filters: current_inventory },
+        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', filters: [] },
         { title: '推广GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', unit: '' },
         { title: 'GMV全店占比(%)', width: 140, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', unit: '%' },
         { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
@@ -429,7 +431,7 @@ const allData = reactive([{
     componentTitle: '计划明细',
     data: [],
     column: [
-        { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '' },
+        { title: '本月货盘', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '', filters: current_inventory },
         { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
         { title: '出价方式', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
         { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
@@ -471,7 +473,8 @@ const all = reactive({
 onMounted(async () => {
     getAll(searchData)
     getData()
-    getDetail(searchData)
+    getDetailPro(searchData)
+    getDetailPlan(searchData)
 })
 const getPlan = async () => {
 
@@ -523,7 +526,9 @@ const changeCheckGroup = (type: string) => {
 };
 
 const getData2 = async () => {
-    pageNum.value = 1
+
+    pageNum_pro.value = 1
+    pageNum_plan.value = 1
     await getPromotionGetAll()
     await getEchartsData()
     await selectChange()
@@ -544,6 +549,13 @@ const getData = async () => {
         const resp2 = await getSubGmvList(data);
         if (resp2.code === 0) {
             state.monthPallet = resp2.data.records;
+            state.monthPallet.forEach((element, index) => {
+                const obj = {
+                    text: element.current_inventory,
+                    value: element.current_inventory
+                }
+                current_inventory.push(obj)
+            })
             await getData2();
 
         }
@@ -658,26 +670,47 @@ const getAll = async (arr: object) => {
     count.value++
 }
 
-const getDetail = async (arr: object) => {
+const getDetailPro = async (arr: object) => {
+    arr.pageNum = pageNum_pro
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
     arr.start_date = arr.date[0]
-    const [proRes, planRes] = [await getProductGetAlldata(arr), await getPlanGetAlldata(arr)]
+    const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0) {
-        allData[0].data = proRes.data.records
+        allData[0].data = [...allData[0].data,...proRes.data.records]
     }
+    pageNum_pro.value++
+}
+const getDetailPlan = async (arr: object) => {
+    arr.pageNum = pageNum_plan
+    // arr.product_manager = [arr.product_manager]
+    arr.end_date = arr.date[1]
+    arr.start_date = arr.date[0]
+    const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0) {
-        allData[1].data = planRes.data.records
+        allData[1].data = [...allData[1].data, ...planRes.data.records]
         allData[1].data.forEach(element => {
             element.pallet = element.campaign_name
         });
     }
-    pageNum.value++
+    pageNum_plan.value++
+}
+
+const loadMore = (at: string) => {
+    if (at == 'product') {
+        getDetailPro(searchData)
+    }
+    if (at == 'plan') {
+        getDetailPlan(searchData)
+    }
 }
 
 // 筛选条件改变时
 const selectChange = () => {
-    getDetail(searchData)
+    pageNum_pro.value = 1
+    pageNum_plan.value = 1
+    getDetailPlan(searchData)
+    getDetailPro(searchData)
 }
 
 
