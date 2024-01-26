@@ -191,7 +191,7 @@
                     出价类型分析
                 </div>
                 <div class="echarts_size aiData_table" style="box-sizing: border-box; padding: 10px;">
-                    <el-table :data="state.tableData" max-height="350px" style="width: 100%" @row-click="tableRwoClick">
+                    <el-table :data="state.tableData" max-height="350px" style="width: 100%">
                         <el-table-column label="出价类型" show-overflow-tooltip>
                             <template #default="scope">
                                 <span>{{ scope.row.bid_type }}</span>
@@ -276,28 +276,28 @@
         <!-- 明细表格查询条件 -->
         <div class="detailSearch" :key="count">
             <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
-                <el-form-item label="出价方式：" v-if="state.tableSearchLv === 1">
+                <el-form-item label="出价方式：">
                     <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.bidTypeAnalysis.records" :key="index"
                             :label="item.bid_type" :value="item.bid_type" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="货盘：" v-if="state.tableSearchLv === 2">
+                <el-form-item label="货盘：">
                     <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
                             :value="item.pallet" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="关键词：" v-if="state.tableSearchLv === 3">
+                <el-form-item label="关键词：">
                     <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="人群：" v-if="state.tableSearchLv === 4">
+                <el-form-item label="人群：">
                     <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
@@ -306,45 +306,17 @@
                 </el-form-item>
             </el-form>
         </div>
+        
+        <product_table :Commodity_detail="allData[0]" :comKey="0" :current_inventory="current_inventory" @load-more="loadMore"></product_table>
 
-        <!-- 商品明细 -->
-        <!-- <el-table id="table0" :data="allData[0].data" border style="width: 100%;height: 280px;">
-            <el-table-column v-for="head, index in allData[0].column" :key="index" :prop="head.dataKey" :label="head.title"
-                :fixed="head.fixed" :align="head.align" :width="head.width" :filters="head.filters"
-                :filter-method="filterTag">
-                <template #default="scope">
-                    <div v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend'">
-                        <div :ref="generateRandomString()" style="width: 10dvw;height: 30px;">
-                        </div>
-                    </div>
-
-                    <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
-                        class="text_hidden">
-                        {{ scope.row.product_alias }}
-                    </div>
-
-                    <div v-else-if="head.unit == '%'">
-                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
-                    </div>
-
-                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
-                        {{ scope.row[scope.column.property] }}
-                    </div>
-
-                    <div v-else>
-                        {{ floatNum(scope.row[scope.column.property]) }}
-                    </div>
-
-                </template>
-            </el-table-column>
-        </el-table> -->
+        <plan_table :Commodity_detail="allData[1]" :comKey="1" @load-more="loadMore" :current_inventory="cities"></plan_table>
 
         <!-- 明细表格 -->
-        <TransitionGroup name="list" tag="comtable">
+        <!-- <TransitionGroup name="list" tag="comtable">
             <template v-for="item, index in allData" :key="index">
                 <comtable :Commodity_detail="item" :comKey="index" @load-more="loadMore" />
             </template>
-        </TransitionGroup>
+        </TransitionGroup> -->
 
     </div>
 </template>
@@ -364,9 +336,8 @@ import { reactive, onMounted, onUnmounted, ref } from 'vue'
 import * as echarts from 'echarts'
 import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
-
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { persentNum, floatNum } from "@/utils/format.js"
+import product_table from './components/product_table.vue'
+import plan_table from './components/plan_table.vue'
 const count = ref(0)
 const pageNum_pro = ref(1)
 const pageNum_plan = ref(1)
@@ -399,7 +370,7 @@ const searchData = reactive({
     end_date: '',
     start_date: '',
     keyword_filter: [], // 关键词
-    audience_filter: [], // 人群
+    audience_filter: '', // 人群
     bid_type: [], // 出价方式
     pallet: [], // 货盘
     pageNum: 1,
@@ -428,7 +399,6 @@ const state = reactive({
     echartsData2: [] as any,
     echartsData3: [] as any,
     echartsData4: [] as any,
-    tableSearchLv: 1,
 })
 
 const current_inventory = reactive([])
@@ -438,8 +408,8 @@ const allData = reactive([{
     componentTitle: '商品明细',
     data: [],
     column: [
-        { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '', filters: current_inventory },
-        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', filters: [] },
+        // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
+        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '',},
         { title: '推广GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', unit: '' },
         { title: 'GMV全店占比(%)', width: 140, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', unit: '%' },
         { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
@@ -467,11 +437,11 @@ const allData = reactive([{
     componentTitle: '计划明细',
     data: [],
     column: [
-        { title: '本月货盘', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '', filters: current_inventory },
+        // { title: '计划类型', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '',},
         { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
-        { title: '出价方式', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
+        { title: '出价类型', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
         { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
-        { title: '场景名称', width: 100, align: 'center', dataKey: 'campaign_scene', key: 'campaign_scene', unit: '' },
+        { title: '场景名称', width: 100, align: 'center', dataKey: 'promotion_type', key: 'promotion_type', unit: '' },
 
         { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
         // { title: 'GMV趋势', width: 100, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
@@ -491,7 +461,7 @@ const allData = reactive([{
         { title: '花费趋势', width: 100, align: 'center', dataKey: 'spend_trend', key: 'spend_trend', unit: '' },
         { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', unit: '' },
 
-        // { title: 'GMV全店占比', width: 100, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', },
+        // { title: '计划编号', width: 100, align: 'center', dataKey: 'plan_id', key: 'plan_id', },
         // { title: '花费全店占比', width: 100, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
         // { title: '支付转化率', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
     ]
@@ -514,16 +484,6 @@ onMounted(async () => {
 })
 const getPlan = async () => {
 
-}
-
-const tableRwoClick = async (row, column, event) => {
-    allData[0].data = []
-    state.tableSearchLv = 1;
-    searchData.keyword_filter = [], // 关键词
-        searchData.audience_filter = [], // 人群
-        searchData.pallet = [], // 货盘
-        searchData.bid_type = [column];
-    await selectChange()
 }
 
 const getProduct = async () => {
@@ -592,7 +552,9 @@ const getData = async () => {
                 }
                 current_inventory.push(obj)
             })
+            count.value++
             await getData2();
+
         }
     }
 }
@@ -621,15 +583,7 @@ const echarts2 = async () => {
     const arr = state.echartsData2
     const option = pieOptions(arr);
     option && myChart.setOption(option);
-    myChart.on("click", function (params: any) {
-        allData[0].data = []
-        searchData.keyword_filter = [], // 关键词
-            searchData.audience_filter = [], // 人群
-            searchData.bid_type = [], // 出价方式
-            state.tableSearchLv = 2;
-        searchData.pallet = [params.name]
-        selectChange()
-    })
+
     window.addEventListener("resize", () => {
         myChart.resize();
     });
@@ -649,15 +603,7 @@ const echarts3 = async () => {
     })
     const option = barOptionsX(arr);
     option && myChart.setOption(option);
-    myChart.on("click", function (params: any) {
-        allData[0].data = []
-        searchData.audience_filter = [], // 人群
-            searchData.bid_type = [], // 出价方式
-            searchData.pallet = [], // 货盘
-            state.tableSearchLv = 3;
-        searchData.keyword_filter = [params.name]
-        selectChange()
-    })
+
     window.addEventListener("resize", () => {
         myChart.resize();
     });
@@ -677,15 +623,7 @@ const echarts4 = async () => {
     })
     const option = barOptionsX(arr);
     option && myChart.setOption(option);
-    myChart.on("click", function (params: any) {
-        allData[0].data = []
-        searchData.keyword_filter = [], // 关键词
-            searchData.bid_type = [], // 出价方式
-            searchData.pallet = [], // 货盘
-            state.tableSearchLv = 4;
-        searchData.audience_filter = [params.name]
-        selectChange()
-    })
+
     window.addEventListener("resize", () => {
         myChart.resize();
     });
@@ -695,6 +633,8 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const getAll = async (arr: object) => {
+    arr.end_date = arr.date[1]
+    arr.start_date = arr.date[0]
     const allRes = await getPromotionGetAlldata(arr)
     if (allRes.code === 0) {
         all.allData.bidTypeAnalysis.records = allRes.data.bidTypeAnalysis.records
@@ -705,33 +645,6 @@ const getAll = async (arr: object) => {
     count.value++
 }
 
-const filterTag = (value: string, row: User) => {
-    return row.pallet === value
-}
-
-let randomStrings = []
-// 不重复随机数
-/**
- * @description: 
- * @param {*} min 最小数
- * @param {*} max 最大数
- * @param {*} count 生成数量
- * @return {*}
- * 调用函数生成长度为10的随机字符串
- * console.log(generateRandomString(10));
- */
-const generateRandomString = () => {
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; // 包含所有大小写字母和数字的字符集合
-    var result = '';
-
-    for (var i = 0; i < 15; i++) {
-        var randomIndex = Math.floor(Math.random() * characters.length); // 获取随机索引值
-        result += characters[randomIndex]; // 根据索引从字符集合中选择对应位置的字符并添加到结果字符串中
-    }
-    randomStrings.push(result)
-    return result;
-}
-
 const getDetailPro = async (arr: object) => {
     arr.pageNum = pageNum_pro
     // arr.product_manager = [arr.product_manager]
@@ -739,7 +652,7 @@ const getDetailPro = async (arr: object) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0) {
-        allData[0].data = [...allData[0].data, ...proRes.data.records]
+        allData[0].data = allData[0].data.concat(proRes.data.records)
     }
     pageNum_pro.value++
 }
@@ -750,7 +663,7 @@ const getDetailPlan = async (arr: object) => {
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0) {
-        allData[1].data = [...allData[1].data, ...planRes.data.records]
+        allData[1].data = allData[1].data.concat(planRes.data.records)
         allData[1].data.forEach(element => {
             element.pallet = element.campaign_name
         });
