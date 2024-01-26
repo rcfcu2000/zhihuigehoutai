@@ -338,7 +338,7 @@ import plan_table from './components/plan_table.vue'
 const count = ref(0)
 const pageNum_pro = ref(1)
 const pageNum_plan = ref(1)
-const pageSize = ref(120)
+const pageSize = ref(50)
 const cities = [
     {
         value: "场景推广",

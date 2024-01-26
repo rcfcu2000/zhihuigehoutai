@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 18:44:45
+ * @LastEditTime: 2024-01-26 20:16:19
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,7 +13,8 @@
     <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
-        <el-table :id="'table' + comKey" :data="tableData" border style="width: 100%;height: 280px;"
+        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
             v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200">
             <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center">
 
@@ -121,9 +122,17 @@ const filterTag = (value: string, row: User) => {
     return row.pallet === value
 }
 let randomStrings = []
+const tableListRef = ref();
 
 onMounted(() => {
 })
+/**
+     * 刷新table,防止滚动条跑到最上面
+    */
+const refreshTable = () => {
+    let table = tableListRef.value;
+    table.doLayout()
+}
 watch(propData.current_inventory, (newD, oldD) => {
     current_inventory = newD
 })
@@ -143,6 +152,11 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     };
     option && myChart.setOption(option);
     EleResize.on(chartDom, listener);
+
+    loadType.value = false
+    setTimeout(() => {
+        refreshTable()
+    }, 1000)
     count.value++
 })
 

@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 19:32:21
+ * @LastEditTime: 2024-01-26 20:16:05
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -10,11 +10,12 @@
     <div class="tableHead">
         {{ componentTitle }}
     </div>
-    <div id="echarts" style="width: 10dvw;height: 30px;">
-    </div>
+    <!-- <div id="echarts" style="width: 10dvw;height: 30px;">
+    </div> -->
     <div class="aiData_table table" :key="count">
-        <el-table ref="tableListRef" :key="tableKey" :id="'table' + comKey" :data="tableData" border
-            style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200">
+        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
+            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="50">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag">
 
@@ -73,7 +74,6 @@ import { persentNum, floatNum } from "@/utils/format.js"
 import * as echarts from 'echarts';
 
 const count = ref(0)
-const tableKey = ref(0)
 const loadType = ref(false)
 let tableHead = ref([
     { key: 'date', dataKey: 'date', title: '日期', align: 'center', width: 150, fixed: true },
@@ -128,7 +128,6 @@ const filterTag = (value: string, row: User) => {
 }
 let randomStrings = []
 const tableListRef = ref();
-const scrollHeight = ref(0)
 
 onMounted(() => {
 
@@ -145,44 +144,29 @@ watch(propData.current_inventory, (newD, oldD) => {
     */
 const refreshTable = () => {
     let table = tableListRef.value;
-    const beforeScrollTop = table.$el.querySelector('div.el-table__body-wrapper').scrollTop
-    tableKey.value = Math.random()
-    setTimeout(() => {
-        table.$el.querySelector('div.el-table__body-wrapper').scrollTop = beforeScrollTop
-    }, 3000)
+    //强制刷新组件
+    table.doLayout()
 }
 watch(propData.Commodity_detail, (newD, oldD) => {
 
     componentTitle.value = newD.componentTitle
-    // console.log(newD, newD, "watch")
     tableHead = newD.column
     tableData = newD.data
 
-    let chartDom = document.getElementById('echarts');
-    let myChart = echarts.init(chartDom);
-    let option = table_lineOptions(lineData());
-    let listener = function () {
-        if (myChart) {
-            myChart.resize();
-        }
-    };
-    option && myChart.setOption(option);
-    EleResize.on(chartDom, listener);
+    // let chartDom = document.getElementById('echarts');
+    // let myChart = echarts.init(chartDom);
+    // let option = table_lineOptions(lineData());
+    // let listener = function () {
+    //     if (myChart) {
+    //         myChart.resize();
+    //     }
+    // };
+    // option && myChart.setOption(option);
+    // EleResize.on(chartDom, listener);
     loadType.value = false
-
     setTimeout(() => {
-        // refreshTable()
-        let table = tableListRef.value.$refs;
-        console.log(tableListRef.value,"tableListRef.value")
-        // // 获取表格滚动元素
-        let tableScrollEle = table.bodyWrapper.firstElementChild.firstElementChild;
-        // // 设置表格滚动的位置
-        tableScrollEle.scrollTop = tableScrollEle.scrollHeight;
-
-        count.value++
-        table.scrollBarRef.setScrollTop(tableScrollEle.scrollHeight)
-        console.log(tableScrollEle.scrollHeight , "hhhhhhhhhhhhhhhhhhhhhhhh")
-    }, 3000)
+        refreshTable()
+    }, 1000)
 })
 
 const loadMore = (res) => {
