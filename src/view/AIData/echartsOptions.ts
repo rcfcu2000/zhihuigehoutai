@@ -258,7 +258,6 @@ export const barOptionsX = (arr: any) => {
                 type: 'shadow'
             },
             formatter: function (params) {
-                console.log(params[0])
                 return '<div>' + params[0].name + '<br>'
                     + '花费' + " : " + ' (' + params[0].value + ') %' + '<br/>'
                     + '花费占比' + " : " + ' (' + params[0].data.zhanbi + ') %' + '<br/>'
