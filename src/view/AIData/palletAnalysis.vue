@@ -532,7 +532,7 @@ onMounted(async () => {
 const getUserPrice = async () => {
   state.loading = true;
   const res = await getUserPriceRange({
-    id: userStore.userInfo.ID,
+    uid: userStore.userInfo.ID,
   });
   if (res.code === 0) {
     state.loading = false;
