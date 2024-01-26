@@ -15,22 +15,18 @@
           <div class="search_line">
             本月货盘
             <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
-              placeholder="请选择" size="small">
+              placeholder="全部" size="small">
               <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
                 :value="item.current_inventory" />
             </el-select>
           </div>
           <div class="search_line">
             货盘变化
-            <div class="line">
-              <el-radio-group v-model="searchData.all" @change="changeCheckGroup('999')" class="ml-4">
-                <el-radio :label="999" border size="small">全部</el-radio>
-              </el-radio-group>
-              <el-checkbox-group v-model="searchData.inventory_change" size="small" @change="changeCheckGroup('dx')">
-                <el-checkbox border v-for="(item, index) in cities" :key="item.label" :label="item.label">{{ item.value
-                }}</el-checkbox>
-              </el-checkbox-group>
-            </div>
+            <el-select v-model="searchData.inventory_change" clearable multiple @change="getData2" class="select_width"
+              placeholder="全部" size="small">
+              <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
+              </el-option>
+            </el-select>
           </div>
         </div>
         <div class="search_right">
@@ -146,14 +142,10 @@
         <div class="echarts_title">GMV对比</div>
         <div class="echarts_1" id="GMVcharts">
           <el-skeleton :rows="4" animated> </el-skeleton>
-          <!-- <el-empty description="description" /> -->
         </div>
         <div class="echarts_title">访客对比</div>
         <div class="echarts_1" id="Visitorcharts">
           <el-skeleton :rows="4" animated> </el-skeleton>
-          <!-- <el-empty description="description">
-
-          </el-empty> -->
         </div>
       </div>
     </div>
@@ -162,60 +154,55 @@
       <div class="trend_comparison_left flex_size">
         <div class="echarts_title">货盘趋势</div>
         <div class="trend_comparison_box" id="Palletecharts">
-          <el-skeleton :rows="6" animated> </el-skeleton>
-          <!-- <el-empty description="暂无数据" class="eharts_empty">
-
-          </el-empty> -->
+          <el-skeleton :rows="5" animated> </el-skeleton>
         </div>
       </div>
       <div class="trend_comparison_right flex_size">
         <div class="echarts_title">新老客对比</div>
         <div class="trend_comparison_box" id="newOldecharts">
-          <el-skeleton :rows="6" animated> </el-skeleton>
-          <!-- <el-empty description="description" /> -->
+          <el-skeleton :rows="5" animated> </el-skeleton>
         </div>
       </div>
     </div>
     <div class="title title_btn">
-      <span> 单价趋势</span>
-      <el-button class="btn" @click="getUserPrice">调整价格区间</el-button>
+      <span> 客单价趋势</span>
+      <el-button class="btn" @click="getUserPrice">调整客单价区间</el-button>
     </div>
     <div class="trend_comparison">
       <div class="trend_comparison_left flex_size">
-        <div class="echarts_title">件单价GMV趋势</div>
+        <div class="echarts_title">客单价GMV趋势</div>
         <div class="trend_comparison_box" id="unitPriceGMVcharts">
-          <el-skeleton :rows="6" animated> </el-skeleton>
-          <!-- <el-empty description="description" /> -->
+          <el-skeleton :rows="5" animated> </el-skeleton>
         </div>
       </div>
       <div class="trend_comparison_right flex_size">
-        <div class="echarts_title">件单价访客趋势</div>
+        <div class="echarts_title">客单价访客趋势</div>
         <div class="trend_comparison_box" id="unitPriceTrendcharts">
-          <el-skeleton :rows="6" animated> </el-skeleton>
-          <!-- <el-empty description="description" /> -->
+          <el-skeleton :rows="5" animated> </el-skeleton>
         </div>
       </div>
     </div>
     <div class="table_title">商品明细</div>
     <div class="aiData_table table">
       <el-table :data="state.tableData" max-height="450">
-        <el-table-column label="商品ID">
+        <el-table-column label="商品ID" width="150">
           <template #default="scope">
             <span>{{ scope.row.product_id }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="商品简称" show-overflow-tooltip>
+        <el-table-column label="商品简称" show-overflow-tooltip width="200">
           <template #default="scope">
             <span>{{ scope.row.product_abbreviation }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="GMV" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')">
+        <el-table-column label="GMV" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')" width="150" align="center">
           <template #default="scope">
-            <span>{{ scope.row.gmv }}</span>
+            <span> {{ parseFloat((scope.row.gmv).toFixed(0)) }} </span>
           </template>
         </el-table-column>
-        <el-table-column label="净利润率" sortable :sort-method="(a, b) => sortList(a, b, 'net_profit_margin')">
+        <el-table-column label="净利润率" sortable :sort-method="(a, b) => sortList(a, b, 'net_profit_margin')" width="150"
+          align="center">
           <template #default="scope">
             <div class="alcenter">
               <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
@@ -232,80 +219,89 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="产品分类">
+        <el-table-column label="产品分类" width="150" align="center">
           <template #default="scope">
             <span>{{ scope.row.product_category }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="搜索访客占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_visitor_ratio')">
+        <el-table-column label="搜索访客占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_visitor_ratio')"
+          width="150" align="center">
           <template #default="scope">
             <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
               parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
           </template>
         </el-table-column>
-        <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')">
+        <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')" width="150"
+          align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="老客占比" sortable :sort-method="(a, b) => sortList(a, b, 'returning_customer_ratio')">
+        <el-table-column label="老客占比" sortable :sort-method="(a, b) => sortList(a, b, 'returning_customer_ratio')"
+          width="130" align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="本月货盘">
+        <el-table-column label="本月货盘" align="center">
           <template #default="scope">
             <span>{{ scope.row.current_inventory }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="上月货盘">
+        <el-table-column label="上月货盘" align="center">
           <template #default="scope">
             <span>{{ scope.row.last_period_stockpile }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="盘货变化">
+        <el-table-column label="盘货变化" align="center">
           <template #default="scope">
             <div v-if="scope.row.stockpile_change === 1" style="width: 100%; background-color: #01E5FF;">上升</div>
             <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降</div>
             <div v-else>持平</div>
           </template>
         </el-table-column>
-        <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')">
+        <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')" width="100"
+          align="center">
           <template #default="scope">
             <span>{{ parseFloat((scope.row.unit_price).toFixed(2)) }} </span>
           </template>
         </el-table-column>
-        <el-table-column label="预估毛利率" sortable :sort-method="(a, b) => sortList(a, b, 'estimated_gross_profit_margin')">
+        <el-table-column label="预估毛利率" sortable :sort-method="(a, b) => sortList(a, b, 'estimated_gross_profit_margin')"
+          width="140" align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="支付转化率" sortable :sort-method="(a, b) => sortList(a, b, 'payment_conversion_rate')">
+        <el-table-column label="支付转化率" sortable :sort-method="(a, b) => sortList(a, b, 'payment_conversion_rate')"
+          width="140" align="center">
           <template #default="scope">
             <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
-        <el-table-column label="收藏率" sortable :sort-method="(a, b) => sortList(a, b, 'collection_rate')">
+        <el-table-column label="收藏率" sortable :sort-method="(a, b) => sortList(a, b, 'collection_rate')" width="100"
+          align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
           </template>
         </el-table-column>
-        <el-table-column label="加购率" sortable :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')">
+        <el-table-column label="加购率" sortable :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')" width="100"
+          align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
           </template>
         </el-table-column>
-        <el-table-column label="连带率" sortable :sort-method="(a, b) => sortList(a, b, 'attachment_rate')">
+        <el-table-column label="连带率" sortable :sort-method="(a, b) => sortList(a, b, 'attachment_rate')" width="100"
+          align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="三级类目">
+        <el-table-column label="三级类目" width="200">
           <template #default="scope">
             <span>{{ scope.row.tertiary_category }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="商品名称" show-overflow-tooltip>
+        <el-table-column label="商品名称" show-overflow-tooltip width="200">
           <template #default="scope">
             <span>{{ scope.row.product_name }}</span>
           </template>
@@ -317,7 +313,7 @@
         </template>
       </el-table>
     </div>
-    <el-dialog v-model="state.dialogForm.visible" width="600px" title="设置价格区间（最多6个）" align-center>
+    <el-dialog v-model="state.dialogForm.visible" width="600px" title="设置客单价区间（最多6个）" align-center>
       <div class="dialog-content">
         <div class="dp-flex justify-content-space-betwee tip align-items">
           <span> 客单价(元) </span>
@@ -400,6 +396,10 @@ const cities = [
   {
     label: 1,
     value: "下降",
+  },
+  {
+    label: 100,
+    value: "其他",
   },
 ];
 const state = reactive({
@@ -512,7 +512,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           end_date: searchData.date[1],
           start_date: searchData.date[0],
           product_manager: searchData.product_manager,
-          inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+          inventory_change: searchData.inventory_change,
           current_inventory: searchData.current_inventory,
           price_range_list: userPriceRange.priceRange,
         }
@@ -532,7 +532,7 @@ onMounted(async () => {
 const getUserPrice = async () => {
   state.loading = true;
   const res = await getUserPriceRange({
-    id: userStore.userInfo.ID,
+    uid: userStore.userInfo.ID,
   });
   if (res.code === 0) {
     state.loading = false;
@@ -563,7 +563,7 @@ const getData = async () => {
       start_date: searchData.date[0],
       current_inventory: [],
       product_manager: searchData.product_manager,
-      inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+      inventory_change: searchData.inventory_change,
     };
     const resp3 = await getSubGmvList(data);
     if (resp3.code === 0) {
@@ -600,7 +600,7 @@ const getData2 = async () => {
     end_date: searchData.date[1],
     start_date: searchData.date[0],
     product_manager: searchData.product_manager,
-    inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+    inventory_change: searchData.inventory_change,
     current_inventory: searchData.current_inventory,
   };
   const [res, res2] = [await getAlldata(data), await getPriceRangedata(data)];
@@ -884,7 +884,7 @@ const GMVDismantling = () => {
       end_date: searchData.date[1],
       start_date: searchData.date[0],
       product_manager: searchData.product_manager,
-      inventory_change: searchData.all ? [searchData.all] : searchData.inventory_change,
+      inventory_change: searchData.inventory_change,
       current_inventory: [params.data.name],
       primary_category: "",
       secondary_category: "",
@@ -1066,13 +1066,8 @@ $echarts_bg_img: url("./images/_2.png");
       .search_left {
         display: flex;
         flex: 0.35;
-        justify-content: space-between;
+        // justify-content: space-between;
 
-        .search_line:last-child {
-          width: 400px;
-          display: flex;
-          align-items: center;
-        }
       }
 
       .search_right {
@@ -1082,6 +1077,8 @@ $echarts_bg_img: url("./images/_2.png");
       }
 
       .search_line {
+        margin: 0 10px;
+
         .line {
           display: flex;
         }
@@ -1192,7 +1189,7 @@ $echarts_bg_img: url("./images/_2.png");
     justify-content: space-around;
 
     .GMV_left {
-      flex: 0.4;
+      flex: 0.48;
 
       // background-color: pink;
       .GMV_left_tit {
@@ -1217,7 +1214,7 @@ $echarts_bg_img: url("./images/_2.png");
     }
 
     .GMV_right {
-      flex: 0.56;
+      flex: 0.48;
     }
 
     .echarts_1 {
@@ -1240,7 +1237,7 @@ $echarts_bg_img: url("./images/_2.png");
 
     .trend_comparison_box {
       padding: 10px 20px;
-      height: 252px;
+      height: 200px;
       background-image: $echarts_bg_img;
       background-size: 100% 100%;
       position: relative;
@@ -1289,6 +1286,7 @@ $echarts_bg_img: url("./images/_2.png");
     .alcenter {
       display: flex;
       align-items: center;
+      justify-content:center;
     }
 
     // border: 1px solid #fff;
@@ -1377,6 +1375,7 @@ $echarts_bg_img: url("./images/_2.png");
   box-shadow: none;
   border-radius: 0;
   border: 1px solid rgba(1, 229, 255, 1);
+  width: 200px;
 
   .el-range-input {
     color: #fff;

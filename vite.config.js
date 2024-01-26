@@ -11,6 +11,8 @@ import vuePlugin from '@vitejs/plugin-vue'
 import GvaPosition from './vitePlugin/gvaPosition'
 import GvaPositionServer from './vitePlugin/codeServer'
 import fullImportPlugin from './vitePlugin/fullImport/fullImport.js'
+const px2rem = require('postcss-px2rem')
+
 // @see https://cn.vitejs.dev/config/
 export default ({
   command,
@@ -26,6 +28,11 @@ export default ({
       process.env[k] = envConfig[k]
     }
   }
+
+  const postcss = px2rem({
+    // 基准大小 baseSize，需要和rem.js中相同
+    remUnit: 16
+  })
 
   // viteLogo(process.env)
 
@@ -86,6 +93,13 @@ export default ({
         scss: {
           additionalData: `@use "@/style/element/index.scss" as *;`,
         }
+      },
+      loaderOptions: {
+        postcss: {
+          plugins: [
+            postcss
+          ]
+        }
       }
     },
   }
@@ -98,11 +112,11 @@ export default ({
     config.plugins.push(AutoImport({
       resolvers: [ElementPlusResolver()]
     }),
-    Components({
-      resolvers: [ElementPlusResolver({
-        importStyle: 'sass'
-      })]
-    }))
+      Components({
+        resolvers: [ElementPlusResolver({
+          importStyle: 'sass'
+        })]
+      }))
   }
   return config
 }
