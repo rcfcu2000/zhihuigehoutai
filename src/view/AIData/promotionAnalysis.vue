@@ -338,7 +338,7 @@ import plan_table from './components/plan_table.vue'
 const count = ref(0)
 const pageNum_pro = ref(1)
 const pageNum_plan = ref(1)
-const pageSize = ref(20)
+const pageSize = ref(120)
 const cities = [
     {
         value: "场景推广",
@@ -434,7 +434,7 @@ const allData = reactive([{
         { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
         { title: '出价类型', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
         { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
-        { title: '场景名称', width: 100, align: 'center', dataKey: 'promotion_type', key: 'promotion_type', unit: '' },
+        // { title: '场景名称', width: 100, align: 'center', dataKey: 'promotion_type', key: 'promotion_type', unit: '' },
 
         { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
         // { title: 'GMV趋势', width: 100, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },

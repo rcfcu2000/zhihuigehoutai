@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 18:24:46
+ * @LastEditTime: 2024-01-26 19:32:21
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,8 +13,8 @@
     <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
-        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200">
+        <el-table ref="tableListRef" :key="tableKey" :id="'table' + comKey" :data="tableData" border
+            style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag">
 
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted } from 'vue'
+import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdated } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum } from "@/utils/format.js"
@@ -73,6 +73,7 @@ import { persentNum, floatNum } from "@/utils/format.js"
 import * as echarts from 'echarts';
 
 const count = ref(0)
+const tableKey = ref(0)
 const loadType = ref(false)
 let tableHead = ref([
     { key: 'date', dataKey: 'date', title: '日期', align: 'center', width: 150, fixed: true },
@@ -126,17 +127,31 @@ const filterTag = (value: string, row: User) => {
     return row.pallet === value
 }
 let randomStrings = []
-const tableListRef = ref(null);
+const tableListRef = ref();
+const scrollHeight = ref(0)
 
 onMounted(() => {
+
+})
+
+onUpdated(() => {
 
 })
 watch(propData.current_inventory, (newD, oldD) => {
     current_inventory.data = newD
 })
-
+/**
+     * 刷新table,防止滚动条跑到最上面
+    */
+const refreshTable = () => {
+    let table = tableListRef.value;
+    const beforeScrollTop = table.$el.querySelector('div.el-table__body-wrapper').scrollTop
+    tableKey.value = Math.random()
+    setTimeout(() => {
+        table.$el.querySelector('div.el-table__body-wrapper').scrollTop = beforeScrollTop
+    }, 3000)
+}
 watch(propData.Commodity_detail, (newD, oldD) => {
-    console.log(tableListRef, "tableListReftableListRef")
 
     componentTitle.value = newD.componentTitle
     // console.log(newD, newD, "watch")
@@ -153,19 +168,21 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     };
     option && myChart.setOption(option);
     EleResize.on(chartDom, listener);
-    count.value++
-
-    // console.log(scrollHeight, scrollTop, "table........................")
     loadType.value = false
-})
-nextTick(() => {
-    let table = tableListRef.value.$refs;
-    // 获取表格滚动元素
-    let tableScrollEle = table.bodyWrapper.firstElementChild.firstElementChild;
-    // 设置表格滚动的位置
-    tableScrollEle.scrollTop = tableScrollEle.scrollHeight;
 
-    // tableListRef.value.$refs.bodyWrapper.getElementsByClassName("el-scrollbar__wrap")[0].scrollTop = tableListRef.value.$refs.bodyWrapper.getElementsByClassName("el-scrollbar__wrap")[0].scrollHeight * 2;
+    setTimeout(() => {
+        // refreshTable()
+        let table = tableListRef.value.$refs;
+        console.log(tableListRef.value,"tableListRef.value")
+        // // 获取表格滚动元素
+        let tableScrollEle = table.bodyWrapper.firstElementChild.firstElementChild;
+        // // 设置表格滚动的位置
+        tableScrollEle.scrollTop = tableScrollEle.scrollHeight;
+
+        count.value++
+        table.scrollBarRef.setScrollTop(tableScrollEle.scrollHeight)
+        console.log(tableScrollEle.scrollHeight , "hhhhhhhhhhhhhhhhhhhhhhhh")
+    }, 3000)
 })
 
 const loadMore = (res) => {

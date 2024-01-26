@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 18:05:00
+ * @LastEditTime: 2024-01-26 18:44:45
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -15,8 +15,7 @@
     <div class="aiData_table table" :key="count">
         <el-table :id="'table' + comKey" :data="tableData" border style="width: 100%;height: 280px;"
             v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200">
-            <el-table-column prop="pallet" label="计划类型" fixed width="120" align="center" :filters="current_inventory"
-                :filter-method="filterTag">
+            <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center">
 
             </el-table-column>
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
