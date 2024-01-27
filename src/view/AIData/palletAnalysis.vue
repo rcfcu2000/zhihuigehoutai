@@ -370,8 +370,8 @@
     </el-dialog>
     <el-dialog v-model="state.tableDialogType" width="100%" title="商品明细" align-center>
       <div class="dialog-content">
-        <div class="aiData_table table">
-          <el-table :data="state.tableData" max-height="800">
+        <div class="aiData_table" style="height:600px; overflow: hidden;">
+          <el-table :data="state.tableData" max-height="600">
             <el-table-column label="商品ID" width="150">
               <template #default="scope">
                 <span>{{ scope.row.product_id }}</span>
