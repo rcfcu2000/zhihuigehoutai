@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 20:16:05
+ * @LastEditTime: 2024-01-27 13:33:43
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -15,9 +15,9 @@
     <div class="aiData_table table" :key="count">
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="50">
+            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="50" @filter-change="filterChange">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
-                :filter-method="filterTag">
+                :filter-method="filterTag" column-key="pallet">
 
             </el-table-column>
 
@@ -116,24 +116,25 @@ const lineData = () => {
 }
 
 const propData = defineProps(['Commodity_detail', 'comKey', 'current_inventory'])
-const emit = defineEmits(['loadMore'])
+const emit = defineEmits(['loadMore','changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
     data: []
 })
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
-const filterTag = (value: string, row: User) => {
+const filterTag = (value: string, row: User, column: object) => {
     return row.pallet === value
+}
+
+const filterChange = (res) => {
+    const checkValue = res.pallet
+    emit('changePallet',checkValue)
 }
 let randomStrings = []
 const tableListRef = ref();
 
 onMounted(() => {
-
-})
-
-onUpdated(() => {
 
 })
 watch(propData.current_inventory, (newD, oldD) => {
@@ -166,7 +167,7 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     loadType.value = false
     setTimeout(() => {
         refreshTable()
-    }, 1000)
+    }, 500)
 })
 
 const loadMore = (res) => {
