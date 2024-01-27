@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 20:16:19
+ * @LastEditTime: 2024-01-27 13:34:08
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,10 +13,12 @@
     <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
-        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+        <el-table ref="planTableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200">
-            <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center">
+            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="200" @filter-change="filterChange">
+            <!-- <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" :filters="current_inventory.data"
+                :filter-method="filterTag" column-key="plan_pallet"> -->
+            <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" column-key="plan_pallet">
 
             </el-table-column>
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
@@ -113,51 +115,56 @@ const lineData = () => {
 }
 
 const propData = defineProps(['Commodity_detail', 'comKey', 'current_inventory'])
-const emit = defineEmits(['loadMore'])
+const emit = defineEmits(['loadMore','changePallet'])
 const componentTitle = ref('')
-const current_inventory = reactive([])
+const current_inventory = reactive({
+    data: []
+})
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
 const filterTag = (value: string, row: User) => {
-    return row.pallet === value
+    return row.promotion_type === value
+}
+const filterChange = (res) => {
+    const checkValue = res.plan_pallet
+    emit('changePallet',checkValue)
 }
 let randomStrings = []
-const tableListRef = ref();
+const planTableListRef = ref();
 
 onMounted(() => {
+})
+watch(propData.current_inventory, (newD, oldD) => {
+    current_inventory.data = newD
 })
 /**
      * 刷新table,防止滚动条跑到最上面
     */
 const refreshTable = () => {
-    let table = tableListRef.value;
+    let table = planTableListRef.value;
     table.doLayout()
 }
-watch(propData.current_inventory, (newD, oldD) => {
-    current_inventory = newD
-})
 watch(propData.Commodity_detail, (newD, oldD) => {
     componentTitle.value = newD.componentTitle
-    // console.log(newD, newD, "watch")
     tableHead = newD.column
     tableData = newD.data
 
-    let chartDom = document.getElementById('echarts');
-    let myChart = echarts.init(chartDom);
-    let option = table_lineOptions(lineData());
-    let listener = function () {
-        if (myChart) {
-            myChart.resize();
-        }
-    };
-    option && myChart.setOption(option);
-    EleResize.on(chartDom, listener);
+    // let chartDom = document.getElementById('echarts');
+    // let myChart = echarts.init(chartDom);
+    // let option = table_lineOptions(lineData());
+    // let listener = function () {
+    //     if (myChart) {
+    //         myChart.resize();
+    //     }
+    // };
+    // option && myChart.setOption(option);
+    // EleResize.on(chartDom, listener);
 
     loadType.value = false
     setTimeout(() => {
         refreshTable()
-    }, 1000)
-    count.value++
+    }, 500)
+    // count.value++
 })
 
 const loadMore = (res) => {

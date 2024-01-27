@@ -2,50 +2,45 @@
     <div class="main">
         <div class="header">
             <span class="titl1_h1">推广分析</span>
-            <div class="search">
-                <div class="search_left">
-                    <div class="search_line">
-                        负责人
-                        <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择"
-                            @change="getData2" size="small" multiple>
-                            <el-option v-for="item in state.responsibleList" :key="item.responsible"
-                                :label="item.responsible" :value="item.responsible" />
-                        </el-select>
+
+            <el-affix :offset="40" @scroll="affixChange">
+                <div class="search">
+                    <div class="search_left">
+                        <div class="search_line">
+                            负责人
+                            <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择"
+                                @change="getData2" size="small" multiple>
+                                <el-option v-for="item in state.responsibleList" :key="item.responsible"
+                                    :label="item.responsible" :value="item.responsible" />
+                            </el-select>
+                        </div>
+                        <div class="search_line">
+                            本月货盘
+                            <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2"
+                                class="select_width" placeholder="请选择" size="small">
+                                <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
+                                    :label="item.current_inventory" :value="item.current_inventory" />
+                            </el-select>
+                        </div>
+                        <div class="search_line">
+                            货盘变化
+                            <el-select v-model="searchData.scene_category" clearable multiple @change="getData2"
+                                class="select_width" placeholder="请选择" size="small">
+                                <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
+                                    :value="item.value" />
+                            </el-select>
+                        </div>
                     </div>
-                    <div class="search_line">
-                        本月货盘
-                        <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2"
-                            class="select_width" placeholder="请选择" size="small">
-                            <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
-                                :label="item.current_inventory" :value="item.current_inventory" />
-                        </el-select>
-                    </div>
-                    <div class="search_line">
-                        货盘变化
-                        <el-select v-model="searchData.scene_category" clearable multiple @change="getData2"
-                            class="select_width" placeholder="请选择" size="small">
-                            <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
-                                :value="item.value" />
-                        </el-select>
-                        <!-- <div class="line">
-                            <el-checkbox-group v-model="searchData.scene_category" size="small"
-                                @change="changeCheckGroup('dx')">
-                                <el-checkbox border v-for="(item, index) in cities" :key="item.value" :label="item.value">{{
-                                    item.value
-                                }}</el-checkbox>
-                            </el-checkbox-group>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="search_right">
-                    <div class="search_line">
-                        请选择起止时间
-                        <el-date-picker @change="getData2()" v-model="searchData.date" size="small" format="YYYY/MM/DD"
-                            value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                            start-placeholder="开始时间" end-placeholder="结束时间" />
+                    <div class="search_right">
+                        <div class="search_line">
+                            请选择起止时间
+                            <el-date-picker @change="getData2()" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
+                                start-placeholder="开始时间" end-placeholder="结束时间" />
+                        </div>
                     </div>
                 </div>
-            </div>
+            </el-affix>
 
         </div>
         <div class="title">
@@ -308,7 +303,7 @@
                 </el-form-item>
             </el-form>
         </div>
-        <goHome />
+
         <product_table :Commodity_detail="allData[0]" :comKey="0" :current_inventory="current_inventory"
             @load-more="loadMore"></product_table>
 
@@ -345,7 +340,7 @@ import plan_table from './components/plan_table.vue'
 const count = ref(0)
 const pageNum_pro = ref(1)
 const pageNum_plan = ref(1)
-const pageSize = ref(50)
+const pageSize = ref(30)
 const cities = [
     {
         value: "场景推广",
@@ -358,10 +353,17 @@ const cities = [
     },
 ];
 
+const affixChange = () => {
+    // const searchDom = document.getElementsByClassName('search')
+    // console.log(searchDom,"setAttribute")
+    // searchDom[0].setAttribute('class','search_scroll')
+}
+
 const searchData = reactive({
     product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
-    current_inventory: [], // string 当期货盘
-    scene_category: [],
+    current_inventory: [] as Array<any>, // string 当期货盘
+    promotion_type: [], // string
+    scene_category: [] as Array<any>, //string 计划类型
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
 
@@ -399,6 +401,7 @@ const state = reactive({
     echartsData2: [] as any,
     echartsData3: [] as any,
     echartsData4: [] as any,
+    planAnalysis: [] as any,
 })
 
 const current_inventory = reactive([])
@@ -562,6 +565,12 @@ const getPromotionGetAll = async () => {
     if (res.code === 0) {
         state.titleData = res.data.promotionIndex1
         state.extendList = res.data.promotionIndex2.records
+
+        res.data.planAnalysis.records.map(item => {
+            item.value = item.promotion_type
+            item.text = item.promotion_type
+        })
+        state.planAnalysis = res.data.planAnalysis.records
     }
 }
 
@@ -623,7 +632,7 @@ const echarts4 = async () => {
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
-const getAll = async (arr: object) => {
+const getAll = async (arr: any) => {
     arr.end_date = arr.date[1]
     arr.start_date = arr.date[0]
     const allRes = await getPromotionGetAlldata(arr)
@@ -636,28 +645,29 @@ const getAll = async (arr: object) => {
     count.value++
 }
 
-const getDetailPro = async (arr: object) => {
+const product_ids = [] as Array<any>;
+const getDetailPro = async (arr: any) => {
     arr.pageNum = pageNum_pro
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
-    if (proRes.code === 0) {
+    if (proRes.code === 0 && proRes.data.records) {
+        proRes.data.records.map((item: any) => {
+            product_ids.push(item.product_id)
+        })
         allData[0].data = allData[0].data.concat(proRes.data.records)
     }
     pageNum_pro.value++
 }
-const getDetailPlan = async (arr: object) => {
+const getDetailPlan = async (arr: any) => {
     arr.pageNum = pageNum_plan
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
-    if (planRes.code === 0) {
+    if (planRes.code === 0 && planRes.data.records) {
         allData[1].data = allData[1].data.concat(planRes.data.records)
-        allData[1].data.forEach(element => {
-            element.pallet = element.campaign_name
-        });
     }
     pageNum_plan.value++
 }
@@ -669,6 +679,18 @@ const loadMore = (at: string) => {
     if (at == 'plan') {
         getDetailPlan(searchData)
     }
+}
+
+// 商品表格筛选
+const changePallet = (value: Array<any>) => {
+    searchData.current_inventory = value
+    pageNum_pro.value = 1
+    allData[0].data = []
+    getDetailPro(searchData)
+}
+
+const changePlan_Pallet = (value: Array<any>) => {
+    searchData.scene_category = value
 }
 
 // 筛选条件改变时
@@ -702,24 +724,32 @@ $echarts_bg_img2: url('./images/_2.png');
         background-size: 100% 100%;
         position: relative;
 
+        .search_scroll {
+            background-color: rgba(0, 0, 0, 0.8);
+            translate: 0.3s;
+        }
+
         .search {
-            padding-top: 20px;
+            width: 100dvw;
+            padding: 0px 10px 0;
             box-sizing: border-box;
             display: flex;
             justify-content: space-between;
+            // position: fixed;
 
             .search_left {
                 display: flex;
                 flex: 0.4;
-                .search_line{
+
+                .search_line {
                     flex: 0.3;
                 }
             }
 
             .search_right {
-                display: flex;
-                flex: 0.3;
-                justify-content: space-between;
+                // display: flex;
+                // flex: 0.3;
+                // justify-content: space-between;
 
             }
 
@@ -929,7 +959,7 @@ $echarts_bg_img2: url('./images/_2.png');
     box-shadow: none;
     border-radius: 0;
     border: 1px solid rgba(1, 229, 255, 1);
-    width: 200px;
+    width: 150px;
 
     .el-range-input {
         color: #fff;
@@ -941,5 +971,4 @@ $echarts_bg_img2: url('./images/_2.png');
     font-size: 16px;
     font-weight: 400;
     padding-right: 0;
-}
-</style>
+}</style>
