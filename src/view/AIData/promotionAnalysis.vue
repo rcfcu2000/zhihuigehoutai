@@ -2,7 +2,6 @@
     <div class="main">
         <div class="header">
             <span class="titl1_h1">推广分析</span>
-
             <el-affix :offset="40" @scroll="affixChange">
                 <div class="search">
                     <div class="search_left">
@@ -309,7 +308,7 @@
 
         <plan_table :Commodity_detail="allData[1]" :comKey="1" @load-more="loadMore" :current_inventory="cities">
         </plan_table>
-
+        <goHome />
         <!-- 明细表格 -->
         <!-- <TransitionGroup name="list" tag="comtable">
             <template v-for="item, index in allData" :key="index">
@@ -747,9 +746,9 @@ $echarts_bg_img2: url('./images/_2.png');
             }
 
             .search_right {
-                // display: flex;
-                // flex: 0.3;
-                // justify-content: space-between;
+                display: flex;
+                flex: 0.3;
+                justify-content: space-between;
 
             }
 
@@ -971,4 +970,5 @@ $echarts_bg_img2: url('./images/_2.png');
     font-size: 16px;
     font-weight: 400;
     padding-right: 0;
-}</style>
+}
+</style>

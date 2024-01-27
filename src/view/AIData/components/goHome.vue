@@ -18,7 +18,7 @@ const goHome = () => {
     height: 50px;
     top: 10px;
     right: 20px;
-    z-index: 9;
+    z-index: 999;
     background-image: url('../images/gohome.png');
     background-size: 100% 100%;
     cursor: pointer;
