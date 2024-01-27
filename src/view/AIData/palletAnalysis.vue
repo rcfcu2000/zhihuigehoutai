@@ -368,7 +368,7 @@
         </span>
       </template>
     </el-dialog>
-    <el-dialog v-model="state.tableDialogType" width="100%" title="设置客单价区间（最多6个）" align-center>
+    <el-dialog v-model="state.tableDialogType" width="100%" title="商品明细" align-center>
       <div class="dialog-content">
         <div class="aiData_table table">
           <el-table :data="state.tableData" max-height="800">
