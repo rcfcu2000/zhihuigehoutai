@@ -22,14 +22,19 @@
                     </div>
                     <div class="search_line">
                         货盘变化
-                        <div class="line">
+                        <el-select v-model="searchData.scene_category" clearable multiple @change="getData2"
+                            class="select_width" placeholder="请选择" size="small">
+                            <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
+                                :value="item.value" />
+                        </el-select>
+                        <!-- <div class="line">
                             <el-checkbox-group v-model="searchData.scene_category" size="small"
                                 @change="changeCheckGroup('dx')">
                                 <el-checkbox border v-for="(item, index) in cities" :key="item.value" :label="item.value">{{
                                     item.value
                                 }}</el-checkbox>
                             </el-checkbox-group>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="search_right">
@@ -303,10 +308,12 @@
                 </el-form-item>
             </el-form>
         </div>
-        
-        <product_table :Commodity_detail="allData[0]" :comKey="0" :current_inventory="current_inventory" @load-more="loadMore"></product_table>
+        <goHome />
+        <product_table :Commodity_detail="allData[0]" :comKey="0" :current_inventory="current_inventory"
+            @load-more="loadMore"></product_table>
 
-        <plan_table :Commodity_detail="allData[1]" :comKey="1" @load-more="loadMore" :current_inventory="cities"></plan_table>
+        <plan_table :Commodity_detail="allData[1]" :comKey="1" @load-more="loadMore" :current_inventory="cities">
+        </plan_table>
 
         <!-- 明细表格 -->
         <!-- <TransitionGroup name="list" tag="comtable">
@@ -326,7 +333,7 @@ import {
     getSubGmvList,
     getSearchdata,
 } from '@/api/AIdata'
-
+import goHome from "./components/goHome.vue";
 import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
 import { pieOptions, barOptionsX } from "./echartsOptions";
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
@@ -402,7 +409,7 @@ const allData = reactive([{
     data: [],
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
-        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '',},
+        { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
         { title: '推广GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', unit: '' },
         { title: 'GMV全店占比(%)', width: 140, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', unit: '%' },
         { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
@@ -504,10 +511,6 @@ const getEchartsData = async () => {
     }
 
 }
-
-const changeCheckGroup = (type: string) => {
-    getData2();
-};
 
 const getData2 = async () => {
 
@@ -707,13 +710,9 @@ $echarts_bg_img2: url('./images/_2.png');
 
             .search_left {
                 display: flex;
-                flex: 0.35;
-                justify-content: space-between;
-
-                .search_line:last-child {
-                    width: 520px;
-                    display: flex;
-                    align-items: center;
+                flex: 0.4;
+                .search_line{
+                    flex: 0.3;
                 }
             }
 
