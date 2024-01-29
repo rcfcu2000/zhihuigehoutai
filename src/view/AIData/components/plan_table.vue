@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-27 13:34:08
+ * @LastEditTime: 2024-01-29 15:08:27
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -25,20 +25,10 @@
                 :fixed="head.fixed" :align="head.align" :width="head.width">
                 <template #default="scope">
                     <!-- 推广分析页 趋势折线 -->
-                    <div v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend'">
-                        <!-- <div :id="scope.row.plan_id" style="width: 10dvw;height: 30px;"> -->
-                        <div :ref="generateRandomString()" style="width: 10dvw;height: 30px;">
+                    <div
+                        v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend' || scope.column.property == 'gmv_trend'">
+                        <div :id="scope.row.plan_id + '_' + scope.column.property" style="width: 10dvw;height: 30px;">
                         </div>
-                        <!-- <script setup>
-                                import { watchEffect } from 'vue';
-                                      watchEffect(() => {
-                                        const chart = echarts.init(chartContainer);
-                                        // 根据row数据生成相关配置
-                                        const options = table_lineOptions(lineData());
-                                        // 将配置选项设置到图表上
-                                        chart.setOption(options);
-                                      });
-                            </script> -->
                     </div>
 
                     <!-- <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
@@ -115,7 +105,7 @@ const lineData = () => {
 }
 
 const propData = defineProps(['Commodity_detail', 'comKey', 'current_inventory'])
-const emit = defineEmits(['loadMore','changePallet'])
+const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
     data: []
@@ -127,7 +117,7 @@ const filterTag = (value: string, row: User) => {
 }
 const filterChange = (res) => {
     const checkValue = res.plan_pallet
-    emit('changePallet',checkValue)
+    emit('changePallet', checkValue)
 }
 let randomStrings = []
 const planTableListRef = ref();
@@ -148,21 +138,43 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     tableData = newD.data
-
-    // let chartDom = document.getElementById('echarts');
-    // let myChart = echarts.init(chartDom);
-    // let option = table_lineOptions(lineData());
-    // let listener = function () {
-    //     if (myChart) {
-    //         myChart.resize();
-    //     }
-    // };
-    // option && myChart.setOption(option);
-    // EleResize.on(chartDom, listener);
-
     loadType.value = false
+    refreshTable()
+    nextTick(() => {
+        tableData.forEach((item: any) => {
+            const domId_1 = item.plan_id + '_' + 'gmv_trend'
+            const domId_2 = item.plan_id + '_' + 'spend_trend'
+            const domId_3 = item.plan_id + '_' + 'roi_trend'
+            let chartDom1 = document.getElementById(domId_1);
+            let chartDom2 = document.getElementById(domId_2);
+            let chartDom3 = document.getElementById(domId_3);
+            let myChart1 = echarts.init(chartDom1);
+            let myChart2 = echarts.init(chartDom2);
+            let myChart3 = echarts.init(chartDom3);
+            let option1 = table_lineOptions(item.gmv_trend, item.times);
+            let option2 = table_lineOptions(item.spend_trend, item.times);
+            let option3 = table_lineOptions(item.roi_trend, item.times);
+            let listener = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+                if (myChart2) {
+                    myChart2.resize();
+                }
+                if (myChart3) {
+                    myChart3.resize();
+                }
+            };
+            option1 && myChart1.setOption(option1);
+            option2 && myChart2.setOption(option2);
+            option3 && myChart3.setOption(option3);
+            EleResize.on(chartDom1, listener);
+            EleResize.on(chartDom2, listener);
+            EleResize.on(chartDom3, listener);
+        })
+    })
+
     setTimeout(() => {
-        refreshTable()
     }, 500)
     // count.value++
 })
@@ -204,6 +216,13 @@ const generateRandomString = () => {
 </script>
 
 <style lang="scss" scoped>
+::v-deep(.echarts-tooltip) {
+    padding: 0 !important;
+    // position: fixed !important;
+    top: 0 !important;
+    left: -10px !important;
+}
+
 .tableHead {
     background-image: $table_bg_Title;
     background-size: 100% 100%;

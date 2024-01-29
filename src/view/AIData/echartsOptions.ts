@@ -472,19 +472,15 @@ export const barOptions = (arr: any, date: any) => {
  * @param {Array} arr 一维数组[1,2,3]
  * @return {*}
  */
-export const table_lineOptions = (arr: Array) => {
+export const table_lineOptions = (arr: Array<any>, date: Array<any>) => {
     const backColor = ['#046991', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         color: backColor,
         tooltip: {
             trigger: 'axis',
-            position: function (pos, params, dom, rect, size) {
-                // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
-                var obj = { top: 35 };
-                obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
-                return obj;
-            },
-            formatter: '{c}'
+            position: [10,10],
+            formatter: '{b}:{c}',
+            className: 'echarts-tooltip echarts-tooltip-dark'
         },
         grid: {
             left: '-25%',
@@ -495,7 +491,8 @@ export const table_lineOptions = (arr: Array) => {
         },
         xAxis: {
             type: 'category',
-            show: false
+            show: false,
+            data: date
         },
         yAxis: {
             show: false,
