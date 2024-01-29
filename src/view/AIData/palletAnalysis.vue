@@ -1,44 +1,47 @@
 <template>
   <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
-    <div class="header">
-      <span class="titl1_h1">货盘分析</span>
-      <div class="search">
-        <div class="search_left">
-          <div class="search_line">
-            负责人
-            <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
-              size="small">
-              <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
-                :value="item.responsible" />
-            </el-select>
+    <el-affix :offset="0">
+      <div class="header">
+        <span class="titl1_h1">货盘分析</span>
+        <div class="search">
+          <div class="search_left">
+            <div class="search_line">
+              负责人
+              <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
+                size="small">
+                <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+                  :value="item.responsible" />
+              </el-select>
+            </div>
+            <div class="search_line">
+              本月货盘
+              <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
+                placeholder="全部" size="small">
+                <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
+                  :value="item.current_inventory" />
+              </el-select>
+            </div>
+            <div class="search_line">
+              货盘变化
+              <el-select v-model="searchData.inventory_change" clearable multiple @change="getData2" class="select_width"
+                placeholder="全部" size="small">
+                <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
+                </el-option>
+              </el-select>
+            </div>
           </div>
-          <div class="search_line">
-            本月货盘
-            <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
-              placeholder="全部" size="small">
-              <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
-                :value="item.current_inventory" />
-            </el-select>
-          </div>
-          <div class="search_line">
-            货盘变化
-            <el-select v-model="searchData.inventory_change" clearable multiple @change="getData2" class="select_width"
-              placeholder="全部" size="small">
-              <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
-              </el-option>
-            </el-select>
-          </div>
-        </div>
-        <div class="search_right">
-          <div class="search_line">
-            请选择起止时间
-            <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
-              end-placeholder="结束时间" />
+          <div class="search_right">
+            <div class="search_line">
+              请选择起止时间
+              <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                end-placeholder="结束时间" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </el-affix>
+
     <div class="title">重点指标</div>
     <div class="roduct_num">
       <div class="roduct_num_box">

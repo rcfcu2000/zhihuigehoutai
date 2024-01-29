@@ -1,8 +1,8 @@
 <template>
     <div class="main">
-        <div class="header">
-            <span class="titl1_h1">推广分析</span>
-            <el-affix :offset="40" @scroll="affixChange">
+        <el-affix :offset="0" @scroll="affixChange">
+            <div class="header">
+                <span class="titl1_h1">推广分析</span>
                 <div class="search">
                     <div class="search_left">
                         <div class="search_line">
@@ -39,9 +39,9 @@
                         </div>
                     </div>
                 </div>
-            </el-affix>
+            </div>
+        </el-affix>
 
-        </div>
         <div class="title">
             重点指标
         </div>
@@ -731,6 +731,7 @@ $echarts_bg_img2: url('./images/_2.png');
         .search {
             width: 100dvw;
             padding: 0px 10px 0;
+            padding-top: 20px;
             box-sizing: border-box;
             display: flex;
             justify-content: space-between;
@@ -958,7 +959,7 @@ $echarts_bg_img2: url('./images/_2.png');
     box-shadow: none;
     border-radius: 0;
     border: 1px solid rgba(1, 229, 255, 1);
-    width: 150px;
+    width: 200px;
 
     .el-range-input {
         color: #fff;
