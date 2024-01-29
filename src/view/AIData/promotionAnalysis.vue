@@ -339,8 +339,8 @@ import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
 const count = ref(0)
-const pageNum_pro = ref(1)
-const pageNum_plan = ref(1)
+const pageNum_pro = ref(0)
+const pageNum_plan = ref(0)
 const pageSize = ref(30)
 const cities = [
     {
@@ -411,7 +411,7 @@ const current_inventory = reactive([])
 // 接口返回的全部数据
 const allData = reactive([{
     componentTitle: '商品明细',
-    data: [],
+    data: [] as Array<any>,
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
         { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
@@ -440,7 +440,7 @@ const allData = reactive([{
     ]
 }, {
     componentTitle: '计划明细',
-    data: [],
+    data: [] as Array<any>,
     column: [
         // { title: '计划类型', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '',},
         { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
@@ -519,8 +519,8 @@ const getEchartsData = async () => {
 
 const getData2 = async () => {
 
-    pageNum_pro.value = 1
-    pageNum_plan.value = 1
+    pageNum_pro.value = 0
+    pageNum_plan.value = 0
     await getPromotionGetAll()
     await getEchartsData()
     await selectChange()
@@ -650,6 +650,7 @@ const getAll = async (arr: any) => {
 const product_ids = [] as Array<any>;
 // 产品明细
 const getDetailPro = async (arr: any) => {
+    pageNum_pro.value++
     arr.pageNum = pageNum_pro
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
@@ -659,7 +660,6 @@ const getDetailPro = async (arr: any) => {
         proRes.data.records.map((item: any) => {
             product_ids.push(item.product_id)
         })
-        pageNum_pro.value++
         productThend(product_ids, proRes.data.records)
     }
 }
@@ -690,13 +690,14 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
             items.cost_trend = thendObj.cost_trend
             items.times = thendObj.times
         })
-        allData[0].data = allData[0].data.concat(records)
+        allData[0].data = records
     }
 }
 
 const plan_ids = [] as Array<any>
 // 计划明细
 const getDetailPlan = async (arr: any) => {
+    pageNum_plan.value++
     arr.pageNum = pageNum_plan
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
@@ -707,7 +708,6 @@ const getDetailPlan = async (arr: any) => {
             plan_ids.push(item.plan_id)
         })
     }
-    pageNum_plan.value++
     planThend(plan_ids, planRes.data.records)
 }
 // 计划趋势
@@ -737,7 +737,7 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
             items.spend_trend = thendObj.spend_trend
             items.times = thendObj.times
         })
-        allData[1].data = allData[1].data.concat(records)
+        allData[1].data = records
     }
 }
 
@@ -753,7 +753,7 @@ const loadMore = (at: string) => {
 // 商品表格筛选
 const changePallet = (value: Array<any>) => {
     searchData.current_inventory = value
-    pageNum_pro.value = 1
+    pageNum_pro.value = 0
     allData[0].data = []
     getDetailPro(searchData)
 }
@@ -764,8 +764,8 @@ const changePlan_Pallet = (value: Array<any>) => {
 
 // 筛选条件改变时
 const selectChange = () => {
-    pageNum_pro.value = 1
-    pageNum_plan.value = 1
+    pageNum_pro.value = 0
+    pageNum_plan.value = 0
     getDetailPlan(searchData)
     getDetailPro(searchData)
 }

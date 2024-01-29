@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-29 15:08:27
+ * @LastEditTime: 2024-01-29 15:30:47
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -141,7 +141,7 @@ watch(propData.Commodity_detail, (newD, oldD) => {
     loadType.value = false
     refreshTable()
     nextTick(() => {
-        tableData.forEach((item: any) => {
+        newD.data.forEach((item: any) => {
             const domId_1 = item.plan_id + '_' + 'gmv_trend'
             const domId_2 = item.plan_id + '_' + 'spend_trend'
             const domId_3 = item.plan_id + '_' + 'roi_trend'
@@ -172,6 +172,7 @@ watch(propData.Commodity_detail, (newD, oldD) => {
             EleResize.on(chartDom2, listener);
             EleResize.on(chartDom3, listener);
         })
+        refreshTable()
     })
 
     setTimeout(() => {
