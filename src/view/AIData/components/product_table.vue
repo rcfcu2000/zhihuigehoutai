@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-27 13:33:43
+ * @LastEditTime: 2024-01-29 15:31:09
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -25,20 +25,12 @@
                 :fixed="head.fixed" :align="head.align" :width="head.width">
                 <template #default="scope">
                     <!-- 推广分析页 趋势折线 -->
-                    <div v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend'">
+                    <div v-if="scope.column.property == 'gmv_trend' || scope.column.property == 'cost_trend' || scope.column.property == 'roi_trend'"
+                        style="position: relative;">
                         <!-- <div :id="scope.row.product_id" style="width: 10dvw;height: 30px;"> -->
-                        <div :ref="generateRandomString()" style="width: 10dvw;height: 30px;">
+                        <div :id="scope.row.product_id + '_' + scope.column.property" style="width: 8dvw;height: 30px;">
+
                         </div>
-                        <!-- <script setup>
-                                import { watchEffect } from 'vue';
-                                      watchEffect(() => {
-                                        const chart = echarts.init(chartContainer);
-                                        // 根据row数据生成相关配置
-                                        const options = table_lineOptions(lineData());
-                                        // 将配置选项设置到图表上
-                                        chart.setOption(options);
-                                      });
-                            </script> -->
                     </div>
 
                     <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
@@ -80,28 +72,7 @@ let tableHead = ref([
     { key: 'name', dataKey: 'name', title: '名称', align: 'center', width: 150 },
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
-let tableData = ref([
-    {
-        date: '2016-05-03',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-02',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-    {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-    },
-])
+let tableData = [] as Array<any>
 
 // mock趋势折线数据
 const lineData = () => {
@@ -116,7 +87,7 @@ const lineData = () => {
 }
 
 const propData = defineProps(['Commodity_detail', 'comKey', 'current_inventory'])
-const emit = defineEmits(['loadMore','changePallet'])
+const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
     data: []
@@ -129,9 +100,9 @@ const filterTag = (value: string, row: User, column: object) => {
 
 const filterChange = (res) => {
     const checkValue = res.pallet
-    emit('changePallet',checkValue)
+    emit('changePallet', checkValue)
 }
-let randomStrings = []
+let randomStrings = [] as Array<any>
 const tableListRef = ref();
 
 onMounted(() => {
@@ -148,25 +119,51 @@ const refreshTable = () => {
     //强制刷新组件
     table.doLayout()
 }
-watch(propData.Commodity_detail, (newD, oldD) => {
+const showCharts = (domId: string) => {
 
+    refreshTable()
+}
+watch(propData.Commodity_detail, (newD, oldD) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
-    tableData = newD.data
-
-    // let chartDom = document.getElementById('echarts');
-    // let myChart = echarts.init(chartDom);
-    // let option = table_lineOptions(lineData());
-    // let listener = function () {
-    //     if (myChart) {
-    //         myChart.resize();
-    //     }
-    // };
-    // option && myChart.setOption(option);
-    // EleResize.on(chartDom, listener);
+    tableData = tableData.concat(newD.data)
     loadType.value = false
-    setTimeout(() => {
+    refreshTable()
+    nextTick(() => {
+        newD.data.forEach((item: any) => {
+            const domId_1 = item.product_id + '_' + 'gmv_trend'
+            const domId_2 = item.product_id + '_' + 'cost_trend'
+            const domId_3 = item.product_id + '_' + 'roi_trend'
+            let chartDom1 = document.getElementById(domId_1);
+            let chartDom2 = document.getElementById(domId_2);
+            let chartDom3 = document.getElementById(domId_3);
+            let myChart1 = echarts.init(chartDom1);
+            let myChart2 = echarts.init(chartDom2);
+            let myChart3 = echarts.init(chartDom3);
+            let option1 = table_lineOptions(item.gmv_trend, item.times);
+            let option2 = table_lineOptions(item.cost_trend, item.times);
+            let option3 = table_lineOptions(item.roi_trend, item.times);
+            let listener = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+                if (myChart2) {
+                    myChart2.resize();
+                }
+                if (myChart3) {
+                    myChart3.resize();
+                }
+            };
+            option1 && myChart1.setOption(option1);
+            option2 && myChart2.setOption(option2);
+            option3 && myChart3.setOption(option3);
+            EleResize.on(chartDom1, listener);
+            EleResize.on(chartDom2, listener);
+            EleResize.on(chartDom3, listener);
+        })
         refreshTable()
+    })
+    setTimeout(() => {
     }, 500)
 })
 
@@ -207,6 +204,13 @@ const generateRandomString = () => {
 </script>
 
 <style lang="scss" scoped>
+::v-deep(.echarts-tooltip) {
+    padding: 0 !important;
+    // position: fixed !important;
+    top: 0 !important;
+    left: -10px !important;
+}
+
 .tableHead {
     background-image: $table_bg_Title;
     background-size: 100% 100%;

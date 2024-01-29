@@ -326,6 +326,8 @@ import {
     getResponsibleList,
     getSubGmvList,
     getSearchdata,
+    getProductThendListdata,
+    getPlanThendListdata,
 } from '@/api/AIdata'
 import goHome from "./components/goHome.vue";
 import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
@@ -337,8 +339,8 @@ import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
 const count = ref(0)
-const pageNum_pro = ref(1)
-const pageNum_plan = ref(1)
+const pageNum_pro = ref(0)
+const pageNum_plan = ref(0)
 const pageSize = ref(30)
 const cities = [
     {
@@ -366,6 +368,7 @@ const searchData = reactive({
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
 
+    ids: [] as Array<any>,
 
     // 明细表格
     end_date: '',
@@ -408,19 +411,19 @@ const current_inventory = reactive([])
 // 接口返回的全部数据
 const allData = reactive([{
     componentTitle: '商品明细',
-    data: [],
+    data: [] as Array<any>,
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
         { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
         { title: '推广GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', unit: '' },
         { title: 'GMV全店占比(%)', width: 140, align: 'center', dataKey: 'gmv_percentage', key: 'gmv_percentage', unit: '%' },
-        { title: '推广GMV趋势', width: 120, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
+        { title: '推广GMV趋势', width: 140, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', unit: '' },
         { title: '花费', width: 100, align: 'center', dataKey: 'cost', key: 'cost', unit: '' },
         { title: '花费全店占比(%)', width: 130, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', unit: '%' },
-        { title: '花费趋势', width: 100, align: 'center', dataKey: 'cost_trend', key: 'cost_trend', unit: '' },
+        { title: '花费趋势', width: 130, align: 'center', dataKey: 'cost_trend', key: 'cost_trend', unit: '' },
         { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
-        // { title: '推广ROI', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', },
-        // { title: '推广ROI趋势', width: 100, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', },
+        { title: '推广ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', },
+        { title: '推广ROI趋势', width: 130, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', },
         { title: '点击率(%)', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', unit: '%' },
         { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', unit: '' },
         { title: '转化率(%)', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%' },
@@ -437,7 +440,7 @@ const allData = reactive([{
     ]
 }, {
     componentTitle: '计划明细',
-    data: [],
+    data: [] as Array<any>,
     column: [
         // { title: '计划类型', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '',},
         { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
@@ -446,7 +449,12 @@ const allData = reactive([{
         // { title: '场景名称', width: 100, align: 'center', dataKey: 'promotion_type', key: 'promotion_type', unit: '' },
 
         { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
-        // { title: 'GMV趋势', width: 100, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
+        { title: 'GMV趋势', width: 130, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
+        { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
+        { title: 'ROI趋势', width: 130, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', unit: '' },
+        { title: '花费', width: 100, align: 'center', dataKey: 'spend', key: 'spend', unit: '' },
+        { title: '花费趋势', width: 130, align: 'center', dataKey: 'spend_trend', key: 'spend_trend', unit: '' },
+        { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', unit: '' },
         { title: '点击率(%)', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', unit: '%' },
         { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', unit: '' },
         { title: '转化率(%)', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%' },
@@ -457,11 +465,6 @@ const allData = reactive([{
         { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', unit: '' },
         { title: '间接成交金额', width: 120, align: 'center', dataKey: 'indirect_transaction_amount', key: 'indirect_transaction_amount', unit: '' },
         { title: '间接成交笔数', width: 120, align: 'center', dataKey: 'indirect_transaction_count', key: 'indirect_transaction_count', unit: '' },
-        { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
-        { title: 'ROI趋势', width: 100, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', unit: '' },
-        { title: '花费', width: 100, align: 'center', dataKey: 'spend', key: 'spend', unit: '' },
-        { title: '花费趋势', width: 100, align: 'center', dataKey: 'spend_trend', key: 'spend_trend', unit: '' },
-        { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', unit: '' },
 
         // { title: '计划编号', width: 100, align: 'center', dataKey: 'plan_id', key: 'plan_id', },
         // { title: '花费全店占比', width: 100, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
@@ -516,8 +519,8 @@ const getEchartsData = async () => {
 
 const getData2 = async () => {
 
-    pageNum_pro.value = 1
-    pageNum_plan.value = 1
+    pageNum_pro.value = 0
+    pageNum_plan.value = 0
     await getPromotionGetAll()
     await getEchartsData()
     await selectChange()
@@ -645,7 +648,9 @@ const getAll = async (arr: any) => {
 }
 
 const product_ids = [] as Array<any>;
+// 产品明细
 const getDetailPro = async (arr: any) => {
+    pageNum_pro.value++
     arr.pageNum = pageNum_pro
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
@@ -655,20 +660,85 @@ const getDetailPro = async (arr: any) => {
         proRes.data.records.map((item: any) => {
             product_ids.push(item.product_id)
         })
-        allData[0].data = allData[0].data.concat(proRes.data.records)
+        productThend(product_ids, proRes.data.records)
     }
-    pageNum_pro.value++
 }
+// 商品趋势
+const productThend = async (arr: Array<any>, records: Array<any>) => {
+    searchData.ids = arr
+    const thendList = await getProductThendListdata(searchData)
+    if (thendList.code === 0 && thendList.data.records) {
+        records.map((items: any) => {
+            let thendObj = {
+                gmv_trend: [] as Array<any>,
+                roi_trend: [] as Array<any>,
+                cost_trend: [] as Array<any>,
+                times: [] as Array<any>,
+            }
+            thendList.data.records.map((item: any) => {
+                if (item.product_id === items.product_id) {
+                    item.records.map((it: any) => {
+                        thendObj.gmv_trend.push(it.gmv_trend)
+                        thendObj.roi_trend.push(it.roi_trend)
+                        thendObj.cost_trend.push(it.spend_trend)
+                        thendObj.times.push(it.date)
+                    })
+                }
+            })
+            items.gmv_trend = thendObj.gmv_trend
+            items.roi_trend = thendObj.roi_trend
+            items.cost_trend = thendObj.cost_trend
+            items.times = thendObj.times
+        })
+        allData[0].data = records
+    }
+}
+
+const plan_ids = [] as Array<any>
+// 计划明细
 const getDetailPlan = async (arr: any) => {
+    pageNum_plan.value++
     arr.pageNum = pageNum_plan
     // arr.product_manager = [arr.product_manager]
     arr.end_date = arr.date[1]
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0 && planRes.data.records) {
-        allData[1].data = allData[1].data.concat(planRes.data.records)
+        planRes.data.records.map((item: any) => {
+            plan_ids.push(item.plan_id)
+        })
     }
-    pageNum_plan.value++
+    planThend(plan_ids, planRes.data.records)
+}
+// 计划趋势
+const planThend = async (arr: Array<any>, records: Array<any>) => {
+    searchData.ids = arr
+    const thendList = await getPlanThendListdata(searchData)
+    if (thendList.code === 0 && thendList.data.records) {
+        records.map((items: any) => {
+            let thendObj = {
+                gmv_trend: [] as Array<any>,
+                roi_trend: [] as Array<any>,
+                spend_trend: [] as Array<any>,
+                times: [] as Array<any>,
+            }
+            thendList.data.records.map((item: any) => {
+                if (item.plan_id === items.plan_id) {
+                    item.records.map((it: any) => {
+                        thendObj.gmv_trend.push(it.gmv_trend)
+                        thendObj.roi_trend.push(it.roi_trend)
+                        thendObj.spend_trend.push(it.spend_trend)
+                        thendObj.times.push(it.date)
+                    })
+                }
+            })
+            items.gmv_trend = thendObj.gmv_trend
+            items.roi_trend = thendObj.roi_trend
+            items.spend_trend = thendObj.spend_trend
+            items.times = thendObj.times
+        })
+        allData[1].data = records
+    }
 }
 
 const loadMore = (at: string) => {
@@ -683,7 +753,7 @@ const loadMore = (at: string) => {
 // 商品表格筛选
 const changePallet = (value: Array<any>) => {
     searchData.current_inventory = value
-    pageNum_pro.value = 1
+    pageNum_pro.value = 0
     allData[0].data = []
     getDetailPro(searchData)
 }
@@ -694,8 +764,8 @@ const changePlan_Pallet = (value: Array<any>) => {
 
 // 筛选条件改变时
 const selectChange = () => {
-    pageNum_pro.value = 1
-    pageNum_plan.value = 1
+    pageNum_pro.value = 0
+    pageNum_plan.value = 0
     getDetailPlan(searchData)
     getDetailPro(searchData)
 }
@@ -706,6 +776,7 @@ const selectChange = () => {
 <style lang="scss" scoped>
 $echarts_bg_img1: url('./images/chrats_size.png');
 $echarts_bg_img2: url('./images/_2.png');
+
 
 .main {
     height: 100%;
