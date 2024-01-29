@@ -910,38 +910,51 @@ const newOldContrast = () => {
     myChart.resize();
   });
 };
+const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
 const unitPriceGMV = () => {
   const chartDom = document.getElementById("unitPriceGMVcharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
-  const arr = state.priceRangedata?.map((i) => {
+  const arr = state.priceRangedata?.map((i, index) => {
     return {
+      type: 'bar',
+      stack: 'Total',
+      itemStyle: {
+        color: backColor[index],
+      },
       name: i.price_range,
+      numIndex: index,
       date: i.records?.map((j) => j.date),
       data: i.records?.map((j) => parseFloat((j.gmv).toFixed(2))),
     };
   });
   const date = arr?.map(i => i.date)
   const option = barOptions(arr, date[0]);
-  myChart.hideLoading();
   option && myChart.setOption(option);
-
   window.addEventListener("resize", () => {
     myChart.resize();
   });
 };
 const unitPriceTrend = () => {
   const chartDom = document.getElementById("unitPriceTrendcharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
-  const arr = state.priceRangedata?.map((i) => {
+  const arr = state.priceRangedata?.map((i, index) => {
     return {
+      type: 'bar',
+      stack: 'Total',
+      itemStyle: {
+        color: backColor[index],
+      },
       name: i.price_range,
+      numIndex: index,
       date: i.records?.map((j) => j.date),
       data: i.records?.map((j) => parseFloat((j.visitor_count).toFixed(2))),
     };
   });
   const date = arr?.map(i => i.date)
   const option = barOptions(arr, date[0]);
-  myChart.hideLoading();
+  option && myChart.setOption(option);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -981,19 +994,19 @@ const GMVDismantling = () => {
           rich: {
             a: {
               color: "#fff",
-              lineHeight: 60,
+              lineHeight: 50,
               fontSize: 18,
               // width:140,
             },
             b: {
               color: "#03FF91",
-              lineHeight: 80,
+              lineHeight: 50,
               fontSize: 14,
               top: 20,
             },
             c: {
               color: "#FD89EE",
-              lineHeight: 80,
+              lineHeight: 50,
               fontSize: 14,
               top: 20,
             },

@@ -401,13 +401,16 @@ export const barOptionsX = (arr: any) => {
 
 // 默认堆积柱状图
 export const barOptions = (arr: any, date: any) => {
+    // console.log(arr)
+    // arr.sort((a, b) =>  a.numIndex - b.numIndex )
+    console.log(arr)
     const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
     return {
         tooltip: {
             trigger: 'axis'
         },
         legend: {
-            data: arr?.map((i: { name: any; }) => i.name),
+            // data: arr?.map((i: { name: any; }) => i.name),
             textStyle: {
                 color: '#FFF'
             }
@@ -439,6 +442,7 @@ export const barOptions = (arr: any, date: any) => {
         },
         yAxis: {
             type: 'value',
+            // inverse:true,
             splitLine: {
                 show: false,
                 lineStyle: {
@@ -453,10 +457,12 @@ export const barOptions = (arr: any, date: any) => {
                 show: false,
             },
         },
-        series: arr?.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: string; data: [number]; }, index: number) => {
             return {
                 type: 'bar',
                 name: i.name,
+                // yAxisIndex:1,
+                barGap: 0,
                 stack: 'Total',
                 data: i.data,
                 itemStyle: {
@@ -464,6 +470,10 @@ export const barOptions = (arr: any, date: any) => {
                 }
             }
         }),
+        // dataSorting: {
+        //     sortType: 'none'
+        // }
+        // series: arr,
     }
 }
 
