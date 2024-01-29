@@ -1,9 +1,8 @@
 <template>
     <div class="main">
-        <div class="header">
-            <span class="titl1_h1">推广分析</span>
-
-            <el-affix :offset="40" @scroll="affixChange">
+        <el-affix :offset="0" @scroll="affixChange">
+            <div class="header">
+                <span class="titl1_h1">推广分析</span>
                 <div class="search">
                     <div class="search_left">
                         <div class="search_line">
@@ -24,15 +23,11 @@
                         </div>
                         <div class="search_line">
                             货盘变化
-                            <div class="line">
-                                <el-checkbox-group v-model="searchData.scene_category" size="small"
-                                    @change="changeCheckGroup('dx')">
-                                    <el-checkbox border v-for="(item, index) in cities" :key="item.value"
-                                        :label="item.value">{{
-                                            item.value
-                                        }}</el-checkbox>
-                                </el-checkbox-group>
-                            </div>
+                            <el-select v-model="searchData.scene_category" clearable multiple @change="getData2"
+                                class="select_width" placeholder="请选择" size="small">
+                                <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
+                                    :value="item.value" />
+                            </el-select>
                         </div>
                     </div>
                     <div class="search_right">
@@ -44,9 +39,9 @@
                         </div>
                     </div>
                 </div>
-            </el-affix>
+            </div>
+        </el-affix>
 
-        </div>
         <div class="title">
             重点指标
         </div>
@@ -309,11 +304,11 @@
         </div>
 
         <product_table :Commodity_detail="allData[0]" :comKey="0" :current_inventory="current_inventory"
-            @load-more="loadMore" @changePallet="changePallet"></product_table>
+            @load-more="loadMore"></product_table>
 
-        <plan_table :Commodity_detail="allData[1]" :comKey="1" :current_inventory="state.planAnalysis" @load-more="loadMore"
-            @changePallet="changePlan_Pallet"></plan_table>
-
+        <plan_table :Commodity_detail="allData[1]" :comKey="1" @load-more="loadMore" :current_inventory="cities">
+        </plan_table>
+        <goHome />
         <!-- 明细表格 -->
         <!-- <TransitionGroup name="list" tag="comtable">
             <template v-for="item, index in allData" :key="index">
@@ -334,7 +329,7 @@ import {
     getProductThendListdata,
     getPlanThendListdata,
 } from '@/api/AIdata'
-
+import goHome from "./components/goHome.vue";
 import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
 import { pieOptions, barOptionsX } from "./echartsOptions";
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
@@ -521,10 +516,6 @@ const getEchartsData = async () => {
     }
 
 }
-
-const changeCheckGroup = (type: string) => {
-    getData2();
-};
 
 const getData2 = async () => {
 
@@ -811,6 +802,7 @@ $echarts_bg_img2: url('./images/_2.png');
         .search {
             width: 100dvw;
             padding: 0px 10px 0;
+            padding-top: 20px;
             box-sizing: border-box;
             display: flex;
             justify-content: space-between;
@@ -818,20 +810,17 @@ $echarts_bg_img2: url('./images/_2.png');
 
             .search_left {
                 display: flex;
-                flex: 0.35;
-                justify-content: space-between;
+                flex: 0.4;
 
-                .search_line:last-child {
-                    width: 520px;
-                    display: flex;
-                    align-items: center;
+                .search_line {
+                    flex: 0.3;
                 }
             }
 
             .search_right {
-                // display: flex;
-                // flex: 0.3;
-                // justify-content: space-between;
+                display: flex;
+                flex: 0.3;
+                justify-content: space-between;
 
             }
 
@@ -1041,7 +1030,7 @@ $echarts_bg_img2: url('./images/_2.png');
     box-shadow: none;
     border-radius: 0;
     border: 1px solid rgba(1, 229, 255, 1);
-    width: 150px;
+    width: 200px;
 
     .el-range-input {
         color: #fff;

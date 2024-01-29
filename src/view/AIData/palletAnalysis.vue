@@ -1,44 +1,47 @@
 <template>
   <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
-    <div class="header">
-      <span class="titl1_h1">货盘分析</span>
-      <div class="search">
-        <div class="search_left">
-          <div class="search_line">
-            负责人
-            <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
-              size="small">
-              <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
-                :value="item.responsible" />
-            </el-select>
+    <el-affix :offset="0">
+      <div class="header">
+        <span class="titl1_h1">货盘分析</span>
+        <div class="search">
+          <div class="search_left">
+            <div class="search_line">
+              负责人
+              <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
+                size="small">
+                <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+                  :value="item.responsible" />
+              </el-select>
+            </div>
+            <div class="search_line">
+              本月货盘
+              <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
+                placeholder="全部" size="small">
+                <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
+                  :value="item.current_inventory" />
+              </el-select>
+            </div>
+            <div class="search_line">
+              货盘变化
+              <el-select v-model="searchData.inventory_change" clearable multiple @change="getData2" class="select_width"
+                placeholder="全部" size="small">
+                <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
+                </el-option>
+              </el-select>
+            </div>
           </div>
-          <div class="search_line">
-            本月货盘
-            <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
-              placeholder="全部" size="small">
-              <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
-                :value="item.current_inventory" />
-            </el-select>
-          </div>
-          <div class="search_line">
-            货盘变化
-            <el-select v-model="searchData.inventory_change" clearable multiple @change="getData2" class="select_width"
-              placeholder="全部" size="small">
-              <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
-              </el-option>
-            </el-select>
-          </div>
-        </div>
-        <div class="search_right">
-          <div class="search_line">
-            请选择起止时间
-            <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
-              end-placeholder="结束时间" />
+          <div class="search_right">
+            <div class="search_line">
+              请选择起止时间
+              <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                end-placeholder="结束时间" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </el-affix>
+
     <div class="title">重点指标</div>
     <div class="roduct_num">
       <div class="roduct_num_box">
@@ -182,7 +185,15 @@
         </div>
       </div>
     </div>
-    <div class="table_title">商品明细</div>
+    <div class="table_title"><span>商品明细</span>
+      <span style="cursor: pointer;" @click="state.tableDialogType = true" class="dp-flex align-items">
+        <el-tooltip effect="dark" content="放大" placement="bottom">
+          <el-icon :size="30" color="#409EFF">
+            <FullScreen />
+          </el-icon>
+        </el-tooltip>
+      </span>
+    </div>
     <div class="aiData_table table">
       <el-table :data="state.tableData" max-height="450">
         <el-table-column label="商品ID" width="150">
@@ -190,7 +201,6 @@
             <span>{{ scope.row.product_id }}</span>
           </template>
         </el-table-column>
-
         <el-table-column label="商品简称" show-overflow-tooltip width="200">
           <template #default="scope">
             <span>{{ scope.row.product_abbreviation }}</span>
@@ -358,10 +368,151 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="state.tableDialogType" width="100%" title="商品明细" align-center>
+      <div class="dialog-content">
+        <div class="aiData_table" style="height:600px; overflow: hidden;">
+          <el-table :data="state.tableData" max-height="600">
+            <el-table-column label="商品ID" width="150">
+              <template #default="scope">
+                <span>{{ scope.row.product_id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="商品简称" show-overflow-tooltip width="200">
+              <template #default="scope">
+                <span>{{ scope.row.product_abbreviation }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="GMV" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')" width="150"
+              align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.gmv).toFixed(0)) }} </span>
+              </template>
+            </el-table-column>
+            <el-table-column label="净利润率" sortable :sort-method="(a, b) => sortList(a, b, 'net_profit_margin')"
+              width="150" align="center">
+              <template #default="scope">
+                <div class="alcenter">
+                  <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
+                    <Top />
+                  </el-icon>
+                  <el-icon size="15" color="#FECD04"
+                    v-if="scope.row.net_profit_margin < 0.2 && scope.row.net_profit_margin > -0.5">
+                    <Right />
+                  </el-icon>
+                  <el-icon size="15" color="red" v-if="scope.row.net_profit_margin < -0.5">
+                    <Bottom />
+                  </el-icon>
+                  <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="产品分类" width="150" align="center">
+              <template #default="scope">
+                <span>{{ scope.row.product_category }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="搜索访客占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_visitor_ratio')"
+              width="150" align="center">
+              <template #default="scope">
+                <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
+                  parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
+              </template>
+            </el-table-column>
+            <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')"
+              width="150" align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="老客占比" sortable :sort-method="(a, b) => sortList(a, b, 'returning_customer_ratio')"
+              width="130" align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="本月货盘" align="center">
+              <template #default="scope">
+                <span>{{ scope.row.current_inventory }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="上月货盘" align="center">
+              <template #default="scope">
+                <span>{{ scope.row.last_period_stockpile }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="盘货变化" align="center">
+              <template #default="scope">
+                <div v-if="scope.row.stockpile_change === 1" style="width: 100%; background-color: #01E5FF;">上升</div>
+                <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降</div>
+                <div v-else>持平</div>
+              </template>
+            </el-table-column>
+            <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')" width="100"
+              align="center">
+              <template #default="scope">
+                <span>{{ parseFloat((scope.row.unit_price).toFixed(2)) }} </span>
+              </template>
+            </el-table-column>
+            <el-table-column label="预估毛利率" sortable
+              :sort-method="(a, b) => sortList(a, b, 'estimated_gross_profit_margin')" width="140" align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2)) }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="支付转化率" sortable :sort-method="(a, b) => sortList(a, b, 'payment_conversion_rate')"
+              width="140" align="center">
+              <template #default="scope">
+                <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }} %</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="收藏率" sortable :sort-method="(a, b) => sortList(a, b, 'collection_rate')" width="100"
+              align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="加购率" sortable :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')" width="100"
+              align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="连带率" sortable :sort-method="(a, b) => sortList(a, b, 'attachment_rate')" width="100"
+              align="center">
+              <template #default="scope">
+                <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="三级类目" width="200">
+              <template #default="scope">
+                <span>{{ scope.row.tertiary_category }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="商品名称" show-overflow-tooltip width="200">
+              <template #default="scope">
+                <span>{{ scope.row.product_name }}</span>
+              </template>
+            </el-table-column>
+            <template #empty>
+              <div class="flex items-center justify-center h-100%">
+                <el-empty />
+              </div>
+            </template>
+          </el-table>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="state.tableDialogType = false" class="cancellation btn">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <goHome />
   </div>
 </template>
 <script setup lang="ts" name="palletLinkAnalysis">
 import { tableColumns } from "./table";
+import goHome from "./components/goHome.vue";
 import {
   getAlldata,
   getPriceRangedata,
@@ -380,7 +531,6 @@ import { lineOptions, barOptions, lineOptions1 } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
-import { pa } from "element-plus/es/locale";
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const formRef = ref<FormInstance>();
@@ -405,6 +555,7 @@ const cities = [
 const state = reactive({
   tree: [] as any,
   tableData: [],
+  tableDialogType: false,
   titleData: {
     attachment_rate: 0,
     add_to_cart_rate: 0,
@@ -1259,13 +1410,16 @@ $echarts_bg_img: url("./images/_2.png");
     height: 43px;
     line-height: 43px;
     font-size: 24px;
-    padding-left: 60px;
+    padding: 0 60px;
     font-weight: 700;
     background-image: url("./images/table_title.png");
     // background: linear-gradient(90deg, #008CC2 0%, #008CC2 100%);
     background-size: 100% 100%;
     margin-left: 20px;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .table {
@@ -1286,7 +1440,7 @@ $echarts_bg_img: url("./images/_2.png");
     .alcenter {
       display: flex;
       align-items: center;
-      justify-content:center;
+      justify-content: center;
     }
 
     // border: 1px solid #fff;
