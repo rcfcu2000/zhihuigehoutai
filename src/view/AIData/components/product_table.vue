@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-29 15:31:09
+ * @LastEditTime: 2024-01-30 15:00:04
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,9 +13,10 @@
     <!-- <div id="echarts" style="width: 10dvw;height: 30px;">
     </div> -->
     <div class="aiData_table table" :key="count">
-        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+        <!--  v-loading="loadType" -->
+        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="50" @filter-change="filterChange">
+            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">
 
@@ -72,8 +73,7 @@ let tableHead = ref([
     { key: 'name', dataKey: 'name', title: '名称', align: 'center', width: 150 },
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
-let tableData = [] as Array<any>
-
+let tableData = reactive([] as Array<any>)
 // mock趋势折线数据
 const lineData = () => {
     let arr = []
@@ -85,8 +85,7 @@ const lineData = () => {
     }
     return arr
 }
-
-const propData = defineProps(['Commodity_detail', 'comKey', 'current_inventory'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
@@ -94,6 +93,9 @@ const current_inventory = reactive({
 })
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
+const countModel = defineModel({
+    type: Number, default: 0
+})
 const filterTag = (value: string, row: User, column: object) => {
     return row.pallet === value
 }
@@ -108,9 +110,6 @@ const tableListRef = ref();
 onMounted(() => {
 
 })
-watch(propData.current_inventory, (newD, oldD) => {
-    current_inventory.data = newD
-})
 /**
      * 刷新table,防止滚动条跑到最上面
     */
@@ -119,14 +118,16 @@ const refreshTable = () => {
     //强制刷新组件
     table.doLayout()
 }
-const showCharts = (domId: string) => {
-
-    refreshTable()
-}
-watch(propData.Commodity_detail, (newD, oldD) => {
+watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
+    console.log(newD, newE, "newE")
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
+    if (newE[0]) {
+
+        tableData = []
+    }
     tableData = tableData.concat(newD.data)
+    countModel.value = tableData.length
     loadType.value = false
     refreshTable()
     nextTick(() => {
@@ -134,12 +135,21 @@ watch(propData.Commodity_detail, (newD, oldD) => {
             const domId_1 = item.product_id + '_' + 'gmv_trend'
             const domId_2 = item.product_id + '_' + 'cost_trend'
             const domId_3 = item.product_id + '_' + 'roi_trend'
-            let chartDom1 = document.getElementById(domId_1);
-            let chartDom2 = document.getElementById(domId_2);
-            let chartDom3 = document.getElementById(domId_3);
+            let chartDom1: any = document.getElementById(domId_1);
+            let chartDom2: any = document.getElementById(domId_2);
+            let chartDom3: any = document.getElementById(domId_3);
             let myChart1 = echarts.init(chartDom1);
+            if (newE[0] && chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
+                myChart1.clear()
+            }
             let myChart2 = echarts.init(chartDom2);
+            if (newE[0] && chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
+                myChart2.clear()
+            }
             let myChart3 = echarts.init(chartDom3);
+            if (newE[0] && chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
+                myChart3.clear()
+            }
             let option1 = table_lineOptions(item.gmv_trend, item.times);
             let option2 = table_lineOptions(item.cost_trend, item.times);
             let option3 = table_lineOptions(item.roi_trend, item.times);
@@ -163,9 +173,7 @@ watch(propData.Commodity_detail, (newD, oldD) => {
         })
         refreshTable()
     })
-    setTimeout(() => {
-    }, 500)
-})
+}, { deep: true })
 
 const loadMore = (res) => {
     if (componentTitle.value == "商品明细") {

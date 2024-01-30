@@ -80,32 +80,36 @@
   background-color: rgb(26, 46, 161) !important;
 }
 
-.el-popper.is-light {
-  background-color: rgb(0, 98, 147) !important;
-  border: 1px solid rgb(0, 98, 147) !important;
-}
 
-.el-select-dropdown__item.hover {
-  background-color: rgb(0, 0, 0, 0.3) !important;
-}
-.el-select-dropdown__item:hover{
-  background-color: rgb(0, 0, 0, 0.3) !important;
-}
+.search_line{
+  .el-popper.is-light {
+    background-color: rgb(0, 98, 147) !important;
+    border: 1px solid rgb(0, 98, 147) !important;
+  }
 
-.el-select-dropdown__item.selected {
-  background-color: rgb(0, 0, 0, 0.1) !important;
-}
+  .el-select-dropdown__item.hover {
+    background-color: rgb(0, 0, 0, 0.3) !important;
+  }
+  .el-select-dropdown__item:hover{
+    background-color: rgb(0, 0, 0, 0.3) !important;
+  }
+  
+  .el-select-dropdown__item.selected {
+    background-color: rgb(0, 0, 0, 0.1) !important;
+  }
+  
+  .el-select-dropdown__item {
+    color: #fff !important;
+  }
+  
+  .el-select__tags .el-tag--info {
+    background-color: rgba(0, 98, 147, 0.5) !important;
+  }
+  
+  .el-select__tags .el-tag--info span {
+    color: #fff !important;
+  }
 
-.el-select-dropdown__item {
-  color: #fff !important;
-}
-
-.el-select__tags .el-tag--info {
-  background-color: rgba(0, 98, 147, 0.5) !important;
-}
-
-.el-select__tags .el-tag--info span {
-  color: #fff !important;
 }
 
 .scrollbox {

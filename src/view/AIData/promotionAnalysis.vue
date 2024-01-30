@@ -270,7 +270,7 @@
         </div>
 
         <!-- 明细表格查询条件 -->
-        <div class="detailSearch" :key="count">
+        <div class="detailSearch">
             <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
                 <el-form-item label="出价方式：">
                     <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
@@ -303,10 +303,11 @@
             </el-form>
         </div>
 
-        <product_table :Commodity_detail="allData[0]" :comKey="0" :current_inventory="current_inventory"
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="0" :clearData="clearData"  :current_inventory="current_inventory"
             @load-more="loadMore"></product_table>
 
-        <plan_table :Commodity_detail="allData[1]" :comKey="1" @load-more="loadMore" :current_inventory="cities">
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="1" :clearData="clearData"  @load-more="loadMore"
+            :current_inventory="cities">
         </plan_table>
         <goHome />
         <!-- 明细表格 -->
@@ -338,7 +339,6 @@ import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
-const count = ref(0)
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
 const pageSize = ref(30)
@@ -523,7 +523,8 @@ const getData2 = async () => {
     pageNum_plan.value = 0
     await getPromotionGetAll()
     await getEchartsData()
-    await selectChange()
+    await getDetailPro(searchData)
+    await getDetailPlan(searchData)
 };
 
 const getData = async () => {
@@ -647,7 +648,9 @@ const getAll = async (arr: any) => {
     count.value++
 }
 
+let clearData = reactive([false])
 const product_ids = [] as Array<any>;
+const count = ref()
 // 产品明细
 const getDetailPro = async (arr: any) => {
     pageNum_pro.value++
@@ -692,6 +695,7 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
         })
         allData[0].data = records
     }
+    product_ids.splice(0,product_ids.length)
 }
 
 const plan_ids = [] as Array<any>
@@ -699,7 +703,7 @@ const plan_ids = [] as Array<any>
 const getDetailPlan = async (arr: any) => {
     pageNum_plan.value++
     arr.pageNum = pageNum_plan
-    // arr.product_manager = [arr.product_manager]
+    // arr.product_manager = [arr.product_manager
     arr.end_date = arr.date[1]
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
@@ -739,9 +743,11 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
         })
         allData[1].data = records
     }
+    plan_ids.splice(0,plan_ids.length)
 }
 
 const loadMore = (at: string) => {
+    clearData[0] = false
     if (at == 'product') {
         getDetailPro(searchData)
     }
@@ -764,6 +770,7 @@ const changePlan_Pallet = (value: Array<any>) => {
 
 // 筛选条件改变时
 const selectChange = () => {
+    clearData[0] = true
     pageNum_pro.value = 0
     pageNum_plan.value = 0
     getDetailPlan(searchData)

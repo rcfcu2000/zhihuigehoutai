@@ -479,7 +479,10 @@ export const table_lineOptions = (arr: Array<any>, date: Array<any>) => {
         tooltip: {
             trigger: 'axis',
             position: [10,10],
-            formatter: '{b}:{c}',
+            formatter: (params:Object) => {
+                return params[0].data.toFixed(2)
+                console.log(params,"tooltip")
+            },
             className: 'echarts-tooltip echarts-tooltip-dark'
         },
         grid: {
