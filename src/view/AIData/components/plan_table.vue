@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-30 16:45:05
+ * @LastEditTime: 2024-01-30 17:28:07
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -28,7 +28,7 @@
                     <!-- 推广分析页 趋势折线 -->
                     <div
                         v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend' || scope.column.property == 'gmv_trend'">
-                        <div :id="scope.row.plan_id + '_' + scope.column.property" style="width: 10dvw;height: 30px;">
+                        <div :id="scope.row.plan_id + '_' + scope.column.property" style="width: 8dvw;height: 30px;">
                         </div>
                     </div>
 
