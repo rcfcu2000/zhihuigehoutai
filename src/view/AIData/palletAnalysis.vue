@@ -730,10 +730,12 @@ const getData = async () => {
           name: "GMV",
           value: parseFloat(allValue.toFixed(2)),
           lv: -1,
+          key: 1,
           bfb: '100%',
           children: resp3.data.records?.map((i) => {
             return {
               name: i.current_inventory,
+              key: i.key,
               value: parseFloat(i.payment_amount.toFixed(2)),
               bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
@@ -1065,13 +1067,14 @@ const GMVDismantling = () => {
             return {
               name: i.primary_category,
               value: i.payment_amount,
+              key: i.key,
               bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
               current: params.data.name,
               lv: 1,
             };
           });
-          addDataToTree(state.tree[0], params.data.name, childs);
+          addDataToTree(state.tree[0], params.data.key, childs);
           myChart.setOption(option);
         }
       });
@@ -1087,16 +1090,17 @@ const GMVDismantling = () => {
                 name: i.secondary_category,
                 current: params.data.current,
                 value: i.payment_amount,
+                key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
                 primary: params.data.name,
                 lv: 2,
               };
             });
-            addDataToTree(state.tree[0], params.data.name, childs);
+            addDataToTree(state.tree[0], params.data.key, childs);
             myChart.setOption(option);
           } else {
-            addDataToTree(state.tree[0], params.data.name, []);
+            addDataToTree(state.tree[0], params.data.key, []);
           }
         }
       });
@@ -1112,6 +1116,8 @@ const GMVDismantling = () => {
               return {
                 name: i.tertiary_category,
                 value: i.payment_amount,
+                current: params.data.current,
+                key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
                 primary: params.data.primary,
@@ -1119,43 +1125,44 @@ const GMVDismantling = () => {
                 lv: 3,
               };
             });
-            addDataToTree(state.tree[0], params.data.name, childs);
+            addDataToTree(state.tree[0], params.data.key, childs);
             myChart.setOption(option);
           } else {
-            addDataToTree(state.tree[0], params.data.name, []);
+            addDataToTree(state.tree[0], params.data.key, []);
+          }
+        }
+      });
+    } else if (params.data.lv === 3) {
+      data.current_inventory = [params.data.current];
+      data.primary_category = params.data.primary;
+      data.secondary_category = params.data.secondary;
+      data.tertiary_category = params.data.name;
+      data.leve = 3
+      getSubGmvList(data).then((res) => {
+        if (res.code === 0) {
+          if (res.data.records) {
+            const childs = res.data.records?.map((i) => {
+              return {
+                name: i.tertiary_category,
+                value: i.payment_amount,
+                children: [],
+                key: i.key,
+                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                primary: params.data.primary,
+                secondary: params.data.secondary,
+                tertiary: params.data.name,
+                lv: 4,
+              };
+            });
+            addDataToTree(state.tree[0], params.data.key, childs);
+            myChart.setOption(option);
+          } else {
+            addDataToTree(state.tree[0], params.data.key, []);
           }
         }
       });
     }
     getData2Copy(data)
-    // else if (params.data.lv === 3) {
-    //   data.current_inventory = [params.data.current];
-    //   data.primary_category = params.data.primary;
-    //   data.secondary_category = params.data.secondary;
-    //   data.tertiary_category = params.data.name;
-    //   data.leve = 2
-    //   getSubGmvList(data).then((res) => {
-    //     if (res.code === 0) {
-    //       if (res.data.records) {
-    //         const childs = res.data.records?.map((i) => {
-    //           return {
-    //             name: i.tertiary_category,
-    //             value: i.payment_amount,
-    //             children: [],
-    //             primary: params.data.primary,
-    //             secondary: params.data.secondary,
-    //             tertiary: params.data.name,
-    //             lv: 4,
-    //           };
-    //         });
-    //         addDataToTree(state.tree[0], params.data.name, childs);
-    //         myChart.setOption(option);
-    //       } else {
-    //         addDataToTree(state.tree[0], params.data.name, []);
-    //       }
-    //     }
-    //   });
-    // }
   });
   window.addEventListener("resize", () => {
     myChart.resize();
@@ -1165,8 +1172,8 @@ const GMVDismantling = () => {
 const addDataToTree = (root: any, targetId: any, newData: any) => {
   if (!root || !targetId) return; // 确保根节点不为空且目标ID有效
 
-  if (root.name === targetId) {
-    root.lv = 999;
+  if (root.key === targetId) {
+    // root.lv = 999;
     root.children = newData; // 若当前节点与目标ID匹配，则直接在该节点上添加新数据
     return;
   } else {
