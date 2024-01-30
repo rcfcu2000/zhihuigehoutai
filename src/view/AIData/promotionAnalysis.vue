@@ -49,25 +49,25 @@
             <div class="roduct_left">
                 <div class="roduct_num_box">
                     <ul class="roduct_num_box_ctn">
-                        <li>
+                        <li :title="parseFloat((state.titleData.promotion_cost).toFixed(2))">
                             <span class="ctn_num">
-                                {{ parseFloat((state.titleData.promotion_cost).toFixed(2)) }}
+                                {{ lueNum(state.titleData.promotion_cost) }}
                             </span>
                             <span class="ctn_name">
                                 推广花费
                             </span>
                         </li>
-                        <li>
+                        <li :title="parseFloat((state.titleData.promotion_gmv).toFixed(2))">
                             <span class="ctn_num">
-                                {{ parseFloat((state.titleData.promotion_gmv).toFixed(2)) }}
+                                {{ lueNum(state.titleData.promotion_gmv) }}
                             </span>
                             <span class="ctn_name">
                                 推广GMV
                             </span>
                         </li>
-                        <li>
+                        <li :title="parseFloat((state.titleData.overall_gmv).toFixed(2))">
                             <span class="ctn_num">
-                                {{ parseFloat((state.titleData.overall_gmv).toFixed(2)) }}
+                                {{ lueNum(state.titleData.overall_gmv) }}
                             </span>
                             <span class="ctn_name">
                                 店铺GMV
@@ -81,7 +81,7 @@
                                 花费占比
                             </span>
                         </li>
-                        <li>
+                        <li :title="parseFloat((state.titleData.promotion_gmv_percentage * 100).toFixed(2))">
                             <span class="ctn_num">
                                 {{ parseFloat((state.titleData.promotion_gmv_percentage * 100).toFixed(2)) }}%
                             </span>
@@ -140,28 +140,28 @@
                 <div class="roduct_right_list" v-for="(ikun, index) in state.extendList" :key="index">
                     <div class="roduct_right_title"> {{ ikun.scene_category }}</div>
                     <ul class="roduct_right_ctn">
-                        <li class="roduct_right_ctn_data">
-                            <span class="ctn_num"> {{ parseFloat((ikun.spend).toFixed(2)) }} </span>
+                        <li class="roduct_right_ctn_data" :title="parseFloat(ikun.spend.toFixed(2))">
+                            <span class="ctn_num"> {{ lueNum(ikun.spend) }} </span>
                             <span class="ctn_tit">花费</span>
                         </li>
-                        <li class="roduct_right_ctn_data">
-                            <span class="ctn_num">{{ parseFloat((ikun.transaction_cost).toFixed(2)) }}</span>
+                        <li class="roduct_right_ctn_data" :title="parseFloat(ikun.transaction_cost.toFixed(2))">
+                            <span class="ctn_num">{{ lueNum(ikun.transaction_cost) }}</span>
                             <span class="ctn_tit">成交成本</span>
                         </li>
-                        <li class="roduct_right_ctn_data">
-                            <span class="ctn_num">{{ parseFloat((ikun.gmv).toFixed(2)) }}</span>
+                        <li class="roduct_right_ctn_data" :title="parseFloat(ikun.gmv.toFixed(2))">
+                            <span class="ctn_num">{{ lueNum(ikun.gmv) }}</span>
                             <span class="ctn_tit">GMV</span>
                         </li>
                         <li class="roduct_right_ctn_data">
                             <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
                             <span class="ctn_tit">渠道占比</span>
                         </li>
-                        <li class="roduct_right_ctn_data">
-                            <span class="ctn_num">{{ parseFloat((ikun.promotion_roi).toFixed(2)) }}</span>
+                        <li class="roduct_right_ctn_data" :title="parseFloat(ikun.promotion_roi.toFixed(2))">
+                            <span class="ctn_num">{{ lueNum(ikun.promotion_roi) }}</span>
                             <span class="ctn_tit">推广ROI</span>
                         </li>
-                        <li class="roduct_right_ctn_data">
-                            <span class="ctn_num">{{ parseFloat((ikun.clicks).toFixed(2)) }}</span>
+                        <li class="roduct_right_ctn_data" :title="parseFloat(ikun.clicks.toFixed(2))">
+                            <span class="ctn_num">{{ lueNum(ikun.clicks) }}</span>
                             <span class="ctn_tit">点击量</span>
                         </li>
                         <li class="roduct_right_ctn_data">
@@ -195,12 +195,12 @@
                         </el-table-column>
                         <el-table-column label="花费">
                             <template #default="scope">
-                                <span>{{ scope.row.spend }}</span>
+                                <span>{{ lueNum(scope.row.spend) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="GMV">
                             <template #default="scope">
-                                <span>{{ scope.row.gmv }}</span>
+                                <span>{{ lueNum(scope.row.gmv) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="GMV占比">
@@ -210,7 +210,7 @@
                         </el-table-column>
                         <el-table-column label="点击量">
                             <template #default="scope">
-                                <span> {{ parseFloat((scope.row.clicks).toFixed(2)) }}</span>
+                                <span> {{ lueNum(parseFloat((scope.row.clicks).toFixed(2))) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点击率">
@@ -220,22 +220,22 @@
                         </el-table-column>
                         <el-table-column label="加购成本">
                             <template #default="scope">
-                                <span>{{ scope.row.add_to_cart_cost }}</span>
+                                <span>{{ lueNum(scope.row.add_to_cart_cost) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="推广ROI">
                             <template #default="scope">
-                                <span>{{ scope.row.promotion_roi }}</span>
+                                <span>{{ lueNum(scope.row.promotion_roi) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="成交成本">
                             <template #default="scope">
-                                <span>{{ scope.row.transaction_cost }}</span>
+                                <span>{{ lueNum(scope.row.transaction_cost) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="推广转化率">
                             <template #default="scope">
-                                <span>{{ scope.row.conversion_rate }}</span>
+                                <span>{{ parseFloat((scope.row.conversion_rate * 100).toFixed(2)) }}</span>
                             </template>
                         </el-table-column>
                         <template #empty>
@@ -339,6 +339,7 @@ import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
+import { lueNum } from "@/utils/format.js"
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
 const pageSize = ref(20)

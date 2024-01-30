@@ -2,15 +2,13 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-30 17:28:07
+ * @LastEditTime: 2024-01-30 17:39:51
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
     <div class="tableHead">
         {{ componentTitle }}
-    </div>
-    <div id="echarts" style="width: 10dvw;height: 30px;">
     </div>
     <div class="aiData_table table" :key="count">
         <!--  v-loading="loadType" -->
@@ -46,7 +44,7 @@
                     </div>
 
                     <div v-else>
-                        {{ floatNum(scope.row[scope.column.property]) }}
+                        {{ lueNum(scope.row[scope.column.property]) }}
                     </div>
 
                 </template>
@@ -59,7 +57,7 @@
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { persentNum, floatNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum } from "@/utils/format.js"
 
 import * as echarts from 'echarts';
 

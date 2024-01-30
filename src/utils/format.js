@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-26 09:54:46
+ * @LastEditTime: 2024-01-30 17:39:16
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -46,4 +46,20 @@ export const persentNum = (num) => {
 export const floatNum = (num) => {
   num = Number(num)
   return num.toFixed(2)
+}
+
+// 数位换算
+export function lueNum(num) {
+  // 格式化为千分位输出 num.toLocaleString()
+  if (num > 9999) {
+      num = (num / 10000).toFixed(2); //保留小数点后两位
+      if (num > 9999) {
+          num = (num.toLocaleString() / 10000).toFixed(4) + "亿";
+      } else {
+          num = num.toLocaleString() + "万";
+      }
+  } else {
+      num = num.toFixed(2)
+  }
+  return num;
 }
