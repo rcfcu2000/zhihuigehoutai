@@ -341,7 +341,7 @@ import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
-const pageSize = ref(30)
+const pageSize = ref(20)
 const cities = [
     {
         value: "场景推广",
