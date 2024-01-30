@@ -33,9 +33,9 @@
           <div class="search_right">
             <div class="search_line">
               请选择起止时间
-              <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
-                end-placeholder="结束时间" />
+              <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false" size="small"
+                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
+                start-placeholder="开始时间" end-placeholder="结束时间" />
             </div>
           </div>
         </div>
@@ -572,7 +572,7 @@ const state = reactive({
   } as any,
   dialogForm: {
     visible: false,
-    records: [] as DomainItem[],
+    records: [] as any,
   },
   loading: true,
   treeLevel: 0,
@@ -614,7 +614,9 @@ const removeLine = (item: DomainItem) => {
   }
 };
 
-const restore = () => { };
+const restore = () => {
+  userPriceRange.priceRange = JSON.parse(state.dialogForm.records);
+};
 
 const addDomain = () => {
   userPriceRange.priceRange.push({
@@ -687,8 +689,8 @@ const getUserPrice = async () => {
   });
   if (res.code === 0) {
     state.loading = false;
+    state.dialogForm.records = JSON.stringify(res.data.records ? res.data.records : []);
     userPriceRange.priceRange = res.data.records ? res.data.records : [];
-    state.dialogForm.records = res.data.records ? res.data.records : [];
     state.dialogForm.visible = true;
   }
 };
@@ -728,10 +730,12 @@ const getData = async () => {
           name: "GMV",
           value: parseFloat(allValue.toFixed(2)),
           lv: -1,
+          key: 1,
           bfb: '100%',
           children: resp3.data.records?.map((i) => {
             return {
               name: i.current_inventory,
+              key: i.key,
               value: parseFloat(i.payment_amount.toFixed(2)),
               bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
@@ -910,38 +914,51 @@ const newOldContrast = () => {
     myChart.resize();
   });
 };
+const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
 const unitPriceGMV = () => {
   const chartDom = document.getElementById("unitPriceGMVcharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
-  const arr = state.priceRangedata?.map((i) => {
+  const arr = state.priceRangedata?.map((i, index) => {
     return {
+      type: 'bar',
+      stack: 'Total',
+      itemStyle: {
+        color: backColor[index],
+      },
       name: i.price_range,
+      numIndex: index,
       date: i.records?.map((j) => j.date),
       data: i.records?.map((j) => parseFloat((j.gmv).toFixed(2))),
     };
   });
   const date = arr?.map(i => i.date)
   const option = barOptions(arr, date[0]);
-  myChart.hideLoading();
   option && myChart.setOption(option);
-
   window.addEventListener("resize", () => {
     myChart.resize();
   });
 };
 const unitPriceTrend = () => {
   const chartDom = document.getElementById("unitPriceTrendcharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
-  const arr = state.priceRangedata?.map((i) => {
+  const arr = state.priceRangedata?.map((i, index) => {
     return {
+      type: 'bar',
+      stack: 'Total',
+      itemStyle: {
+        color: backColor[index],
+      },
       name: i.price_range,
+      numIndex: index,
       date: i.records?.map((j) => j.date),
       data: i.records?.map((j) => parseFloat((j.visitor_count).toFixed(2))),
     };
   });
   const date = arr?.map(i => i.date)
   const option = barOptions(arr, date[0]);
-  myChart.hideLoading();
+  option && myChart.setOption(option);
   option && myChart.setOption(option);
 
   window.addEventListener("resize", () => {
@@ -981,19 +998,19 @@ const GMVDismantling = () => {
           rich: {
             a: {
               color: "#fff",
-              lineHeight: 60,
+              lineHeight: 50,
               fontSize: 18,
               // width:140,
             },
             b: {
               color: "#03FF91",
-              lineHeight: 80,
+              lineHeight: 50,
               fontSize: 14,
               top: 20,
             },
             c: {
               color: "#FD89EE",
-              lineHeight: 80,
+              lineHeight: 50,
               fontSize: 14,
               top: 20,
             },
@@ -1050,13 +1067,14 @@ const GMVDismantling = () => {
             return {
               name: i.primary_category,
               value: i.payment_amount,
+              key: i.key,
               bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
               current: params.data.name,
               lv: 1,
             };
           });
-          addDataToTree(state.tree[0], params.data.name, childs);
+          addDataToTree(state.tree[0], params.data.key, childs);
           myChart.setOption(option);
         }
       });
@@ -1072,16 +1090,17 @@ const GMVDismantling = () => {
                 name: i.secondary_category,
                 current: params.data.current,
                 value: i.payment_amount,
+                key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
                 primary: params.data.name,
                 lv: 2,
               };
             });
-            addDataToTree(state.tree[0], params.data.name, childs);
+            addDataToTree(state.tree[0], params.data.key, childs);
             myChart.setOption(option);
           } else {
-            addDataToTree(state.tree[0], params.data.name, []);
+            addDataToTree(state.tree[0], params.data.key, []);
           }
         }
       });
@@ -1097,6 +1116,8 @@ const GMVDismantling = () => {
               return {
                 name: i.tertiary_category,
                 value: i.payment_amount,
+                current: params.data.current,
+                key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
                 primary: params.data.primary,
@@ -1104,43 +1125,44 @@ const GMVDismantling = () => {
                 lv: 3,
               };
             });
-            addDataToTree(state.tree[0], params.data.name, childs);
+            addDataToTree(state.tree[0], params.data.key, childs);
             myChart.setOption(option);
           } else {
-            addDataToTree(state.tree[0], params.data.name, []);
+            addDataToTree(state.tree[0], params.data.key, []);
+          }
+        }
+      });
+    } else if (params.data.lv === 3) {
+      data.current_inventory = [params.data.current];
+      data.primary_category = params.data.primary;
+      data.secondary_category = params.data.secondary;
+      data.tertiary_category = params.data.name;
+      data.leve = 3
+      getSubGmvList(data).then((res) => {
+        if (res.code === 0) {
+          if (res.data.records) {
+            const childs = res.data.records?.map((i) => {
+              return {
+                name: i.tertiary_category,
+                value: i.payment_amount,
+                children: [],
+                key: i.key,
+                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                primary: params.data.primary,
+                secondary: params.data.secondary,
+                tertiary: params.data.name,
+                lv: 4,
+              };
+            });
+            addDataToTree(state.tree[0], params.data.key, childs);
+            myChart.setOption(option);
+          } else {
+            addDataToTree(state.tree[0], params.data.key, []);
           }
         }
       });
     }
     getData2Copy(data)
-    // else if (params.data.lv === 3) {
-    //   data.current_inventory = [params.data.current];
-    //   data.primary_category = params.data.primary;
-    //   data.secondary_category = params.data.secondary;
-    //   data.tertiary_category = params.data.name;
-    //   data.leve = 2
-    //   getSubGmvList(data).then((res) => {
-    //     if (res.code === 0) {
-    //       if (res.data.records) {
-    //         const childs = res.data.records?.map((i) => {
-    //           return {
-    //             name: i.tertiary_category,
-    //             value: i.payment_amount,
-    //             children: [],
-    //             primary: params.data.primary,
-    //             secondary: params.data.secondary,
-    //             tertiary: params.data.name,
-    //             lv: 4,
-    //           };
-    //         });
-    //         addDataToTree(state.tree[0], params.data.name, childs);
-    //         myChart.setOption(option);
-    //       } else {
-    //         addDataToTree(state.tree[0], params.data.name, []);
-    //       }
-    //     }
-    //   });
-    // }
   });
   window.addEventListener("resize", () => {
     myChart.resize();
@@ -1150,8 +1172,8 @@ const GMVDismantling = () => {
 const addDataToTree = (root: any, targetId: any, newData: any) => {
   if (!root || !targetId) return; // 确保根节点不为空且目标ID有效
 
-  if (root.name === targetId) {
-    root.lv = 999;
+  if (root.key === targetId) {
+    // root.lv = 999;
     root.children = newData; // 若当前节点与目标ID匹配，则直接在该节点上添加新数据
     return;
   } else {
@@ -1178,7 +1200,6 @@ const getLevel = (arr) => {
   return maxLevel;
 };
 </script>
-
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
@@ -1562,5 +1583,49 @@ $echarts_bg_img: url("./images/_2.png");
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgb(33, 183, 206);
   /* 滑块悬停状态颜色 */
+}
+
+::v-deep(.el-table__row--striped) {
+  background-color: rgb(7, 35, 82, 1);
+}
+
+::v-deep(.el-table-fixed-column--left) {
+  border-right: 1px solid rgb(16, 97, 197);
+  background-color: rgb(26, 46, 161);
+}
+
+::v-deep(.el-popper).is-light {
+  background-color: rgb(0, 98, 147);
+  border: 1px solid rgb(0, 98, 147);
+}
+
+::v-deep(.el-select-dropdown__item).hover {
+  background-color: rgb(0, 0, 0, 0.3);
+}
+
+::v-deep(.el-select-dropdown__item) {
+  :hover {
+    background-color: rgb(0, 0, 0, 0.3);
+  }
+}
+
+::v-deep(.el-select-dropdown__item).selected {
+  background-color: rgb(0, 0, 0, 0.1);
+}
+
+::v-deep(.el-select-dropdown__item) {
+  color: #fff;
+}
+
+::v-deep(.el-select__tags) {
+  .el-tag--info {
+    background-color: rgba(0, 98, 147, 0.5);
+  }
+}
+
+::v-deep(.el-select__tags) {
+  .el-tag--info span {
+    color: #fff;
+  }
 }
 </style>

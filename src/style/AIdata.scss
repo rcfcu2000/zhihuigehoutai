@@ -135,15 +135,18 @@
   background: rgba(109, 174, 255, 1);
 }
 
-.el-table--border .el-table__inner-wrapper::after,.el-table--border::before,.el-table--border::after,.el-table__border-left-patch{
-  background-color:  transparent !important;
+.el-table--border .el-table__inner-wrapper::after,
+.el-table--border::before,
+.el-table--border::after,
+.el-table__border-left-patch {
+  background-color: transparent !important;
 }
 
-.el-checkbox{
+.el-checkbox {
   color: #fff !important;
 }
 
-.el-table-filter__bottom button{
+.el-table-filter__bottom button {
   color: #fff;
 }
 
