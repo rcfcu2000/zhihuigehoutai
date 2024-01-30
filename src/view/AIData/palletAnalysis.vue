@@ -33,9 +33,9 @@
           <div class="search_right">
             <div class="search_line">
               请选择起止时间
-              <el-date-picker @change="getData2" v-model="searchData.date" size="small" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
-                end-placeholder="结束时间" />
+              <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false" size="small"
+                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
+                start-placeholder="开始时间" end-placeholder="结束时间" />
             </div>
           </div>
         </div>
@@ -572,7 +572,7 @@ const state = reactive({
   } as any,
   dialogForm: {
     visible: false,
-    records: [] as DomainItem[],
+    records: [] as any,
   },
   loading: true,
   treeLevel: 0,
@@ -614,7 +614,9 @@ const removeLine = (item: DomainItem) => {
   }
 };
 
-const restore = () => { };
+const restore = () => {
+  userPriceRange.priceRange = JSON.parse(state.dialogForm.records);
+};
 
 const addDomain = () => {
   userPriceRange.priceRange.push({
@@ -687,8 +689,8 @@ const getUserPrice = async () => {
   });
   if (res.code === 0) {
     state.loading = false;
+    state.dialogForm.records = JSON.stringify(res.data.records ? res.data.records : []);
     userPriceRange.priceRange = res.data.records ? res.data.records : [];
-    state.dialogForm.records = res.data.records ? res.data.records : [];
     state.dialogForm.visible = true;
   }
 };
@@ -1191,7 +1193,6 @@ const getLevel = (arr) => {
   return maxLevel;
 };
 </script>
-
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
@@ -1575,5 +1576,49 @@ $echarts_bg_img: url("./images/_2.png");
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgb(33, 183, 206);
   /* 滑块悬停状态颜色 */
+}
+
+::v-deep(.el-table__row--striped) {
+  background-color: rgb(7, 35, 82, 1);
+}
+
+::v-deep(.el-table-fixed-column--left) {
+  border-right: 1px solid rgb(16, 97, 197);
+  background-color: rgb(26, 46, 161);
+}
+
+::v-deep(.el-popper).is-light {
+  background-color: rgb(0, 98, 147);
+  border: 1px solid rgb(0, 98, 147);
+}
+
+::v-deep(.el-select-dropdown__item).hover {
+  background-color: rgb(0, 0, 0, 0.3);
+}
+
+::v-deep(.el-select-dropdown__item) {
+  :hover {
+    background-color: rgb(0, 0, 0, 0.3);
+  }
+}
+
+::v-deep(.el-select-dropdown__item).selected {
+  background-color: rgb(0, 0, 0, 0.1);
+}
+
+::v-deep(.el-select-dropdown__item) {
+  color: #fff;
+}
+
+::v-deep(.el-select__tags) {
+  .el-tag--info {
+    background-color: rgba(0, 98, 147, 0.5);
+  }
+}
+
+::v-deep(.el-select__tags) {
+  .el-tag--info span {
+    color: #fff;
+  }
 }
 </style>

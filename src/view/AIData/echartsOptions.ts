@@ -403,7 +403,7 @@ export const barOptionsX = (arr: any) => {
 export const barOptions = (arr: any, date: any) => {
     // console.log(arr)
     // arr.sort((a, b) =>  a.numIndex - b.numIndex )
-    console.log(arr)
+    // console.log(arr)
     const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
     return {
         tooltip: {
