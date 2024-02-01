@@ -31,13 +31,85 @@
             <div class="child" style="flex: 0.58;">
                 <div class="title">单品重点指标</div>
                 <div class="box_container">
-                    <div class="roduct_num"></div>
-                    <div class="roduct_num"></div>
+                    <div class="roduct_num">
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts1"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts2"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts3"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts4"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts5"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="roduct_num">
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts6"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts7"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts8"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts9"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                        <div class="roduct_num_box">
+                            <div class="roduct_num_box_charts" id="echarts10"></div>
+                            <div class="roduct_num_box_text">
+                                <div class="tit">商品访客数</div>
+                                <div class="num">5862</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="child" style="flex: 0.38;">
-                <div class="title">单品重点指标</div>
-                <div class="box_container bg_img">
+                <div class="title">价格力分析</div>
+                <div class="box_container bg_img" id="echarts11">
                 </div>
             </div>
         </div>
@@ -46,12 +118,12 @@
         <div class="box">
             <div class="child">
                 <div class="title">SKU占比分析</div>
-                <div class="box_container bg_img">
+                <div class="box_container bg_img" id="echarts12">
                 </div>
             </div>
             <div class="child">
                 <div class="title">评价分析</div>
-                <div class="box_container bg_img">
+                <div class="box_container bg_img" id="echarts13">
                 </div>
             </div>
         </div>
@@ -81,7 +153,8 @@ import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
-import { lineOptions, barOptions, lineOptions1 } from "./echartsOptions";
+import 'echarts-wordcloud'
+import { lineOptionsNum, XYlineOptions, barOptionsY, wordsCloud } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -96,8 +169,117 @@ const disabledDate = (time: Date) => {
 const searchData = reactive({
     shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
+    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
 });
+
+onMounted(async () => {
+    await getHeaderChart()
+})
+const getHeaderChart1 = () => {
+}
+const getHeaderChart = () => {
+    const chartDom1 = document.getElementById("echarts1") as HTMLElement;
+    const myChart1 = echarts.init(chartDom1);
+
+    const chartDom2 = document.getElementById("echarts2") as HTMLElement;
+    const myChart2 = echarts.init(chartDom2);
+
+    const chartDom3 = document.getElementById("echarts3") as HTMLElement;
+    const myChart3 = echarts.init(chartDom3);
+
+    const chartDom4 = document.getElementById("echarts4") as HTMLElement;
+    const myChart4 = echarts.init(chartDom4);
+
+    const chartDom5 = document.getElementById("echarts5") as HTMLElement;
+    const myChart5 = echarts.init(chartDom5);
+
+    const chartDom6 = document.getElementById("echarts6") as HTMLElement;
+    const myChart6 = echarts.init(chartDom6);
+
+    const chartDom7 = document.getElementById("echarts7") as HTMLElement;
+    const myChart7 = echarts.init(chartDom7);
+
+    const chartDom8 = document.getElementById("echarts8") as HTMLElement;
+    const myChart8 = echarts.init(chartDom8);
+
+    const chartDom9 = document.getElementById("echarts9") as HTMLElement;
+    const myChart9 = echarts.init(chartDom9);
+
+    const chartDom10 = document.getElementById("echarts10") as HTMLElement;
+    const myChart10 = echarts.init(chartDom10);
+
+    const chartDom11 = document.getElementById("echarts11") as HTMLElement;
+    const myChart11 = echarts.init(chartDom11);
+
+    const chartDom12 = document.getElementById("echarts12") as HTMLElement;
+    const myChart12 = echarts.init(chartDom12);
+
+    const chartDom13 = document.getElementById("echarts13") as HTMLElement;
+    const myChart13 = echarts.init(chartDom13);
+
+    let arr = [
+        //     {
+        //         name: "店铺GMV",
+        //         data: data,
+        //     },
+        //     {
+        //         name: "行业交易金额",
+        //         data: data,
+        //     },
+    ];
+    const option1 = lineOptionsNum(arr);
+    const option2 = lineOptionsNum(arr);
+    const option3 = lineOptionsNum(arr);
+    const option4 = lineOptionsNum(arr);
+    const option5 = lineOptionsNum(arr);
+    const option6 = lineOptionsNum(arr);
+    const option7 = lineOptionsNum(arr);
+    const option8 = lineOptionsNum(arr);
+    const option9 = lineOptionsNum(arr);
+    const option10 = lineOptionsNum(arr);
+
+    const option11 = XYlineOptions(arr);
+    const option12 = barOptionsY(arr);
+    const option13 = wordsCloud(arr);
+
+
+    option1 && myChart1.setOption(option1);
+    option2 && myChart2.setOption(option2);
+    option3 && myChart3.setOption(option3);
+    option4 && myChart4.setOption(option4);
+    option5 && myChart5.setOption(option5);
+    option6 && myChart6.setOption(option6);
+    option7 && myChart7.setOption(option7);
+    option8 && myChart8.setOption(option8);
+    option9 && myChart9.setOption(option9);
+    option10 && myChart10.setOption(option10);
+
+    option11 && myChart11.setOption(option11);
+    option12 && myChart12.setOption(option12);
+    option13 && myChart13.setOption(option13);
+
+
+    window.addEventListener("resize", () => {
+        myChart1.resize();
+        myChart2.resize();
+        myChart3.resize();
+        myChart4.resize();
+        myChart5.resize();
+        myChart6.resize();
+        myChart7.resize();
+        myChart8.resize();
+        myChart9.resize();
+        myChart10.resize();
+
+        myChart11.resize();
+        myChart12.resize();
+        myChart13.resize();
+    });
+
+}
+
+
+
 
 </script>
 <style lang="scss" scoped>
@@ -172,13 +354,50 @@ $echarts_bg_img: url("./images/_2.png");
 
             .box_container {
                 height: 300px;
-               
+
 
                 .roduct_num {
                     height: 148px;
                     margin: 1px 0;
                     background-image: url("./images/image-3.png");
                     background-size: 100% 100%;
+                    display: flex;
+                    padding: 0 4%;
+
+                    .roduct_num_box {
+                        flex: 0.2;
+                        // border: 1px solid #ccc;
+                        position: relative;
+                        // padding: 0 10px;
+                        // box-sizing: border-box;
+
+                        .roduct_num_box_charts {
+                            width: 100%;
+                            height: 100%;
+                            top: 0;
+                            left: 0;
+                            position: absolute;
+                            // background-color: red;
+                        }
+
+                        .roduct_num_box_text {
+                            position: relative;
+                            z-index: 1;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+
+                            .tit {
+                                font-size: 18px;
+                            }
+
+                            .num {
+                                line-height: 120px;
+                                font-size: 48px;
+                            }
+                        }
+                    }
                 }
             }
 
