@@ -2,8 +2,8 @@
     AI公共头部
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:15:01
- * @LastEditors: dtl darksunnydong@qq.com
- * @LastEditTime: 2024-01-22 17:21:05
+ * @LastEditors: 603388675@qq.com 603388675@qq.com
+ * @LastEditTime: 2024-02-01 10:17:51
  * @FilePath: \zhihuigehoutai\src\view\AIData\components\page_header.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -11,7 +11,7 @@
     <div class="header">
         <el-row>
             <el-col :span="8">
-                <div class="grid-content ep-bg-purple" />
+                <div class="header_left" />
             </el-col>
             <el-col :span="8">
                 <div class="h_title">
@@ -41,7 +41,7 @@ console.log(props, "page_header_props")
 }
 
 .h_title {
-    font-size: 30px;
+    font-size: 1.3dvw;
     font-weight: 700;
     letter-spacing: 0px;
     width: 100%;
