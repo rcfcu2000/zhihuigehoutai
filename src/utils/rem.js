@@ -1,6 +1,6 @@
 function setRem() {
     //  PC端
-    console.log('非移动设备')
+    // console.log('非移动设备')
     // 基准大小
     let baseSize = 100;
     let basePc = baseSize / 1920; // 表示1920的设计图,使用100PX的默认值
@@ -13,7 +13,7 @@ function setRem() {
     }
     let rem = vW * basePc; // 以默认比例值乘以当前窗口宽度,得到该宽度下的相应font-size值
     document.documentElement.style.fontSize = rem + "px";
-    console.log(rem)
+    // console.log(rem)
     // //得到html的Dom元素
     // let htmlDom = document.getElementsByTagName('html')[0];
     // //设置根元素字体大小
