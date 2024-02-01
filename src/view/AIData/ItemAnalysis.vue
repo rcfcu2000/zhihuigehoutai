@@ -56,32 +56,37 @@
             </div>
         </div>
 
-        <div class="box">
-            <div class="child">
-                <div class="table_title">关键词分析</div>
-                <div class="box_container table">
-                </div>
-            </div>
-            <div class="child">
-                <div class="table_title">每日明细</div>
-                <div class="box_container table">
-                </div>
-            </div>
-        </div>
+        <el-row :gutter="20">
+            <el-col :span="12">
+                <wordsTbale v-model="count" :Commodity_detail="allData[0]" :comKey="1" :clearData="clearData"
+                    :current_inventory="current_inventory" @load-more="loadMore" />
+            </el-col>
+            <el-col :span="12">
+                <dayListTbale v-model="count" :Commodity_detail="allData[1]" :comKey="0" :clearData="clearData"
+                    :current_inventory="current_inventory" @load-more="loadMore" />
+            </el-col>
+        </el-row>
+
+
+
         <goHome />
     </div>
 </template>
 <script setup lang="ts" name="palletLinkAnalysis">
+import { ElMessage } from 'element-plus'
 import goHome from "./components/goHome.vue";
 import {
-
+    getProductDayList,
+    getKeywordList,
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, ref } from "vue";
-import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 import { lineOptions, barOptions, lineOptions1 } from "./echartsOptions";
+
+import dayListTbale from './components/dayList_table.vue'
+import wordsTbale from './components/words_table.vue'
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -90,15 +95,128 @@ var option: EChartsOption;
 const state = reactive({
     shopList: [] as any,
 });
+const pageNum_day = ref(0)
+const pageNum_words = ref(0)
+const pageSize = ref(20)
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const searchData = reactive({
     shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
-});
+    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
 
+    page_num: 0,
+    page_size: pageSize,
+    product_id: '',
+    start_date: '',
+    end_date: '',
+});
+onMounted(async () => {
+    await getWordsList(searchData)
+    await getDayList(searchData)
+})
+
+// 接口返回的全部数据
+const allData = reactive([{
+    componentTitle: '关键词分析',
+    data: [] as Array<any>,
+    column: [
+        {
+            title: '类型', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '', children: [
+                { title: '流量来源', width: 100, align: 'center', dataKey: 'keyword', key: 'keyword', unit: '', },
+            ]
+        },
+        {
+            title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
+                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+            ]
+        },
+        {
+            title: '直通车', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
+                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+            ]
+        },
+        {
+            title: '总计', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
+                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+            ]
+        },
+    ]
+}, {
+    componentTitle: '每日明细',
+    data: [] as Array<any>,
+    column: [
+        { title: '日期', width: 120, align: 'center', dataKey: 'date', key: 'date', fixed: true, unit: '', },
+        { title: '商品访客数', width: 100, align: 'center', dataKey: 'product_visitor_count', key: 'product_visitor_count', unit: '' },
+        { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
+        { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '' },
+        { title: '搜索访客占比', width: 110, align: 'center', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', unit: '%' },
+        { title: '老买家占比', width: 100, align: 'center', dataKey: 'returning_customer_ratio', key: 'returning_customer_ratio', unit: '' },
+        { title: '搜索GMV占比', width: 115, align: 'center', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', unit: '' },
+        { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '' },
+        { title: '价格力星级', width: 100, align: 'center', dataKey: 'price_power_stars', key: 'price_power_stars', unit: '' },
+        { title: '价格力额外曝光', width: 125, align: 'center', dataKey: 'price_power_extra_exposure', key: 'price_power_extra_exposure', unit: '' },
+        { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '' },
+        { title: '连带购买叶子类目宽度', width: 100, align: 'center', dataKey: 'associated_purchase_subcategory_width', key: 'associated_purchase_subcategory_width', unit: '' },
+        { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '' },
+        { title: '推广花费', width: 100, align: 'center', dataKey: 'promotion_cost', key: 'promotion_cost', unit: '' },
+        { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '' },
+    ]
+}])
+const count = ref()
+let clearData = reactive([false])
+const current_inventory = reactive([])
+
+
+// 关键字分析
+const getWordsList = async (arr: any) =>{
+    pageNum_words.value++
+    arr.start_date = arr.date[0]
+    arr.end_date = arr.date[1]
+    const res = await getKeywordList(arr)
+    if (res.code == 0 && res.data.records) {
+        allData[0].data = res.data.records
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
+// 每日明细
+const getDayList = async (arr: any) => {
+    pageNum_day.value++
+    arr.start_date = arr.date[0]
+    arr.end_date = arr.date[1]
+    const res = await getProductDayList(arr)
+    if (res.code == 0 && res.data.records) {
+        allData[1].data = res.data.records
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
+
+
+
+const loadMore = (at: string) => {
+    clearData[0] = false
+    if (at == 'day') {
+        getDayList(searchData)
+    }
+    if (at == 'words') {
+        getWordsList(searchData)
+    }
+}
 </script>
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
@@ -172,7 +290,7 @@ $echarts_bg_img: url("./images/_2.png");
 
             .box_container {
                 height: 300px;
-               
+
 
                 .roduct_num {
                     height: 148px;

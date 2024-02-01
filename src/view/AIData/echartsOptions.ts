@@ -520,7 +520,7 @@ export const table_lineOptions = (arr: Array<any>, date: Array<any>) => {
 }
 
 
-export const wordsCloud = (arr: Array) => {
+export const wordsCloud = (arr: Array<any>) => {
     return {
         tooltip: {
             trigger: 'axis',
