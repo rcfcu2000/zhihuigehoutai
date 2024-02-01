@@ -535,7 +535,6 @@ export const wordsCloud = (arr: any) => {
         { value: 84, name: '水獭' },
         { value: 86, name: '刺猬' }
     ]
-
     return {
         tooltip: {
 

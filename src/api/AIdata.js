@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-29 09:34:37
+ * @LastEditTime: 2024-02-01 15:54:49
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -128,3 +128,22 @@ export const getPlanThendListdata = (data) => {
         data
     })
 }
+
+// 单品分析-关键词分析
+export const getKeywordList = (data) => {
+    return service({
+        url: '/product/getKeywordList',
+        method: 'post',
+        data
+    })
+}
+
+// 单品分析-每日明细
+export const getProductDayList = (data) => {
+    return service({
+        url: '/product/getProductDayList',
+        method: 'post',
+        data
+    })
+}
+
