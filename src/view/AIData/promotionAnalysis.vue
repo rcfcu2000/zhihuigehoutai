@@ -303,10 +303,10 @@
             </el-form>
         </div>
 
-        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="0" :clearData="clearData"  :current_inventory="current_inventory"
-            @load-more="loadMore"></product_table>
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="0" :clearData="clearData"
+            :current_inventory="current_inventory" @load-more="loadMore"></product_table>
 
-        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="1" :clearData="clearData"  @load-more="loadMore"
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="1" :clearData="clearData" @load-more="loadMore"
             :current_inventory="cities">
         </plan_table>
         <goHome />
@@ -367,7 +367,7 @@ const searchData = reactive({
     promotion_type: [], // string
     scene_category: [] as Array<any>, //string 计划类型
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("6").beginDate, weaklast(-8)[0]],
+    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
 
     ids: [] as Array<any>,
 
@@ -484,8 +484,9 @@ const all = reactive({
 })
 
 onMounted(async () => {
-    getAll(searchData)
-    getData()
+    await getAll(searchData)
+    await getData()
+    await getData2()
     // getDetailPro(searchData)
     // getDetailPlan(searchData)
 })
@@ -502,10 +503,6 @@ const tableRwoClick = async (row, column, event) => {
         searchData.pallet = [], // 货盘
         searchData.bid_type = [row.bid_type];
     await selectChange()
-}
-
-const getProduct = async () => {
-
 }
 
 // 获取四个图表数据
@@ -531,11 +528,10 @@ const getEchartsData = async () => {
 }
 
 const getData2 = async () => {
-
     pageNum_pro.value = 0
     pageNum_plan.value = 0
-    await getPromotionGetAll()
     await getEchartsData()
+    await getPromotionGetAll()
     await getDetailPro(searchData)
     await getDetailPlan(searchData)
 };
@@ -563,9 +559,14 @@ const getData = async () => {
                 current_inventory.push(obj)
             })
             count.value++
-            await getData2();
-
         }
+
+        // pageNum_pro.value = 0
+        // pageNum_plan.value = 0
+        // await getEchartsData()
+        // await getPromotionGetAll()
+        // await getDetailPro(searchData)
+        // await getDetailPlan(searchData)
     }
 }
 
@@ -582,11 +583,11 @@ const getPromotionGetAll = async () => {
         state.titleData = res.data.promotionIndex1
         state.extendList = res.data.promotionIndex2.records
 
-        res.data.planAnalysis.records.map(item => {
+        res.data.planAnalysis?.records?.map(item => {
             item.value = item.promotion_type
             item.text = item.promotion_type
         })
-        state.planAnalysis = res.data.planAnalysis.records
+        state.planAnalysis = res.data.planAnalysis?.records ?? []
     }
 }
 
@@ -697,7 +698,7 @@ const getDetailPro = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0 && proRes.data.records) {
-        proRes.data.records.map((item: any) => {
+        proRes.data.records?.map((item: any) => {
             product_ids.push(item.product_id)
         })
         productThend(product_ids, proRes.data.records)
@@ -708,16 +709,16 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
     searchData.ids = arr
     const thendList = await getProductThendListdata(searchData)
     if (thendList.code === 0 && thendList.data.records) {
-        records.map((items: any) => {
+        records?.map((items: any) => {
             let thendObj = {
                 gmv_trend: [] as Array<any>,
                 roi_trend: [] as Array<any>,
                 cost_trend: [] as Array<any>,
                 times: [] as Array<any>,
             }
-            thendList.data.records.map((item: any) => {
+            thendList.data.records?.map((item: any) => {
                 if (item.product_id === items.product_id) {
-                    item.records.map((it: any) => {
+                    item.records?.map((it: any) => {
                         thendObj.gmv_trend.push(it.gmv_trend)
                         thendObj.roi_trend.push(it.roi_trend)
                         thendObj.cost_trend.push(it.spend_trend)
@@ -732,7 +733,7 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
         })
         allData[0].data = records
     }
-    product_ids.splice(0,product_ids.length)
+    product_ids.splice(0, product_ids.length)
 }
 
 const plan_ids = [] as Array<any>
@@ -745,7 +746,7 @@ const getDetailPlan = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0 && planRes.data.records) {
-        planRes.data.records.map((item: any) => {
+        planRes.data.records?.map((item: any) => {
             plan_ids.push(item.plan_id)
         })
     }
@@ -756,16 +757,16 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
     searchData.ids = arr
     const thendList = await getPlanThendListdata(searchData)
     if (thendList.code === 0 && thendList.data.records) {
-        records.map((items: any) => {
+        records?.map((items: any) => {
             let thendObj = {
                 gmv_trend: [] as Array<any>,
                 roi_trend: [] as Array<any>,
                 spend_trend: [] as Array<any>,
                 times: [] as Array<any>,
             }
-            thendList.data.records.map((item: any) => {
+            thendList.data.records?.map((item: any) => {
                 if (item.plan_id === items.plan_id) {
-                    item.records.map((it: any) => {
+                    item.records?.map((it: any) => {
                         thendObj.gmv_trend.push(it.gmv_trend)
                         thendObj.roi_trend.push(it.roi_trend)
                         thendObj.spend_trend.push(it.spend_trend)
@@ -780,7 +781,7 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
         })
         allData[1].data = records
     }
-    plan_ids.splice(0,plan_ids.length)
+    plan_ids.splice(0, plan_ids.length)
 }
 
 const loadMore = (at: string) => {
