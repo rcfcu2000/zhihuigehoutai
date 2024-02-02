@@ -520,21 +520,6 @@ export const table_lineOptions = (arr: Array<any>, date: Array<any>) => {
 
 
 export const wordsCloud = (arr: any) => {
-    arr = [
-        { value: 67, name: '红腹角雉' },
-        { value: 98, name: '麝牛' },
-        { value: 97, name: '山舌鱼' },
-        { value: 100, name: '羚羊' },
-        { value: 37, name: '非洲王子' },
-        { value: 83, name: '麋鹿' },
-        { value: 60, name: '中华鲟' },
-        { value: 42, name: '鮪鱼' },
-        { value: 96, name: '射水鱼' },
-        { value: 54, name: '果子狸' },
-        { value: 33, name: '小春鱼' },
-        { value: 84, name: '水獭' },
-        { value: 86, name: '刺猬' }
-    ]
     return {
         tooltip: {
 
@@ -603,7 +588,7 @@ export const wordsCloud = (arr: any) => {
                     focus: 'self',
                     textStyle: {
                         textShadowBlur: 10,
-                        textShadowColor: '#333',
+                        textShadowColor: '#fdfdfd',
                     },
                 },
                 data: arr,
@@ -634,7 +619,7 @@ export const lineOptionsNum = (arr: any) => {
         series: [
             {
                 symbol: "none",
-                data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320],
+                data: arr,
                 type: 'line',
                 areaStyle: {
                     color: {
@@ -670,7 +655,7 @@ export const lineOptionsNum = (arr: any) => {
     }
 }
 
-export const XYlineOptions = (arr: any) => {
+export const XYlineOptions = (date: any, price: any, leave: any) => {
     return {
         tooltip: {
             trigger: "axis"
@@ -697,15 +682,7 @@ export const XYlineOptions = (arr: any) => {
         xAxis: {
             type: "category",
             boundaryGap: false,
-            data: [
-                "08-30",
-                "08-31",
-                "09-01",
-                "09-02",
-                "09-03",
-                "09-04",
-                "09-05",
-            ],
+            data: date,
             axisLine: {
                 show: false,
                 lineStyle: {
@@ -789,7 +766,7 @@ export const XYlineOptions = (arr: any) => {
                         }
                     }
                 },
-                data: [5, 4, 5, 1, 2, 5, 3]
+                data: leave,
             },
             {
                 name: "件单价",
@@ -804,7 +781,7 @@ export const XYlineOptions = (arr: any) => {
                         }
                     }
                 },
-                data: [50, 100, 120, 55, 23, 78, 200]
+                data: price
             }
         ]
     }
@@ -813,8 +790,22 @@ export const XYlineOptions = (arr: any) => {
 
 export const barOptionsY = (arr: any) => {
     return {
+
         tooltip: {
-            trigger: "axis"
+            trigger: 'axis',
+
+            axisPointer: {
+                type: 'shadow'
+            },
+            formatter: function (params) {
+                return '<div>'
+                    + '<span class="echartsToolTip">sku名称</span>' + params[0].name + '<br>'
+                    + '<span class="echartsToolTip">支付金额</span>' + params[0].value + '<br/>'
+                    + '<span class="echartsToolTip">支付买家数</span>' + parseFloat((params[0].data.pay_buyers).toFixed(2)) + '' + '<br/>'
+                    + '<span class="echartsToolTip">支付件数</span>' + parseFloat((params[0].data.pay_quantity).toFixed(2)) + '<br/>'
+                    + '<span class="echartsToolTip">加购件数</span>' + parseFloat((params[0].data.add_to_cart_count).toFixed(2)) + '<br/>'
+                    + '</div>';
+            }
         },
         legend: {
             // data: ["价格力星级", "件单价"],
@@ -828,12 +819,6 @@ export const barOptionsY = (arr: any) => {
             right: "4%",
             bottom: "5%",
             containLabel: true
-        },
-        toolbox: {
-            feature: {
-                // 去掉图片下载
-                // saveAsImage: {}
-            }
         },
         dataZoom: [
             {
@@ -874,13 +859,16 @@ export const barOptionsY = (arr: any) => {
             type: 'category',
             inverse: false,
             // show:false,
-            // data: arr.map(i => i.name),
-            data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World'],
+            data: arr.map(i => i.sku_name),
+            // data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World'],
             axisLabel: {
                 color: '#fff',
+                rotate: 90,
                 formatter: function (value) {
-                    if (value.length > 2) {
-                        return `${value.slice(0, 1)}...`
+                    // var str = value.split("");
+                    // return str.join("\n");
+                    if (value.length > 8) {
+                        return `${value.slice(0, 8)}...`
                     }
                     return value
                 },
@@ -927,7 +915,7 @@ export const barOptionsY = (arr: any) => {
                     color: '#01E5FF',
                 },
                 sort: 'descending',
-                data: [50, 100, 120, 55, 50, 100, 120, 55, 50, 100, 120, 55, 50, 100, 120, 55, 50, 100, 120, 55, 23, 78, 200, 50, 100, 120, 55, 23, 78, 200, 50, 100, 120, 55, 23, 78, 200, 50, 100, 120, 55, 23, 78, 200]
+                data: arr,
             }
         ]
     }

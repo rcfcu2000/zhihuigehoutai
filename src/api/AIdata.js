@@ -147,3 +147,33 @@ export const getProductDayList = (data) => {
     })
 }
 
+// 单品分析-3个图表数据
+export const getChart3data = (data) => {
+    return service({
+        url: '/product/getChart3data',
+        method: 'post',
+        data
+    })
+}
+
+
+// 单品分析-指标趋势数据
+export const getIndexTrend = (data) => {
+    return service({
+        url: '/product/getIndexTrend',
+        method: 'post',
+        data
+    })
+}
+
+
+// 单品分析-重要指标
+export const getIndexdata = (data) => {
+    return service({
+        url: '/product/getIndexdata',
+        method: 'post',
+        data
+    })
+}
+
+
