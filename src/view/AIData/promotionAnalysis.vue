@@ -490,10 +490,6 @@ onMounted(async () => {
     // getDetailPro(searchData)
     // getDetailPlan(searchData)
 })
-const getPlan = async () => {
-
-}
-
 const tableRwoClick = async (row, column, event) => {
     console.log(row, column, event)
     allData[0].data = []

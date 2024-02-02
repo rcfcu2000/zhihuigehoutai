@@ -10,7 +10,8 @@
                     <div class="search_right">
                         <div class="search_line">
                             商品选择
-                            <el-select v-model="searchData.shopId" class="select_width" placeholder="请选择" size="small">
+                            <el-select v-model="searchData.shopId" class="select_width" placeholder="请选择" @change="getData"
+                                size="small">
                                 <el-option v-for="item in state.shopList" :key="item.responsible" :label="item.responsible"
                                     :value="item.responsible" />
                             </el-select>
@@ -18,8 +19,8 @@
 
                         <div class="search_line">
                             请选择起止时间
-                            <el-date-picker v-model="searchData.date" :clearable="false" size="small" format="YYYY/MM/DD"
-                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
+                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" size="small"
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                                 start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
                     </div>
@@ -163,7 +164,7 @@ import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
-import { lineOptionsNum, XYlineOptions, barOptionsY, wordsCloud } from "./echartsOptions";
+import { lineOptionsNum, XYlineOptions, pieItemOptions, wordsCloud } from "./echartsOptions";
 import dayListTbale from './components/dayList_table.vue'
 import wordsTbale from './components/words_table.vue'
 const userStore = useUserStore();
@@ -206,11 +207,14 @@ const searchData = reactive({
 });
 
 onMounted(async () => {
+    await getData()
+})
+
+const getData = async () => {
+    await getTopData()
     await getWordsList(searchData)
     await getDayList(searchData)
-    await getTopData()
-
-})
+}
 
 const allData = reactive([{
     componentTitle: '关键词分析',
@@ -398,7 +402,7 @@ const getHeaderChart = () => {
     const option10 = lineOptionsNum(arr10);
 
     const option11 = XYlineOptions(arr11Date, arr11pp_level, arr11unit_price);
-    const option12 = barOptionsY(arr12);
+    const option12 = pieItemOptions(arr12);
     const option13 = wordsCloud(arr13);
 
 
