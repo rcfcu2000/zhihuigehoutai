@@ -10,7 +10,8 @@
                     <div class="search_right">
                         <div class="search_line">
                             商品选择
-                            <el-select v-model="searchData.shopId" class="select_width" placeholder="请选择" size="small">
+                            <el-select v-model="searchData.shopId" class="select_width" placeholder="请选择" @change="getData"
+                                size="small">
                                 <el-option v-for="item in state.shopList" :key="item.responsible" :label="item.responsible"
                                     :value="item.responsible" />
                             </el-select>
@@ -18,8 +19,8 @@
 
                         <div class="search_line">
                             请选择起止时间
-                            <el-date-picker v-model="searchData.date" :clearable="false" size="small" format="YYYY/MM/DD"
-                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
+                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" size="small"
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                                 start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
                     </div>
@@ -36,35 +37,38 @@
                             <div class="roduct_num_box_charts" id="echarts1"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="num"> {{ parseFloat((state.itemData.bundle_purchase).toFixed(0)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts2"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">GMV</div>
+                                <div class="num">{{ parseFloat((state.itemData.gmv).toFixed(2)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts3"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">支付转化率</div>
+                                <div class="num">{{ parseFloat((state.itemData.payment_conversion_rate * 100).toFixed(2))
+                                }}%
+                                </div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts4"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">搜索访客占比</div>
+                                <div class="num">{{ parseFloat((state.itemData.search_visitor_ratio * 100).toFixed(2)) }}%
+                                </div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts5"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">搜索GMV占比</div>
+                                <div class="num">{{ parseFloat((state.itemData.search_gmv_ratio * 100).toFixed(2)) }}%</div>
                             </div>
                         </div>
                     </div>
@@ -72,36 +76,40 @@
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts6"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">老客占比</div>
+                                <div class="num">{{ parseFloat((state.itemData.returning_customer_ratio * 100).toFixed(2))
+                                }}%</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts7"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">退款率</div>
+                                <div class="num">{{ parseFloat((state.itemData.refund_rate * 100).toFixed(2)) }}%</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts8"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">免费搜索点击率</div>
+                                <div class="num">{{ parseFloat((state.itemData.free_search_click_rate * 100).toFixed(2)) }}%
+
+                                </div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts9"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">连带购买叶子类目宽度</div>
+                                <div class="num">{{ parseFloat((state.itemData.bundle_purchase * 100).toFixed(2)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts10"></div>
                             <div class="roduct_num_box_text">
-                                <div class="tit">商品访客数</div>
-                                <div class="num">5862</div>
+                                <div class="tit">复购率</div>
+                                <div class="num">{{ parseFloat((state.itemData.repeat_purchase_rate * 100).toFixed(2)) }}%
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -147,13 +155,16 @@ import goHome from "./components/goHome.vue";
 import {
     getProductDayList,
     getKeywordList,
+    getChart3data,
+    getIndexTrend,
+    getIndexdata
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
-import { lineOptionsNum, XYlineOptions, barOptionsY, wordsCloud } from "./echartsOptions";
+import { lineOptionsNum, XYlineOptions, pieItemOptions, wordsCloud } from "./echartsOptions";
 import dayListTbale from './components/dayList_table.vue'
 import wordsTbale from './components/words_table.vue'
 const userStore = useUserStore();
@@ -163,6 +174,19 @@ type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const state = reactive({
     shopList: [] as any,
+    itemData: {
+        bundle_purchase: 0,
+        free_search_click_rate: 0,
+        gmv: 0,
+        payment_conversion_rate: 0,
+        refund_rate: 0,
+        repeat_purchase_rate: 0,
+        returning_customer_ratio: 0,
+        search_gmv_ratio: 0,
+        search_visitor_ratio: 0,
+    },
+    itemIndexTrend: [] as any,
+    itemChart3data: {} as any,
 });
 const pageNum_day = ref(0)
 const pageNum_words = ref(0)
@@ -183,11 +207,13 @@ const searchData = reactive({
 });
 
 onMounted(async () => {
+    await getData()
+})
+
+const getData = async () => {
+    await getTopData()
     await getWordsList(searchData)
     await getDayList(searchData)
-    await getHeaderChart()
-})
-const getHeaderChart1 = () => {
 }
 
 const allData = reactive([{
@@ -252,6 +278,21 @@ const count = ref()
 let clearData = reactive([false])
 const current_inventory = reactive([])
 
+const getTopData = async () => {
+    const data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        product_id: ''
+    }
+    const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
+    if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
+        state.itemChart3data = { ...res1.data }
+        state.itemIndexTrend = res2.data.records ?? [];
+        state.itemData = { ...res3.data };
+
+        await getHeaderChart()
+    }
+}
 
 // 关键字分析
 const getWordsList = async (arr: any) => {
@@ -318,31 +359,51 @@ const getHeaderChart = () => {
 
     const chartDom13 = document.getElementById("echarts13") as HTMLElement;
     const myChart13 = echarts.init(chartDom13);
+    let arr1 = state.itemIndexTrend?.map(i => i.gmv)
+    let arr2 = state.itemIndexTrend?.map(i => i.gmv)
+    let arr3 = state.itemIndexTrend?.map(i => i.payment_conversion_rate)
+    let arr4 = state.itemIndexTrend?.map(i => i.search_visitor_ratio)
+    let arr5 = state.itemIndexTrend?.map(i => i.search_gmv_ratio)
+    let arr6 = state.itemIndexTrend?.map(i => i.returning_customer_ratio)
+    let arr7 = state.itemIndexTrend?.map(i => i.refund_rate)
+    let arr8 = state.itemIndexTrend?.map(i => i.free_search_click_rate)
+    let arr9 = state.itemIndexTrend?.map(i => i.bundle_purchase)
+    let arr10 = state.itemIndexTrend?.map(i => i.repeat_purchase_rate)
 
-    let arr = [
-        //     {
-        //         name: "店铺GMV",
-        //         data: data,
-        //     },
-        //     {
-        //         name: "行业交易金额",
-        //         data: data,
-        //     },
-    ];
-    const option1 = lineOptionsNum(arr);
-    const option2 = lineOptionsNum(arr);
-    const option3 = lineOptionsNum(arr);
-    const option4 = lineOptionsNum(arr);
-    const option5 = lineOptionsNum(arr);
-    const option6 = lineOptionsNum(arr);
-    const option7 = lineOptionsNum(arr);
-    const option8 = lineOptionsNum(arr);
-    const option9 = lineOptionsNum(arr);
-    const option10 = lineOptionsNum(arr);
+    let arr11Date = state.itemChart3data.price_power?.records?.map(i => i.date)
+    let arr11pp_level = state.itemChart3data.price_power?.records?.map(i => i.pp_level)
+    let arr11unit_price = state.itemChart3data.price_power?.records?.map(i => i.unit_price)
 
-    const option11 = XYlineOptions(arr);
-    const option12 = barOptionsY(arr);
-    const option13 = wordsCloud(arr);
+    let arr12 = state.itemChart3data.sku?.records?.map(i => {
+        return {
+            name: i.sku_name,
+            value: parseFloat((i.pay_amount).toFixed(2)),
+            ...i,
+
+        }
+    })
+
+
+    let arr13 = state.itemChart3data.review?.records?.map(i => {
+        return {
+            value: i.count,
+            name: i.keyword
+        }
+    })
+    const option1 = lineOptionsNum(arr1);
+    const option2 = lineOptionsNum(arr2);
+    const option3 = lineOptionsNum(arr3);
+    const option4 = lineOptionsNum(arr4);
+    const option5 = lineOptionsNum(arr5);
+    const option6 = lineOptionsNum(arr6);
+    const option7 = lineOptionsNum(arr7);
+    const option8 = lineOptionsNum(arr8);
+    const option9 = lineOptionsNum(arr9);
+    const option10 = lineOptionsNum(arr10);
+
+    const option11 = XYlineOptions(arr11Date, arr11pp_level, arr11unit_price);
+    const option12 = pieItemOptions(arr12);
+    const option13 = wordsCloud(arr13);
 
 
     option1 && myChart1.setOption(option1);
