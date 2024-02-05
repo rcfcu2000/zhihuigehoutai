@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-01 15:54:49
+ * @LastEditTime: 2024-02-05 10:27:31
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -171,6 +171,25 @@ export const getIndexTrend = (data) => {
 export const getIndexdata = (data) => {
     return service({
         url: '/product/getIndexdata',
+        method: 'post',
+        data
+    })
+}
+
+// 店铺分析-所有数据
+export const shopGetAlldata = (data) => {
+    return service({
+        url: '/shop/getAlldata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 店铺分析-所有趋势数据
+export const getAllTrenddata = (data) => {
+    return service({
+        url: '/shop/getAllTrenddata',
         method: 'post',
         data
     })

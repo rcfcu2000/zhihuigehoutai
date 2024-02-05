@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-01-30 18:06:50
+ * @LastEditTime: 2024-02-05 09:42:44
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -87,7 +87,7 @@ const lineData = () => {
 }
 const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory'])
 const emit = defineEmits(['loadMore', 'changePallet'])
-const componentTitle = ref('')
+const componentTitle = ref('商品明细')
 const current_inventory = reactive({
     data: []
 })
