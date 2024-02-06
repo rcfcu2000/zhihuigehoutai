@@ -120,13 +120,13 @@
         </div>
 
         <div class="box4">
-            <div class="box3_left">
+            <div class="box4_left">
                 <div class="title">店铺综合体验分</div>
-                <div class="echarts_bg"></div>
+                <div class="echarts_bg" id="box4Left"></div>
             </div>
-            <div class="box3_right">
+            <div class="box4_right">
                 <div class="title">店铺表现</div>
-                <div class="echarts_bg"></div>
+                <div class="echarts_bg" id="box4Right"></div>
             </div>
         </div>
 
@@ -142,7 +142,7 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
-import { pieOptionsHome, wordsCloud } from "./echartsOptions";
+import { pieOptionsHome, wordsCloud, lineOptions } from "./echartsOptions";
 import dayListTbale from './components/dayList_table.vue'
 import wordsTbale from './components/words_table.vue'
 import * as echarts from "echarts";
@@ -181,6 +181,7 @@ const searchData = reactive({
 onMounted(async () => {
     await gettreeData()
     await pieCharts()
+    // await getBox4()
 })
 
 const gettreeData = async () => {
@@ -458,7 +459,50 @@ const addDataToTree = (root: any, targetId: any, newData: any) => {
         }
     }
 };
+Math.floor(Math.random() * (1 - 100) + 100); //1~100的随机数
+let data = Array.from(new Array(30), (x, i) =>
+    Math.floor(Math.random() * (1 - 100) + 100)
+);
+const getBox4 = () => {
+    const chartDom1 = document.getElementById("box4Left") as HTMLElement;
+    const myChart1 = echarts.init(chartDom1);
 
+    const chartDom2 = document.getElementById("box4Right") as HTMLElement;
+    const myChart2 = echarts.init(chartDom2);
+
+
+    let arr1 = [
+        {
+            name: "店铺GMV",
+            data: data,
+        },
+    ];
+    let arr2 = [
+        {
+            name: "商品体验",
+            data: data,
+        },
+        {
+            name: "物流体验",
+            data: data,
+        },
+        {
+            name: "服务体验",
+            data: data,
+        },
+    ];
+
+    const option1 = lineOptions(arr1);
+    option1 && myChart1.setOption(option1);
+
+    const option2 = lineOptions(arr2);
+    option2 && myChart2.setOption(option2);
+
+    window.addEventListener("resize", () => {
+        myChart1.resize();
+        myChart2.resize();
+    });
+}
 
 </script>
 <style lang="scss" scoped>
@@ -606,6 +650,9 @@ $echarts_bg_img: url("./images/_2.png");
 
         .box2_center {
             flex: 0.45;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
 
             .box2_center_top {
                 height: 38%;
