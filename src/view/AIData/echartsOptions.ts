@@ -102,7 +102,7 @@ function fontSize(res) {
     return res * fontSize
 }
 
-// 线图
+// 多线图
 export const lineOptions1 = (arr: any, date: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
@@ -164,6 +164,87 @@ export const lineOptions1 = (arr: any, date: any) => {
                 data: i.data,
                 itemStyle: {
                     color: backColor[index],
+                }
+            }
+        }),
+    }
+}
+// 多线图
+export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            top: "5%",
+            // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+            data: arr?.map((i: { name: any; }) => i.name),
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: '10%',
+            right: '8%',
+            bottom: '10%',
+            containLabel: true
+        },
+        dataZoom: [
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1]
+            }
+        ],
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        yAxis: {
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
+            return {
+                name: i.name,
+                symbolSize: 1, // 设置数据点的大小为8像素
+                smooth: linetype,
+                type: 'line',
+                data: i.data,
+                itemStyle: {
+                    color: backColor[index],
+                },
+                lineStype: {
+                    type: (linetype && index > 0) ? 'dashed' : 'solid'
                 }
             }
         }),
@@ -549,7 +630,7 @@ export const table_lineOptions = (arr: Array<any>, date: Array<any>) => {
     }
 }
 
-
+// 词云图
 export const wordsCloud = (arr: any) => {
     return {
         tooltip: {
@@ -1031,6 +1112,65 @@ export const pieItemOptions = (arr: any) => {
     }
 }
 
+// 饼图
+export const pieItemOptions1 = (arr: any) => {
+    // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'item',
+        },
+        // title: {
+        //     text: 'SKU名称',
+        //     right: 20,
+        //     top: "32%",
+        //     textStyle: {
+        //         color: '#FFF'
+        //     }
+        // },
+        grid: {
+            left: '6%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        legend: {
+            type: 'scroll',
+            left: 'center',
+            // orient: 'vertical',
+            // right: 20,
+            icon: "circle",
+            pageIconSize: [15, 15], // 设置上一页、下一页的尺寸 
+            pageTextStyle: {  // 设置上一页、下一页文字样式 
+                color: '#fff'
+            },
+            pageIconColor: '#fff',
+            top: "5%",
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        series: [
+            {
+                type: 'pie',
+                radius: ['30%', '50%'],
+                center: ['50%', '50%'],
+                label: {
+                    show: true,
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 14,
+                        fontWeight: 'bolder'
+                    },
+                    formatter(param) {
+                        return param.name + '  ' + param.value + '  ';
+                    }
+                },
+                data: arr,
+            }
+        ]
+    }
+}
+
 export const pieOptionsHome = (arr: any) => {
     const data = genData(20);
     return {
@@ -1084,6 +1224,71 @@ export const pieOptionsHome = (arr: any) => {
                         shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
                 }
+            }
+        ]
+    }
+}
+
+export const lineFillOptionsNum = (arr: any, times: any) => {
+    return {
+        tooltip: {
+            show: true,
+            trigger: "axis",
+        },
+        grid: {
+            top: "2%",
+            left: "5%",
+            right: "5%",
+            bottom: "10%",
+            // containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            show: false,
+            data: times
+        },
+        yAxis: {
+            type: 'value',
+            show: false,
+        },
+        series: [
+            {
+                symbol: "none",
+                data: arr,
+                type: 'line',
+                lineStyle: {
+                    width: 4
+                },
+                areaStyle: {
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 0% 处的颜色
+                            },
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 0% 处的颜色
+                            },
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 0% 处的颜色
+                            },
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 100% 处的颜色
+                            }
+                        ],
+                        global: false // 缺省为 false
+                    }
+                },
+                color: 'rgba(3,171,217, 1)', //线条颜色
             }
         ]
     }
