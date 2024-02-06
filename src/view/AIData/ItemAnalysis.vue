@@ -318,6 +318,7 @@ const getTopData = async () => {
 // 关键字分析
 const getWordsList = async (arr: any) => {
     pageNum_words.value++
+    arr.page_num = pageNum_words.value
     arr.start_date = arr.date[0]
     arr.end_date = arr.date[1]
     const res = await getKeywordList(arr)
@@ -330,6 +331,7 @@ const getWordsList = async (arr: any) => {
 // 每日明细
 const getDayList = async (arr: any) => {
     pageNum_day.value++
+    arr.page_num = pageNum_day.value
     arr.start_date = arr.date[0]
     arr.end_date = arr.date[1]
     const res = await getProductDayList(arr)
