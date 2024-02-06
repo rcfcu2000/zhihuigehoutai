@@ -714,8 +714,8 @@ export const lineOptionsNum = (arr: any) => {
     return {
         grid: {
             top: "2%",
-            left: "2%",
-            right: "2%",
+            left: "5%",
+            right: "5%",
             bottom: "10%",
             // containLabel: true
         },
