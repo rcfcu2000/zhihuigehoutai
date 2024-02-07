@@ -10,10 +10,11 @@
                     <div class="search_right">
                         <div class="search_line">
                             商品选择
-                            <el-select v-model="searchData.shopId" class="select_width" placeholder="请选择" @change="getData"
-                                size="small">
-                                <el-option v-for="item in state.shopList" :key="item.responsible" :label="item.responsible"
-                                    :value="item.responsible" />
+                            <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择"
+                                @change="getData" size="small" filterable remote reserve-keyword remote-show-suffix
+                                :remote-method="remoteMethod" :loading="searchData.loading">
+                                <el-option v-for="item in state.shopList" :key="item.product_id" :label="item.product_name"
+                                    :value="item.product_id" />
                             </el-select>
                         </div>
 
@@ -37,7 +38,7 @@
                             <div class="roduct_num_box_charts" id="echarts1"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">商品访客数</div>
-                                <div class="num"> {{ parseFloat((state.itemData.bundle_purchase).toFixed(0)) }}</div>
+                                <div class="num"> {{ parseFloat((state.itemData.visitors_count).toFixed(0)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
@@ -157,7 +158,8 @@ import {
     getKeywordList,
     getChart3data,
     getIndexTrend,
-    getIndexdata
+    getIndexdata,
+    getProductlist
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
@@ -165,16 +167,20 @@ import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
 import { lineOptionsNum, XYlineOptions, pieItemOptions, wordsCloud } from "./echartsOptions";
+import { useThrottle, useDebounce } from '@/utils/throttle-debounce';
 import dayListTbale from './components/dayList_table.vue'
 import wordsTbale from './components/words_table.vue'
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
+import { fa } from "element-plus/es/locale";
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const state = reactive({
     shopList: [] as any,
+    key: "" as any,
     itemData: {
+        visitors_count: 0,
         bundle_purchase: 0,
         free_search_click_rate: 0,
         gmv: 0,
@@ -195,10 +201,9 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const searchData = reactive({
-    shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
-
+    loading: false,
+    date: ['2024-01-01', '2024-01-11'],
     page_num: 0,
     page_size: pageSize,
     product_id: '',
@@ -207,8 +212,24 @@ const searchData = reactive({
 });
 
 onMounted(async () => {
+    await getSearchShopList()
     await getData()
 })
+
+const getSearchShopList = useThrottle(async () => {
+    const res = await getProductlist(
+        { key: state.key }
+    )
+    state.shopList = res.data.records
+    searchData.loading = false
+}, 1000)
+
+const remoteMethod = async (query: string) => {
+    console.log(query)
+    searchData.loading = true
+    state.key = query
+    getSearchShopList()
+}
 
 const getData = async () => {
     await getTopData()
@@ -361,7 +382,7 @@ const getHeaderChart = () => {
 
     const chartDom13 = document.getElementById("echarts13") as HTMLElement;
     const myChart13 = echarts.init(chartDom13);
-    let arr1 = state.itemIndexTrend?.map(i => i.gmv)
+    let arr1 = state.itemIndexTrend?.map(i => i.visitors_count)
     let arr2 = state.itemIndexTrend?.map(i => i.gmv)
     let arr3 = state.itemIndexTrend?.map(i => i.payment_conversion_rate)
     let arr4 = state.itemIndexTrend?.map(i => i.search_visitor_ratio)
@@ -645,6 +666,10 @@ $echarts_bg_img: url("./images/_2.png");
     width: 200px;
 
     .el-range-input {
+        color: #fff;
+    }
+
+    .el-input__inner {
         color: #fff;
     }
 }

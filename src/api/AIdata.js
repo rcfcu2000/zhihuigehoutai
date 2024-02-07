@@ -176,6 +176,15 @@ export const getIndexdata = (data) => {
     })
 }
 
+// 单品分析-商品列表
+export const getProductlist = (data) => {
+    return service({
+        url: '/product/getProductlist',
+        method: 'post',
+        data
+    })
+}
+
 // 店铺分析-所有数据
 export const shopGetAlldata = (data) => {
     return service({

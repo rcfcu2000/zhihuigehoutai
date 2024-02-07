@@ -96,15 +96,15 @@
                         <div class="echarts_title">货盘GMV达成率</div>
                     </div>
                 </div>
-                <div class="box2_center_btn">
+                <div class="box2_center_btn" id="box2center">
 
                 </div>
             </div>
             <div class="box2_right">
                 <div class="title">关键词</div>
                 <div class="echarts_bg">
-                    <div class="echarts_bg_top"></div>
-                    <div class="echarts_bg_btn"></div>
+                    <div class="echarts_bg_top" id="cloudWord1"></div>
+                    <div class="echarts_bg_btn" id="cloudWord2"></div>
                 </div>
             </div>
         </div>
@@ -120,13 +120,13 @@
         </div>
 
         <div class="box4">
-            <div class="box3_left">
+            <div class="box4_left">
                 <div class="title">店铺综合体验分</div>
-                <div class="echarts_bg"></div>
+                <div class="echarts_bg" id="box4Left"></div>
             </div>
-            <div class="box3_right">
+            <div class="box4_right">
                 <div class="title">店铺表现</div>
-                <div class="echarts_bg"></div>
+                <div class="echarts_bg" id="box4Right"></div>
             </div>
         </div>
 
@@ -142,9 +142,9 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
-import { pieOptionsHome, wordsCloud } from "./echartsOptions";
-import dayListTbale from './components/dayList_table.vue'
-import wordsTbale from './components/words_table.vue'
+import { pieOptionsHome, wordsCloud, lineOptions } from "./echartsOptions";
+// import dayListTbale from './components/dayList_table.vue'
+// import wordsTbale from './components/words_table.vue'
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
 type EChartsOption = echarts.EChartsOption;
@@ -181,6 +181,9 @@ const searchData = reactive({
 onMounted(async () => {
     await gettreeData()
     await pieCharts()
+    await getBox4()
+    // await cloudEcharts()
+    // await getbox2Echarts()
 })
 
 const gettreeData = async () => {
@@ -458,7 +461,495 @@ const addDataToTree = (root: any, targetId: any, newData: any) => {
         }
     }
 };
+Math.floor(Math.random() * (1 - 100) + 100); //1~100的随机数
+let data = Array.from(new Array(30), (x, i) =>
+    Math.floor(Math.random() * (1 - 100) + 100)
+);
 
+const clouddata = [
+    {
+        name: '花鸟市场',
+        value: 1446,
+    },
+    {
+        name: '汽车',
+        value: 928,
+    },
+    {
+        name: '视频',
+        value: 906,
+    },
+    {
+        name: '电视',
+        value: 825,
+    },
+    {
+        name: 'Lover Boy 88',
+        value: 514,
+    },
+    {
+        name: '动漫',
+        value: 486,
+    },
+    {
+        name: '音乐',
+        value: 53,
+    },
+    {
+        name: '直播',
+        value: 163,
+    },
+    {
+        name: '广播电台',
+        value: 86,
+    },
+    {
+        name: '戏曲曲艺',
+        value: 17,
+    },
+    {
+        name: '演出票务',
+        value: 6,
+    },
+    {
+        name: '给陌生的你听',
+        value: 1,
+    },
+    {
+        name: '资讯',
+        value: 1437,
+    },
+    {
+        name: '商业财经',
+        value: 422,
+    },
+    {
+        name: '娱乐八卦',
+        value: 353,
+    },
+    {
+        name: '军事',
+        value: 331,
+    },
+    {
+        name: '科技资讯',
+        value: 313,
+    },
+    {
+        name: '社会时政',
+        value: 307,
+    },
+    {
+        name: '时尚',
+        value: 43,
+    },
+    {
+        name: '网络奇闻',
+        value: 15,
+    },
+    {
+        name: '旅游出行',
+        value: 438,
+    },
+    {
+        name: '景点类型',
+        value: 957,
+    },
+    {
+        name: '国内游',
+        value: 927,
+    },
+    {
+        name: '远途出行方式',
+        value: 908,
+    },
+    {
+        name: '酒店',
+        value: 693,
+    },
+    {
+        name: '关注景点',
+        value: 611,
+    },
+    {
+        name: '旅游网站偏好',
+        value: 512,
+    },
+    {
+        name: '出国游',
+        value: 382,
+    },
+    {
+        name: '交通票务',
+        value: 312,
+    },
+    {
+        name: '旅游方式',
+        value: 187,
+    },
+    {
+        name: '旅游主题',
+        value: 163,
+    },
+    {
+        name: '港澳台',
+        value: 104,
+    },
+    {
+        name: '本地周边游',
+        value: 3,
+    },
+    {
+        name: '小卖家',
+        value: 1331,
+    },
+    {
+        name: '全日制学校',
+        value: 941,
+    },
+    {
+        name: '基础教育科目',
+        value: 585,
+    },
+    {
+        name: '考试培训',
+        value: 473,
+    },
+    {
+        name: '语言学习',
+        value: 358,
+    },
+    {
+        name: '留学',
+        value: 246,
+    },
+    {
+        name: 'K12课程培训',
+        value: 207,
+    },
+    {
+        name: '艺术培训',
+        value: 194,
+    },
+    {
+        name: '技能培训',
+        value: 104,
+    },
+    {
+        name: 'IT培训',
+        value: 87,
+    },
+    {
+        name: '高等教育专业',
+        value: 63,
+    },
+    {
+        name: '家教',
+        value: 48,
+    },
+    {
+        name: '体育培训',
+        value: 23,
+    },
+    {
+        name: '职场培训',
+        value: 5,
+    },
+    {
+        name: '金融财经',
+        value: 1328,
+    },
+    {
+        name: '银行',
+        value: 765,
+    },
+    {
+        name: '股票',
+        value: 452,
+    },
+    {
+        name: '保险',
+        value: 415,
+    },
+    {
+        name: '贷款',
+        value: 253,
+    },
+    {
+        name: '基金',
+        value: 211,
+    },
+    {
+        name: '信用卡',
+        value: 180,
+    },
+    {
+        name: '外汇',
+        value: 138,
+    },
+    {
+        name: 'P2P',
+        value: 116,
+    },
+    {
+        name: '贵金属',
+        value: 98,
+    },
+    {
+        name: '债券',
+        value: 93,
+    },
+    {
+        name: '网络理财',
+        value: 92,
+    },
+    {
+        name: '信托',
+        value: 90,
+    },
+    {
+        name: '征信',
+        value: 76,
+    },
+    {
+        name: '期货',
+        value: 76,
+    },
+    {
+        name: '公积金',
+        value: 40,
+    },
+    {
+        name: '银行理财',
+        value: 36,
+    },
+    {
+        name: '银行业务',
+        value: 30,
+    },
+    {
+        name: '典当',
+        value: 7,
+    },
+    {
+        name: '海外置业',
+        value: 1,
+    },
+    {
+        name: '汽车',
+        value: 1309,
+    },
+    {
+        name: '汽车档次',
+        value: 965,
+    },
+    {
+        name: '汽车品牌',
+        value: 900,
+    },
+    {
+        name: '汽车车型',
+        value: 727,
+    },
+    {
+        name: '购车阶段',
+        value: 461,
+    },
+    {
+        name: '二手车',
+        value: 309,
+    },
+    {
+        name: '汽车美容',
+        value: 260,
+    },
+    {
+        name: '新能源汽车',
+        value: 173,
+    },
+    {
+        name: '汽车维修',
+        value: 155,
+    },
+    {
+        name: '租车服务',
+        value: 136,
+    },
+    {
+        name: '车展',
+        value: 121,
+    },
+    {
+        name: '违章查询',
+        value: 76,
+    },
+    {
+        name: '汽车改装',
+        value: 62,
+    },
+    {
+        name: '汽车用品',
+        value: 37,
+    },
+    {
+        name: '路况查询',
+        value: 32,
+    },
+    {
+        name: '汽车保险',
+        value: 28,
+    },
+    {
+        name: '陪驾代驾',
+        value: 4,
+    },
+    {
+        name: '网络购物',
+        value: 1275,
+    },
+    {
+        name: '做我的猫',
+        value: 1088,
+    },
+    {
+        name: '只想要你知道',
+        value: 907,
+    },
+    {
+        name: '团购',
+        value: 837,
+    },
+    {
+        name: '比价',
+        value: 201,
+    },
+    {
+        name: '海淘',
+        value: 195,
+    },
+    {
+        name: '移动APP购物',
+        value: 179,
+    },
+    {
+        name: '支付方式',
+        value: 119,
+    },
+    {
+        name: '代购',
+        value: 43,
+    },
+    {
+        name: '体育健身',
+        value: 1234,
+    },
+    {
+        name: '体育赛事项目',
+        value: 802,
+    },
+    {
+        name: '运动项目',
+        value: 405,
+    },
+    {
+        name: '体育类赛事',
+        value: 337,
+    },
+    {
+        name: '健身项目',
+        value: 199,
+    },
+    {
+        name: '健身房健身',
+        value: 78,
+    }
+]
+
+const cloudEcharts = () => {
+    const chartDom1 = document.getElementById("cloudWord1") as HTMLElement;
+    const myChart1 = echarts.init(chartDom1);
+
+    const chartDom2 = document.getElementById("cloudWord2") as HTMLElement;
+    const myChart2 = echarts.init(chartDom2);
+
+
+    let arr1 = clouddata
+    let arr2 = clouddata
+
+    const option1 = wordsCloud(arr1, '手淘搜索Top30');
+    option1 && myChart1.setOption(option1);
+
+    const option2 = wordsCloud(arr2, '直通车Top30');
+    option2 && myChart2.setOption(option2);
+
+    window.addEventListener("resize", () => {
+        myChart1.resize();
+        myChart2.resize();
+    });
+}
+
+const getbox2Echarts = () => {
+    const chartDom1 = document.getElementById("box2center") as HTMLElement;
+    const myChart1 = echarts.init(chartDom1);
+
+    let arr1 = [
+        {
+            name: "访客数",
+            data: data,
+        },
+        {
+            name: "GMV",
+            data: data,
+        },
+    ];
+    const option1 = lineOptions(arr1);
+    option1 && myChart1.setOption(option1);
+
+    window.addEventListener("resize", () => {
+        myChart1.resize();
+    });
+}
+
+const getBox4 = () => {
+    const chartDom1 = document.getElementById("box4Left") as HTMLElement;
+    const myChart1 = echarts.init(chartDom1);
+
+    const chartDom2 = document.getElementById("box4Right") as HTMLElement;
+    const myChart2 = echarts.init(chartDom2);
+
+
+    let arr1 = [
+        {
+            name: "店铺GMV",
+            data: data,
+        },
+    ];
+    let arr2 = [
+        {
+            name: "商品体验",
+            data: data,
+        },
+        {
+            name: "物流体验",
+            data: data,
+        },
+        {
+            name: "服务体验",
+            data: data,
+        },
+    ];
+
+    const option1 = lineOptions(arr1);
+    option1 && myChart1.setOption(option1);
+
+    const option2 = lineOptions(arr2);
+    option2 && myChart2.setOption(option2);
+
+    window.addEventListener("resize", () => {
+        myChart1.resize();
+        myChart2.resize();
+    });
+}
 
 </script>
 <style lang="scss" scoped>
@@ -606,6 +1097,9 @@ $echarts_bg_img: url("./images/_2.png");
 
         .box2_center {
             flex: 0.45;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
 
             .box2_center_top {
                 height: 38%;
@@ -635,7 +1129,14 @@ $echarts_bg_img: url("./images/_2.png");
                 flex: 1;
                 background-image: $echarts_bg_img;
                 background-size: 100% 100%;
+                display: flex;
+                flex-direction: column;
+
+                >div {
+                    flex: 0.48;
+                }
             }
+
         }
     }
 
