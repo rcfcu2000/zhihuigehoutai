@@ -631,10 +631,24 @@ export const table_lineOptions = (arr: Array<any>, date: Array<any>) => {
 }
 
 // 词云图
-export const wordsCloud = (arr: any) => {
+export const wordsCloud = (arr: any, name: any) => {
     return {
         tooltip: {
-
+        },
+        grid: {
+            left: '0%',
+            right: '0%',
+            bottom: '0%',
+            // containLabel: true
+        },
+        title: {
+            text: name,
+            left: 10,
+            top: 20,
+            textStyle: {
+                color: '#FFF',
+                fontSize: fontSize(0.2),
+            }
         },
         series: [
             {
@@ -680,20 +694,15 @@ export const wordsCloud = (arr: any) => {
 
                 // 全局文本样式
                 textStyle: {
-                    fontFamily: 'sans-serif',
-                    fontWeight: 'bold',
-                    // Color可以是回调函数或颜色字符串
+                    fontFamily: 'PingFangSC-Semibold',
+                    fontWeight: 400,
                     color: function () {
-                        // 任意颜色
-                        return (
-                            'rgb(' +
-                            [
-                                Math.round(Math.random() * 160),
-                                Math.round(Math.random() * 160),
-                                Math.round(Math.random() * 160),
-                            ].join(',') +
-                            ')'
-                        )
+                        return 'rgb(' + [
+                            Math.round(Math.random() * 160),
+                            Math.round(Math.random() * 160),
+                            Math.round(Math.random() * 160)
+                        ].join(',') + ')';
+
                     },
                 },
                 emphasis: {
