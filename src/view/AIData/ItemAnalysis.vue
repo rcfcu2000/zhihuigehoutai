@@ -303,7 +303,7 @@ const getTopData = async () => {
     const data = {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
-        product_id: ''
+        product_id:searchData.product_id,
     }
     const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
     if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
