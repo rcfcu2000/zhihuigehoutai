@@ -1070,7 +1070,7 @@ export const pieItemOptions = (arr: any) => {
 
         },
         grid: {
-            top:"2%",
+            top: "2%",
             left: '0',
             right: '0',
             bottom: '2%',
@@ -1097,7 +1097,14 @@ export const pieItemOptions = (arr: any) => {
             top: "20%",
             textStyle: {
                 color: '#FFF'
-            }
+            },
+            formatter: function (name) {
+                var maxLength = 15; // 最大长度限制
+                if (name.length > maxLength) {
+                    name = name.slice(0, maxLength) + '...';
+                }
+                return name
+            },
         },
         series: [
             {
@@ -1116,7 +1123,7 @@ export const pieItemOptions = (arr: any) => {
                     //     return params.name + '  ' + params.value + '  ';
                     // }
                     formatter: function (params) {
-                        var maxLength = 6; // 最大长度限制
+                        var maxLength = 10; // 最大长度限制
                         if (params.name.length > maxLength) {
                             return params.name.substring(0, maxLength) + "..." + '  ' + params.value + '  '; // 超过最大长度则添加省略号
                         } else {
