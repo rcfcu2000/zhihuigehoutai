@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-05 09:43:14
+ * @LastEditTime: 2024-02-18 10:39:28
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -39,7 +39,7 @@
                         {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
                     </div>
 
-                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden">
+                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden" :title="scope.row[scope.column.property]">
                         {{ scope.row[scope.column.property] }}
                     </div>
 
@@ -102,9 +102,6 @@ const planTableListRef = ref();
 
 onMounted(() => {
 })
-watch(propData.current_inventory, (newD, oldD) => {
-    current_inventory.data = newD
-})
 /**
      * 刷新table,防止滚动条跑到最上面
     */
@@ -118,7 +115,8 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE], oldD) => {
     if (newE[0]) {
         tableData = []
     }
-    tableData = newD.data
+    tableData = tableData.concat(newD.data)
+    console.log(tableData,"tableData")
     loadType.value = false
     refreshTable()
     nextTick(() => {
@@ -164,11 +162,8 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE], oldD) => {
         })
         refreshTable()
     })
-
-    setTimeout(() => {
-    }, 500)
     // count.value++
-})
+}, { deep: true })
 
 const loadMore = (res) => {
     if (componentTitle.value == "计划明细") {

@@ -172,6 +172,7 @@ export const lineOptions1 = (arr: any, date: any) => {
 // 多线图
 export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    console.log(linetype,"linetype")
     return {
         tooltip: {
             trigger: 'axis'
@@ -234,6 +235,7 @@ export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) =
             },
         },
         series: arr?.map((i: { name: any; data: any; }, index: number) => {
+            console.log(index,'index')
             return {
                 name: i.name,
                 symbolSize: 1, // 设置数据点的大小为8像素

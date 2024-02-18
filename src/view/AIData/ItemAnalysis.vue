@@ -232,6 +232,9 @@ const remoteMethod = async (query: string) => {
 }
 
 const getData = async () => {
+    pageNum_day.value = 0
+    pageNum_words.value = 0
+    clearData[0] = true
     await getTopData()
     await getWordsList(searchData)
     await getDayList(searchData)
