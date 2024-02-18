@@ -91,6 +91,21 @@
                 <div class="box2_center_top">
                     <div class="box2_center_top_left">
                         <div class="echarts_title">月累GMV达成率</div>
+                        <div class="box2_center_top_left_center">
+                            <div class="box2_center_top_left_center_left">
+                                <p class="num">3144451</p>
+                                <p class="name">累计GMV</p>
+                                <p class="num" style="margin-top: 20px;">3144451</p>
+                                <p class="name">GMV目标</p>
+                            </div>
+
+                            <div class="box2_center_top_left_center_right">
+                                <div>
+                                    <div class="num">98.89%</div>
+                                    <div class="percentage">目标: 100.00%(-1.11%)</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="box2_center_top_tight">
                         <div class="echarts_title">货盘GMV达成率</div>
@@ -182,8 +197,8 @@ onMounted(async () => {
     await gettreeData()
     await pieCharts()
     await getBox4()
-    // await cloudEcharts()
-    // await getbox2Echarts()
+    await cloudEcharts()
+    await getbox2Echarts()
 })
 
 const gettreeData = async () => {
@@ -1109,6 +1124,55 @@ $echarts_bg_img: url("./images/_2.png");
 
                 >div {
                     flex: 0.48;
+
+                    .box2_center_top_left_center {
+                        display: flex;
+                        justify-content: space-between;
+
+                        .box2_center_top_left_center_left {
+                            flex: 0.3;
+                            vertical-align: top;
+                            letter-spacing: 0px;
+
+                            .num {
+                                font-size: 24px;
+                                font-weight: 400;
+
+                                color: rgba(1, 217, 255, 1);
+                                text-align: left;
+                            }
+
+                            .name {
+                                font-size: 18px;
+                                font-weight: 400;
+                                color: rgba(255, 87, 51, 1);
+                                text-align: left;
+                                vertical-align: top;
+                            }
+                        }
+
+                        .box2_center_top_left_center_right {
+                            flex: 0.6;
+                            background-image: url('./images/nnnn.png');
+                            background-size: 100% 100%;
+                            text-align: center;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            .num {
+                                font-size: 48px;
+                                font-weight: 700;
+                                letter-spacing: 0px;
+                                color: rgba(255, 0, 0, 1);
+                            }
+
+                            .percentage {
+                                font-size: 18px;
+                                font-weight: 400;
+                                color: rgba(255, 255, 255, 1);
+                            }
+                        }
+                    }
                 }
             }
 
