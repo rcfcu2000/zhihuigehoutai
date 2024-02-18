@@ -1,5 +1,5 @@
 <template>
-    <div class="main" element-loading-background="rgba(122, 122, 122, 0.8)">
+    <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
         <el-affix :offset="0">
             <div class="header">
                 <span class="titl1_h1">单品分析</span>
@@ -179,6 +179,7 @@ var option: EChartsOption;
 const state = reactive({
     shopList: [] as any,
     key: "" as any,
+    loading: false,
     itemData: {
         visitors_count: 0,
         bundle_purchase: 0,
@@ -212,8 +213,13 @@ const searchData = reactive({
 });
 
 onMounted(async () => {
+    state.loading = true
     await getSearchShopList()
-    await getData()
+    setTimeout(async () => {
+        // console.log(state.shopList)
+        searchData.product_id = state.shopList[0]?.product_id
+        await getData()
+    }, 2000)
 })
 
 const getSearchShopList = useThrottle(async () => {
@@ -225,7 +231,6 @@ const getSearchShopList = useThrottle(async () => {
 }, 1000)
 
 const remoteMethod = async (query: string) => {
-    console.log(query)
     searchData.loading = true
     state.key = query
     getSearchShopList()
@@ -235,6 +240,9 @@ const getData = async () => {
     await getTopData()
     await getWordsList(searchData)
     await getDayList(searchData)
+    // setTimeout(() => {
+    //     state.loading = false
+    // }, 1000)
 }
 
 const allData = reactive([{
@@ -310,8 +318,9 @@ const getTopData = async () => {
         state.itemChart3data = { ...res1.data }
         state.itemIndexTrend = res2.data.records ?? [];
         state.itemData = { ...res3.data };
-
         await getHeaderChart()
+        state.loading = false
+
     }
 }
 
