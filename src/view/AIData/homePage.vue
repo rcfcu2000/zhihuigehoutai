@@ -93,14 +93,21 @@
                         <div class="echarts_title">月累GMV达成率</div>
                         <div class="box2_center_top_left_center">
                             <div class="box2_center_top_left_center_left">
-                                <p class="num">3144451</p>
-                                <p class="name">累计GMV</p>
-                                <p class="num" style="margin-top: 20px;">3144451</p>
-                                <p class="name">GMV目标</p>
+                                <div>
+                                    <p class="num">3144451</p>
+                                    <p class="name">累计GMV</p>
+                                </div>
+                                <div>
+                                    <p class="num">3144451</p>
+                                    <p class="name">GMV目标</p>
+                                </div>
                             </div>
 
                             <div class="box2_center_top_left_center_right">
-                                <div>
+                                <div class="absu">
+
+                                </div>
+                                <div class="wenzi">
                                     <div class="num">98.89%</div>
                                     <div class="percentage">目标: 100.00%(-1.11%)</div>
                                 </div>
@@ -109,6 +116,45 @@
                     </div>
                     <div class="box2_center_top_tight">
                         <div class="echarts_title">货盘GMV达成率</div>
+                        <div class="aiData_table table">
+                            <el-table :data="state.tableData">
+                                <el-table-column label="" width="120">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.name }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="S">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.S }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="A">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.A }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="B">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.B }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="C">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.C }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="D">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.D }}</span>
+                                    </template>
+                                </el-table-column>
+                                <template #empty>
+                                    <div class="flex items-center justify-center h-100%">
+                                        <el-empty />
+                                    </div>
+                                </template>
+                            </el-table>
+                        </div>
                     </div>
                 </div>
                 <div class="box2_center_btn" id="box2center">
@@ -179,6 +225,32 @@ const state = reactive({
         paid_traffic_percentage: 0,
         paid_gmv_percentage: 0,
     } as any,
+    tableData: [
+        {
+            name: '累计达成率',
+            S: 1,
+            A: 1,
+            B: 1,
+            C: 1,
+            D: 1,
+        },
+        {
+            name: 'GMV目标',
+            S: 1,
+            A: 1,
+            B: 1,
+            C: 1,
+            D: 1,
+        },
+        {
+            name: 'GMV达成率',
+            S: 1,
+            A: 1,
+            B: 1,
+            C: 1,
+            D: 1,
+        },
+    ],
     tree: [] as any,
 
 });
@@ -1041,9 +1113,9 @@ $echarts_bg_img: url("./images/_2.png");
     }
 
     .echarts_title {
-        margin: 10px 0 16px 0;
+        margin: 10px 0 10px 0;
         width: 220px;
-        height: 32px;
+        height: 28px;
         padding-left: 40px;
         background-image: url("./images/11.png");
         background-size: 100% 100%;
@@ -1128,11 +1200,15 @@ $echarts_bg_img: url("./images/_2.png");
                     .box2_center_top_left_center {
                         display: flex;
                         justify-content: space-between;
+                        height: calc(100% - 50px);
 
                         .box2_center_top_left_center_left {
                             flex: 0.3;
                             vertical-align: top;
                             letter-spacing: 0px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
 
                             .num {
                                 font-size: 24px;
@@ -1153,24 +1229,39 @@ $echarts_bg_img: url("./images/_2.png");
 
                         .box2_center_top_left_center_right {
                             flex: 0.6;
-                            background-image: url('./images/nnnn.png');
-                            background-size: 100% 100%;
                             text-align: center;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            .num {
-                                font-size: 48px;
-                                font-weight: 700;
-                                letter-spacing: 0px;
-                                color: rgba(255, 0, 0, 1);
+                            position: relative;
+
+                            .absu {
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                top: 0;
+                                left: 0;
+                                background-image: url('./images/nnnn.png');
+                                background-size: 100% 100%;
                             }
 
-                            .percentage {
-                                font-size: 18px;
-                                font-weight: 400;
-                                color: rgba(255, 255, 255, 1);
+                            .wenzi {
+                                position: relative;
+                                z-index: 1;
+                                .num {
+                                    font-size: 48px;
+                                    font-weight: 700;
+                                    letter-spacing: 0px;
+                                    color: rgba(255, 0, 0, 1);
+                                }
+
+                                .percentage {
+                                    font-size: 18px;
+                                    font-weight: 400;
+                                    color: rgba(255, 255, 255, 1);
+                                }
                             }
+
                         }
                     }
                 }
@@ -1279,6 +1370,28 @@ $echarts_bg_img: url("./images/_2.png");
 ::-webkit-scrollbar-thumb:hover {
     background-color: rgb(33, 183, 206);
     /* 滑块悬停状态颜色 */
+}
+
+::v-deep(.echarts-tooltip) {
+    padding: 0 !important;
+    // position: fixed !important;
+    top: 0 !important;
+    left: -10px !important;
+}
+
+::v-deep(.el-table) {
+    .el-table__header {
+        border-bottom: 1px solid rgb(16, 97, 197);
+
+        tr {
+            color: rgb(255, 153, 0);
+        }
+    }
+
+
+    .el-table__row .el-table_1_column_1 {
+        border-right: 1px solid rgb(16, 97, 197);
+    }
 }
 </style>
   

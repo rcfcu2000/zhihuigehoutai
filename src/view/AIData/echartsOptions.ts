@@ -1072,10 +1072,10 @@ export const pieItemOptions = (arr: any) => {
 
         },
         grid: {
-            top: "2%",
+            top: "10px",
             left: '0',
             right: '0',
-            bottom: '2%',
+            bottom: '10px',
             // containLabel: true
         },
         title: {
