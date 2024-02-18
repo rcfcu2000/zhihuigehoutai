@@ -7,24 +7,24 @@
           <div class="search_left">
             <div class="search_line">
               负责人
-              <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择" @change="getData2"
-                size="small">
+              <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip class="select_width"
+                placeholder="请选择" @change="getData2">
                 <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
                   :value="item.responsible" />
               </el-select>
             </div>
             <div class="search_line">
               本月货盘
-              <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2" class="select_width"
-                placeholder="全部" size="small">
+              <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable multiple
+                @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
                   :value="item.current_inventory" />
               </el-select>
             </div>
             <div class="search_line">
               货盘变化
-              <el-select v-model="searchData.inventory_change" clearable multiple @change="getData2" class="select_width"
-                placeholder="全部" size="small">
+              <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable multiple
+                @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
                 </el-option>
               </el-select>
@@ -33,9 +33,9 @@
           <div class="search_right">
             <div class="search_line">
               请选择起止时间
-              <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false" size="small"
-                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                start-placeholder="开始时间" end-placeholder="结束时间" />
+              <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                end-placeholder="结束时间" />
             </div>
           </div>
         </div>
@@ -138,7 +138,8 @@
     <div class="title">GMV拆解</div>
     <div class="GMV">
       <div class="GMV_left">
-        <div class="GMV_left_tit">{{ state.treeLevel ? state.treeLevel : '全部' }}</div>
+        <div class="GMV_left_tit">{{ state.treeLevel ? state.treeLevel : '全部' }} <span class="clearSelect"
+            @click="clearSelect">清除选中</span></div>
         <div class="GMV_left_ctn" id="GMVDismantlingecharts"></div>
       </div>
       <div class="GMV_right">
@@ -522,6 +523,7 @@ import {
   getCategoriesList,
   getSubGmvList,
 } from "@/api/AIdata";
+import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
@@ -587,7 +589,7 @@ const disabledDate = (time: Date) => {
 }
 const searchData = reactive({
   product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
-  current_inventory: [], // string 当期货盘
+  current_inventory: [] as any, // string 当期货盘
   inventory_change: [],
   all: 999 as any,
   // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
@@ -704,47 +706,72 @@ const changeCheckGroup = (type: string) => {
   getData2();
 };
 
+const clearSelect = async () => {
+  state.treeLevel = 0
+  searchData.current_inventory = []
+  await getData()
+};
+
+const getTree = async () => {
+  let data = {
+    end_date: searchData.date[1],
+    start_date: searchData.date[0],
+    current_inventory: [],
+    product_manager: searchData.product_manager,
+    inventory_change: searchData.inventory_change,
+  };
+  const resp3 = await getSubGmvList(data);
+  if (resp3.code === 0) {
+    state.monthPallet = resp3.data.records;
+    let allValue = 0;
+    resp3.data.records?.forEach((i) => {
+      allValue += (i.payment_amount * 1);
+    });
+    state.tree = [
+      {
+        name: "GMV",
+        value: parseFloat(allValue.toFixed(2)),
+        lv: -1,
+        key: 1,
+        bfb: '100%',
+        children: resp3.data.records?.map((i) => {
+          return {
+            name: i.current_inventory,
+            key: i.key,
+            value: parseFloat(i.payment_amount.toFixed(2)),
+            bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+            children: [],
+            lv: 0,
+          };
+        }),
+      },
+    ];
+    await GMVDismantling();
+
+  }
+}
 
 const getData = async () => {
-  const [resp1, resp2] = [await getResponsibleList(), await getCategoriesList()];
+  const [resp1, resp2, res4] = [await getResponsibleList(), await getCategoriesList(), await getUserPriceRange({ uid: userStore.userInfo.ID, })];
   if (resp1.code === 0 && resp2.code === 0) {
     state.responsibleList = resp1.data.records;
     // console.log([resp1.data.records[0].responsible])
     searchData.product_manager = resp1.data.records[0].responsible;
-    let data = {
-      end_date: searchData.date[1],
-      start_date: searchData.date[0],
-      current_inventory: [],
-      product_manager: searchData.product_manager,
-      inventory_change: searchData.inventory_change,
-    };
-    const resp3 = await getSubGmvList(data);
-    if (resp3.code === 0) {
-      state.monthPallet = resp3.data.records;
-      let allValue = 0;
-      resp3.data.records?.forEach((i) => {
-        allValue += (i.payment_amount * 1);
-      });
-      state.tree = [
-        {
-          name: "GMV",
-          value: parseFloat(allValue.toFixed(2)),
-          lv: -1,
-          key: 1,
-          bfb: '100%',
-          children: resp3.data.records?.map((i) => {
-            return {
-              name: i.current_inventory,
-              key: i.key,
-              value: parseFloat(i.payment_amount.toFixed(2)),
-              bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
-              children: [],
-              lv: 0,
-            };
-          }),
-        },
-      ];
-      await getData2();
+    await getTree()
+    await getData2();
+    if (res4.code === 0) {
+      state.loading = false;
+      state.dialogForm.records = JSON.stringify(res4.data.records ? res4.data.records : []);
+      userPriceRange.priceRange = res4.data.records ? res4.data.records : [];
+      let obj = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        product_manager: searchData.product_manager,
+        inventory_change: searchData.inventory_change,
+        current_inventory: searchData.current_inventory,
+        price_range_list: userPriceRange.priceRange,
+      }
+      getPriceRangedatas(obj)
     }
   }
 };
@@ -758,14 +785,14 @@ const getData2 = async () => {
     inventory_change: searchData.inventory_change,
     current_inventory: searchData.current_inventory,
   };
-  const [res, res2] = [await getAlldata(data), await getPriceRangedata(data)];
-  if (res.code === 0 && res2.code === 0) {
+  const [res] = [await getAlldata(data)];
+  if (res.code === 0) {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
     state.gmvPrductList = res.data.gmvPrductList.records;
     state.oldNewList = res.data.oldNewList.records;
 
-    state.priceRangedata = res2.data.records;
+    // state.priceRangedata = res2.data.records;
     getEchartsData();
     state.loading = false;
   }
@@ -784,12 +811,14 @@ const getPriceRangedatas = async (data) => {
 
 const getData2Copy = async (data: any) => {
   state.loading = true;
-  const [res, res2] = [await getAlldata(data), await getPriceRangedata(data)];
-  if (res.code === 0 && res2.code === 0) {
+  const [res] = [await getAlldata(data)];
+  if (res.code === 0) {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
     state.gmvPrductList = res.data.gmvPrductList.records;
-    state.priceRangedata = res2.data.records;
+    // state.priceRangedata = res2.data.records;
+    data.price_range_list = userPriceRange.priceRange
+    getPriceRangedatas(data)
     getEchartsData2();
     state.loading = false;
   }
@@ -842,10 +871,13 @@ const contrastGMV = () => {
   ];
   const option = lineOptions(arr);
   option && myChart.setOption(option);
-  myChart.hideLoading();
-  window.addEventListener("resize", () => {
-    myChart.resize();
-  });
+  let listener1 = function () {
+    if (myChart) {
+      myChart.resize();
+    }
+  };
+  option && myChart.setOption(option);
+  EleResize.on(chartDom, listener1);
 };
 const contrastVisitor = () => {
   const chartDom = document.getElementById("Visitorcharts") as HTMLElement;
@@ -864,9 +896,13 @@ const contrastVisitor = () => {
   const option = lineOptions(arr);
   myChart.hideLoading();
   option && myChart.setOption(option);
-  window.addEventListener("resize", () => {
-    myChart.resize();
-  });
+  let listener1 = function () {
+    if (myChart) {
+      myChart.resize();
+    }
+  };
+  option && myChart.setOption(option);
+  EleResize.on(chartDom, listener1);
 };
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
@@ -1060,6 +1096,7 @@ const GMVDismantling = () => {
       leve: 0,
     };
     if (params.data.lv === 0) {
+      searchData.current_inventory = [params.data.name]
       data.leve = 0
       getSubGmvList(data).then((res) => {
         if (res.code === 0) {
@@ -1163,10 +1200,18 @@ const GMVDismantling = () => {
       });
     }
     getData2Copy(data)
+
   });
-  window.addEventListener("resize", () => {
-    myChart.resize();
-  });
+  let listener1 = function () {
+    if (myChart) {
+      myChart.resize();
+    }
+  };
+  option && myChart.setOption(option);
+  EleResize.on(chartDom, listener1);
+  // window.addEventListener("resize", () => {
+  //   myChart.resize();
+  // });
 };
 // 添加数据到树形结构的函数
 const addDataToTree = (root: any, targetId: any, newData: any) => {
@@ -1256,7 +1301,7 @@ $echarts_bg_img: url("./images/_2.png");
         }
 
         .select_width {
-          width: 100px;
+          width: 150px;
         }
 
         .search_radio {
@@ -1361,10 +1406,12 @@ $echarts_bg_img: url("./images/_2.png");
     justify-content: space-around;
 
     .GMV_left {
-      flex: 0.48;
+      // flex: 0.48;
+      width: 48%;
 
       // background-color: pink;
       .GMV_left_tit {
+        width: 100%;
         height: 66px;
         line-height: 66px;
         text-align: center;
@@ -1372,6 +1419,16 @@ $echarts_bg_img: url("./images/_2.png");
         font-size: 18px;
         font-weight: 600;
         background: rgb(3, 37, 93, 0.5);
+        position: relative;
+
+        .clearSelect {
+          position: absolute;
+          right: 10px;
+          bottom: 0;
+          top: 0;
+          margin: auto;
+          cursor: pointer;
+        }
       }
 
       .GMV_left_ctn {
@@ -1386,7 +1443,7 @@ $echarts_bg_img: url("./images/_2.png");
     }
 
     .GMV_right {
-      flex: 0.48;
+      width: 48%;
     }
 
     .echarts_1 {
@@ -1409,7 +1466,7 @@ $echarts_bg_img: url("./images/_2.png");
 
     .trend_comparison_box {
       padding: 10px 20px;
-      height: 200px;
+      height: calc(100% - 78px);
       background-image: $echarts_bg_img;
       background-size: 100% 100%;
       position: relative;
@@ -1626,6 +1683,20 @@ $echarts_bg_img: url("./images/_2.png");
 ::v-deep(.el-select__tags) {
   .el-tag--info span {
     color: #fff;
+  }
+}
+
+::v-deep(.el-table) {
+  .el-table__header {
+    border-bottom: 1px solid rgb(16, 97, 197);
+
+    tr {
+      // color: rgb(255, 153, 0);
+    }
+  }
+
+  .el-table__row .el-table_1_column_1 {
+    border-right: 1px solid rgb(16, 97, 197);
   }
 }
 </style>

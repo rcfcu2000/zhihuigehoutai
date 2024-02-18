@@ -1248,6 +1248,7 @@ $echarts_bg_img: url("./images/_2.png");
                             .wenzi {
                                 position: relative;
                                 z-index: 1;
+
                                 .num {
                                     font-size: 48px;
                                     font-weight: 700;
@@ -1387,7 +1388,6 @@ $echarts_bg_img: url("./images/_2.png");
             color: rgb(255, 153, 0);
         }
     }
-
 
     .el-table__row .el-table_1_column_1 {
         border-right: 1px solid rgb(16, 97, 197);
