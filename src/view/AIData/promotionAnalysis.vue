@@ -7,24 +7,24 @@
                     <div class="search_left">
                         <div class="search_line">
                             负责人
-                            <el-select v-model="searchData.product_manager" class="select_width" placeholder="请选择"
-                                @change="getData2" size="small" multiple>
+                            <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip
+                                class="select_width" placeholder="请选择" @change="getData2" multiple>
                                 <el-option v-for="item in state.responsibleList" :key="item.responsible"
                                     :label="item.responsible" :value="item.responsible" />
                             </el-select>
                         </div>
                         <div class="search_line">
                             本月货盘
-                            <el-select v-model="searchData.current_inventory" clearable multiple @change="getData2"
-                                class="select_width" placeholder="请选择" size="small">
+                            <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable
+                                multiple @change="getData2" class="select_width" placeholder="请选择">
                                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
                                     :label="item.current_inventory" :value="item.current_inventory" />
                             </el-select>
                         </div>
                         <div class="search_line">
                             货盘变化
-                            <el-select v-model="searchData.scene_category" clearable multiple @change="getData2"
-                                class="select_width" placeholder="请选择" size="small">
+                            <el-select v-model="searchData.scene_category" collapse-tags collapse-tags-tooltip clearable
+                                multiple @change="getData2" class="select_width" placeholder="请选择">
                                 <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
                                     :value="item.value" />
                             </el-select>
@@ -33,7 +33,7 @@
                     <div class="search_right">
                         <div class="search_line">
                             请选择起止时间
-                            <el-date-picker @change="getData2()" :clearable="false" v-model="searchData.date" size="small"
+                            <el-date-picker @change="getData2()" :clearable="false" v-model="searchData.date"
                                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                                 start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
@@ -873,7 +873,7 @@ $echarts_bg_img2: url('./images/_2.png');
                 }
 
                 .select_width {
-                    width: 100px;
+                    width: 150px;
                 }
 
                 ::v-deep(.el-radio) {
