@@ -776,7 +776,7 @@ export const lineOptionsNum = (arr: any) => {
     }
 }
 
-export const XYlineOptions = (date: any, price: any, leave: any) => {
+export const XYlineOptions = (date: any, leave: any, price: any) => {
     return {
         tooltip: {
             trigger: "axis"
@@ -879,6 +879,7 @@ export const XYlineOptions = (date: any, price: any, leave: any) => {
                 name: "价格力星级",
                 type: "line",
                 stack: "价格力星级",
+                symbolSize: 0, // 设置数据点的大小为8像素
                 itemStyle: {
                     normal: {
                         color: "#a8f5a1",
@@ -894,6 +895,7 @@ export const XYlineOptions = (date: any, price: any, leave: any) => {
                 yAxisIndex: 1,
                 type: "line",
                 stack: "件单价",
+                symbolSize: 0, // 设置数据点的大小为8像素
                 itemStyle: {
                     normal: {
                         color: "#b78ffc",
