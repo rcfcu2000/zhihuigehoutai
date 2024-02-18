@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-06 16:59:52
+ * @LastEditTime: 2024-02-18 10:27:12
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——每日明细 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -83,7 +83,6 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     if (newE[0]) {
-
         tableData = []
     }
     tableData = tableData.concat(newD.data)

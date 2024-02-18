@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-07 14:30:42
+ * @LastEditTime: 2024-02-18 12:30:03
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,10 +14,10 @@
     </div> -->
     <div class="aiData_table table" :key="count">
         <!--  v-loading="loadType" -->
-        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
-            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange"
-            @header-click="headerClick">
+        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType" show-summary
+            :summary-method="getSummaries" element-loading-background="rgba(122, 122, 122, 0.8)"
+            style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300"
+            @filter-change="filterChange" @header-click="headerClick">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">
 
@@ -64,6 +64,7 @@ import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdate
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum, lueNum } from "@/utils/format.js"
+import type { TableColumnCtx } from 'element-plus'
 
 import * as echarts from 'echarts';
 
@@ -124,7 +125,6 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     if (newE[0]) {
-
         tableData = []
     }
     tableData = tableData.concat(newD.data)
@@ -185,7 +185,57 @@ const loadMore = (res) => {
         }
     }
 }
+interface Product {
+    pallet: string
+    product_alias: string
+    gmv: string
+    gmv_percentage: string
+    cost: string
+    cost_percentage: number
+    roi: number
+    click_through_rate: number
+    clicks: number
+    conversion_rate: number
+    direct_roi: number
+    average_order_value: number
+    direct_transaction_amount: number
+    direct_transaction_count: number
+    indirect_roi: number
+    indirect_transaction_amount: number
+    indirect_transaction_count: number
+    existing_customer_percentage: number
+    favorite_add_to_cart_rate: number
+}
+interface SummaryMethodProps<T = Product> {
+    columns: TableColumnCtx<T>[]
+    data: T[]
+}
 
+const getSummaries = (param: SummaryMethodProps) => {
+    const { columns, data } = param
+    const sums: string[] = []
+    columns.forEach((column, index) => {
+        if (index === 0) {
+            sums[index] = '合计'
+            return
+        }
+        const values = data.map((item) => Number(item[column.property]))
+        if (!values.every((value) => Number.isNaN(value))) {
+            sums[index] = `${values.reduce((prev, curr) => {
+                const value = Number(curr)
+                if (!Number.isNaN(value)) {
+                    return Number(prev + curr)
+                } else {
+                    return Number(prev)
+                }
+            }, 0)}`
+        } else {
+            sums[index] = 'N/A'
+        }
+    })
+    console.log(sums,"sums")
+    return sums
+}
 
 // 不重复随机数
 /**
