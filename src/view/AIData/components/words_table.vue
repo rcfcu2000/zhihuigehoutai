@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 16:43:25
+ * @LastEditTime: 2024-02-18 18:27:37
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -16,13 +16,15 @@
         <!--  v-loading="loadType" -->
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 320px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange" @header-click="headerClick">
+            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange"
+            @header-click="headerClick">
             <!-- <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">
 
             </el-table-column> -->
 
-            <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title" :fixed="head.fixed" :align="head.align" :width="head.width">
+            <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
+                :fixed="head.fixed" :align="head.align" :width="head.width">
                 <el-table-column v-for="item, idx in head.children" :key="idx" :prop="item.dataKey" :label="item.title"
                     :align="item.align" :width="item.width">
                     <template #default="scope">
@@ -32,6 +34,11 @@
                     </template>
                 </el-table-column>
             </el-table-column>
+            <template #append v-if="nomore">
+                <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                    <el-icon><MagicStick /></el-icon> <span>没有更多了</span>
+                </div>
+            </template>
         </el-table>
     </div>
 </template>
@@ -40,7 +47,7 @@
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdated } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { persentNum, floatNum,lueNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum } from "@/utils/format.js"
 
 import * as echarts from 'echarts';
 
@@ -63,7 +70,7 @@ const lineData = () => {
     }
     return arr
 }
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory','tableCount'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory', 'tableCount'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
@@ -84,7 +91,8 @@ const filterChange = (res) => {
 }
 let randomStrings = [] as Array<any>
 const tableListRef = ref();
-const nomore = false
+const nomore = ref(false)
+
 onMounted(() => {
 
 })
@@ -104,9 +112,6 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
         tableData = []
     }
     tableData = tableData.concat(newD.data)
-    if(tableData.length >= propData.tableCount){
-
-    }
     countModel.value = tableData.length
     loadType.value = false
     refreshTable()
@@ -118,9 +123,11 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
 const loadMore = (res) => {
     if (componentTitle.value == "商品明细") {
         console.log('商品明细')
-        if (!loadType.value) {
+        if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'product')
+        }else{
+            nomore.value = true
         }
     }
 }
@@ -149,7 +156,7 @@ const generateRandomString = () => {
 }
 
 const headerClick = () => {
-    
+
 }
 
 </script>
@@ -167,7 +174,7 @@ const headerClick = () => {
     background-image: $box_head_bg_img;
     font-size: 24px;
     font-weight: 700;
-    color: rgba(255,255,255,1);
+    color: rgba(255, 255, 255, 1);
     height: 70px;
     display: flex;
     align-items: center;

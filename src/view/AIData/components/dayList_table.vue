@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 10:27:12
+ * @LastEditTime: 2024-02-18 18:26:51
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——每日明细 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -31,6 +31,11 @@
                     </div>
                 </template>
             </el-table-column>
+            <template #append v-if="nomore">
+                <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                    <el-icon><MagicStick /></el-icon> <span>没有更多了</span>
+                </div>
+            </template>
         </el-table>
     </div>
 </template>
@@ -48,7 +53,7 @@ let tableHead = ref([
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
 let tableData = reactive([] as Array<any>)
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'tableCount'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 tableData = propData.Commodity_detail.data
@@ -66,6 +71,7 @@ const filterChange = (res) => {
 }
 let randomStrings = [] as Array<any>
 const tableListRef = ref();
+const nomore = ref(false)
 
 onMounted(() => {
 
@@ -78,7 +84,7 @@ const refreshTable = () => {
     //强制刷新组件
     table.doLayout()
 }
-watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
+watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([newD, newE]) => {
     console.log(newD, newE, "newE")
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
@@ -97,9 +103,11 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
 const loadMore = (res) => {
     if (componentTitle.value == "每日明细") {
         console.log('商品明细')
-        if (!loadType.value) {
+        if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'day')
+        }else{
+            nomore.value = true
         }
     }
 }
