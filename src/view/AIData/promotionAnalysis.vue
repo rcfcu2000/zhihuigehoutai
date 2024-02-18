@@ -487,8 +487,6 @@ onMounted(async () => {
     await getAll(searchData)
     await getData()
     await getData2()
-    // getDetailPro(searchData)
-    // getDetailPlan(searchData)
 })
 const tableRwoClick = async (row, column, event) => {
     console.log(row, column, event)
@@ -556,13 +554,6 @@ const getData = async () => {
             })
             count.value++
         }
-
-        // pageNum_pro.value = 0
-        // pageNum_plan.value = 0
-        // await getEchartsData()
-        // await getPromotionGetAll()
-        // await getDetailPro(searchData)
-        // await getDetailPlan(searchData)
     }
 }
 

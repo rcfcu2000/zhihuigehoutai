@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 10:26:17
+ * @LastEditTime: 2024-02-18 16:43:25
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -63,7 +63,7 @@ const lineData = () => {
     }
     return arr
 }
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory','tableCount'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
@@ -84,7 +84,7 @@ const filterChange = (res) => {
 }
 let randomStrings = [] as Array<any>
 const tableListRef = ref();
-
+const nomore = false
 onMounted(() => {
 
 })
@@ -96,7 +96,7 @@ const refreshTable = () => {
     //强制刷新组件
     table.doLayout()
 }
-watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
+watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([newD, newE]) => {
     console.log(newD, newE, "newE")
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
@@ -104,50 +104,13 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
         tableData = []
     }
     tableData = tableData.concat(newD.data)
+    if(tableData.length >= propData.tableCount){
+
+    }
     countModel.value = tableData.length
     loadType.value = false
     refreshTable()
     nextTick(() => {
-        // newD.data.forEach((item: any) => {
-        //     const domId_1 = item.product_id + '_' + 'gmv_trend'
-        //     const domId_2 = item.product_id + '_' + 'cost_trend'
-        //     const domId_3 = item.product_id + '_' + 'roi_trend'
-        //     let chartDom1: any = document.getElementById(domId_1);
-        //     let chartDom2: any = document.getElementById(domId_2);
-        //     let chartDom3: any = document.getElementById(domId_3);
-        //     let myChart1 = echarts.init(chartDom1);
-        //     if (newE[0] && chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
-        //         myChart1.clear()
-        //     }
-        //     let myChart2 = echarts.init(chartDom2);
-        //     if (newE[0] && chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
-        //         myChart2.clear()
-        //     }
-        //     let myChart3 = echarts.init(chartDom3);
-        //     if (newE[0] && chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
-        //         myChart3.clear()
-        //     }
-        //     let option1 = table_lineOptions(item.gmv_trend, item.times);
-        //     let option2 = table_lineOptions(item.cost_trend, item.times);
-        //     let option3 = table_lineOptions(item.roi_trend, item.times);
-        //     let listener = function () {
-        //         if (myChart1) {
-        //             myChart1.resize();
-        //         }
-        //         if (myChart2) {
-        //             myChart2.resize();
-        //         }
-        //         if (myChart3) {
-        //             myChart3.resize();
-        //         }
-        //     };
-        //     option1 && myChart1.setOption(option1);
-        //     option2 && myChart2.setOption(option2);
-        //     option3 && myChart3.setOption(option3);
-        //     EleResize.on(chartDom1, listener);
-        //     EleResize.on(chartDom2, listener);
-        //     EleResize.on(chartDom3, listener);
-        // })
         refreshTable()
     })
 }, { deep: true })
