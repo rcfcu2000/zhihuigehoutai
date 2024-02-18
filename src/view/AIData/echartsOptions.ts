@@ -638,9 +638,9 @@ export const wordsCloud = (arr: any, name: any) => {
         tooltip: {
         },
         grid: {
-            left: '0%',
-            right: '0%',
-            bottom: '0%',
+            left: '0',
+            right: '0',
+            bottom: '0',
             // containLabel: true
         },
         title: {
@@ -664,11 +664,11 @@ export const wordsCloud = (arr: any, name: any) => {
                 // 左/上/宽/高/右/下用于字云的定位
                 // 默认放置在中心，大小为75% x 80%。
                 left: 'center',
-                top: 'center',
-                width: '70%',
+                bottom: 'center',
+                width: '98%',
                 height: '80%',
                 right: null,
-                bottom: null,
+                // bottom: null,
 
                 // 数据中的值将映射到的文本大小范围。
                 // 默认值为最小12px，最大60px。
@@ -710,8 +710,8 @@ export const wordsCloud = (arr: any, name: any) => {
                 emphasis: {
                     focus: 'self',
                     textStyle: {
-                        textShadowBlur: 10,
-                        textShadowColor: '#fdfdfd',
+                        textShadowBlur: 0,
+                        textShadowColor: '#ffffff',
                     },
                 },
                 data: arr,
@@ -778,7 +778,7 @@ export const lineOptionsNum = (arr: any) => {
     }
 }
 
-export const XYlineOptions = (date: any, price: any, leave: any) => {
+export const XYlineOptions = (date: any, leave: any, price: any) => {
     return {
         tooltip: {
             trigger: "axis"
@@ -881,6 +881,7 @@ export const XYlineOptions = (date: any, price: any, leave: any) => {
                 name: "价格力星级",
                 type: "line",
                 stack: "价格力星级",
+                symbolSize: 0, // 设置数据点的大小为8像素
                 itemStyle: {
                     normal: {
                         color: "#a8f5a1",
@@ -896,6 +897,7 @@ export const XYlineOptions = (date: any, price: any, leave: any) => {
                 yAxisIndex: 1,
                 type: "line",
                 stack: "件单价",
+                symbolSize: 0, // 设置数据点的大小为8像素
                 itemStyle: {
                     normal: {
                         color: "#b78ffc",
@@ -1069,10 +1071,17 @@ export const pieItemOptions = (arr: any) => {
             // }
 
         },
+        grid: {
+            top: "2%",
+            left: '0',
+            right: '0',
+            bottom: '2%',
+            // containLabel: true
+        },
         title: {
             text: 'SKU名称',
             right: 20,
-            top: "32%",
+            top: "10%",
             textStyle: {
                 color: '#FFF'
             }
@@ -1087,10 +1096,17 @@ export const pieItemOptions = (arr: any) => {
                 color: '#fff'
             },
             pageIconColor: '#fff',
-            top: "40%",
+            top: "20%",
             textStyle: {
                 color: '#FFF'
-            }
+            },
+            formatter: function (name) {
+                var maxLength = 15; // 最大长度限制
+                if (name.length > maxLength) {
+                    name = name.slice(0, maxLength) + '...';
+                }
+                return name
+            },
         },
         series: [
             {
@@ -1105,12 +1121,28 @@ export const pieItemOptions = (arr: any) => {
                         fontSize: 14,
                         fontWeight: 'bolder'
                     },
-                    formatter(param) {
-                        return param.name + '  ' + param.value + '  ';
-                    }
+                    // formatter(params) {
+                    //     return params.name + '  ' + params.value + '  ';
+                    // }
+                    formatter: function (params) {
+                        var maxLength = 10; // 最大长度限制
+                        if (params.name.length > maxLength) {
+                            return params.name.substring(0, maxLength) + "..." + '  ' + params.value + '  '; // 超过最大长度则添加省略号
+                        } else {
+                            return params.name + '  ' + params.value + '  '; // 未超过最大长度则返回原始名称
+                        }
+                    },
                 },
                 data: arr,
                 itemStyle: {
+                    // color: function () {
+                    //     return 'rgb(' + [
+                    //         Math.round(Math.random() * 160),
+                    //         Math.round(Math.random() * 160),
+                    //         Math.round(Math.random() * 160)
+                    //     ].join(',') + ')';
+
+                    // },
                     // color: backColor,
                     // normal: {
                     //     color: function (colors) {
@@ -1172,9 +1204,17 @@ export const pieItemOptions1 = (arr: any) => {
                         fontSize: 14,
                         fontWeight: 'bolder'
                     },
-                    formatter(param) {
-                        return param.name + '  ' + param.value + '  ';
-                    }
+                    formatter: function (params) {
+                        var maxLength = 10; // 最大长度限制
+                        if (params.name.length > maxLength) {
+                            return params.name.substring(0, maxLength) + "..." + '  ' + params.value + '  '; // 超过最大长度则添加省略号
+                        } else {
+                            return params.name + '  ' + params.value + '  '; // 未超过最大长度则返回原始名称
+                        }
+                    },
+                    // formatter(params) {
+                    //     return params.name + '  ' + params.value + '  ';
+                    // }
                 },
                 data: arr,
             }

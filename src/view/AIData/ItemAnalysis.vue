@@ -306,7 +306,7 @@ const getTopData = async () => {
     const data = {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
-        product_id: ''
+        product_id: searchData.product_id,
     }
     const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
     if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
@@ -429,7 +429,7 @@ const getHeaderChart = () => {
 
     const option11 = XYlineOptions(arr11Date, arr11pp_level, arr11unit_price);
     const option12 = pieItemOptions(arr12);
-    const option13 = wordsCloud(arr13);
+    const option13 = wordsCloud(arr13, '');
 
 
     option1 && myChart1.setOption(option1);
