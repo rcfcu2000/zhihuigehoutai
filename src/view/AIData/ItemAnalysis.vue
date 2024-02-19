@@ -141,11 +141,11 @@
         <el-row :gutter="20">
             <el-col :span="12">
                 <wordsTbale v-model="count" :Commodity_detail="allData[0]" :comKey="1" :clearData="clearData"
-                    :current_inventory="current_inventory" @load-more="loadMore" />
+                    :current_inventory="current_inventory" @load-more="loadMore" :tableCount="wordsCount" />
             </el-col>
             <el-col :span="12">
                 <dayListTbale v-model="count" :Commodity_detail="allData[1]" :comKey="0" :clearData="clearData"
-                    :current_inventory="current_inventory" @load-more="loadMore" />
+                    :current_inventory="current_inventory" @load-more="loadMore" :tableCount="dayCount" />
             </el-col>
         </el-row>
         <goHome />
@@ -198,6 +198,8 @@ const state = reactive({
 const pageNum_day = ref(0)
 const pageNum_words = ref(0)
 const pageSize = ref(20)
+const wordsCount = ref(0)
+const dayCount = ref(0)
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
@@ -335,6 +337,7 @@ const getWordsList = async (arr: any) => {
     arr.end_date = arr.date[1]
     const res = await getKeywordList(arr)
     if (res.code == 0 && res.data.records) {
+
         allData[0].data = res.data.records
     } else {
         ElMessage.error(res.msg)
