@@ -336,27 +336,32 @@
           </span>
         </div>
         <el-form ref="formRef" :model="userPriceRange">
-          <div v-for="(item, index) in userPriceRange.priceRange" class="item_line dp-flex" :key="index">
-            <el-form-item :prop="'priceRange.' + index + '.priceMin'" :rules="{
-              required: true,
-              message: '填写价格区间',
-              trigger: 'blur',
-            }">
-              <el-input-number v-model="item.priceMin" class="input_width input_style" :controls="false"
-                @blur="checkNum(item.priceMin, index, 'priceMin')" />
-              -
-            </el-form-item>
-            <el-form-item :prop="'priceRange.' + index + '.priceMax'" :rules="{
-              required: true,
-              message: '填写价格区间',
-              type: 'number',
-              trigger: 'blur',
-            }">
-              <el-input-number v-model="item.priceMax" class="input_width input_style" :controls="false"
-                @blur="checkNum(item.priceMax, index, 'priceMax')" />
-              <span style="flex: 1">元</span>
-            </el-form-item>
-            <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
+          <div v-for="(item, index) in userPriceRange.priceRange" :key="index">
+            <div class="item_line dp-flex">
+              <el-form-item :prop="'priceRange.' + index + '.priceMin'" :rules="{
+                required: true,
+                message: '填写价格区间',
+                trigger: 'blur',
+              }">
+                <el-input-number v-model="item.priceMin" class="input_width input_style" :controls="false"
+                  @blur="checkNum(item.priceMin, index, 'priceMin')" />
+                -
+              </el-form-item>
+              <el-form-item :prop="'priceRange.' + index + '.priceMax'" :rules="{
+                required: true,
+                message: '填写价格区间',
+                type: 'number',
+                trigger: 'blur',
+              }">
+                <el-input-number v-model="item.priceMax" class="input_width input_style" :disabled="item.disabled"
+                  :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')" :placeholder="item.placeholder" />
+                <span style="flex: 1">元</span>
+              </el-form-item>
+              <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
+            </div>
+            <!-- <div  class="item_line dp-flex" v-if="index == 6">
+                123123
+            </div> -->
           </div>
         </el-form>
         <el-button class="mt-2 btn_style" style="width: 100%" @click="addDomain"
@@ -598,18 +603,13 @@ const searchData = reactive({
 
 // 调整价格区间data
 const userPriceRange = reactive<{
-  priceRange: DomainItem[];
+  priceRange: any[];
 }>({
   priceRange: [],
 });
 
-interface DomainItem {
-  priceMin: number;
-  priceMax: number;
-  uid: string;
-}
 
-const removeLine = (item: DomainItem) => {
+const removeLine = (item: any) => {
   const index = userPriceRange.priceRange.indexOf(item);
   if (index !== -1) {
     userPriceRange.priceRange.splice(index, 1);
@@ -621,41 +621,77 @@ const restore = () => {
 };
 
 const addDomain = () => {
-  userPriceRange.priceRange.push({
-    priceMin: 0,
-    priceMax: 0,
-    uid: userStore.userInfo.ID,
-  });
+  const count = userPriceRange.priceRange.length - 1
+  console.log(count)
+  if (userPriceRange.priceRange.length === 5) {
+    userPriceRange.priceRange.push({
+      priceMin: userPriceRange.priceRange[count]['priceMax'],
+      priceMax: null,
+      disabled: true,
+      placeholder: '以上',
+      uid: userStore.userInfo.ID,
+    });
+  } else {
+    if (count < 0) {
+      userPriceRange.priceRange.push({
+        priceMin: 0,
+        priceMax: 100,
+        uid: userStore.userInfo.ID,
+      });
+    } else {
+      userPriceRange.priceRange.push({
+        priceMin: userPriceRange.priceRange[count]['priceMax'],
+        priceMax: userPriceRange.priceRange[count]['priceMax'] + 1,
+        uid: userStore.userInfo.ID,
+      });
+    }
+
+  }
+  console.log(userPriceRange.priceRange)
 };
 
 const checkNum = (val, ind, str) => {
+  // console.log(val, ind, str)
   if (!/^\d+$/.test(val)) {
     ElMessage.warning("输入格式错误或者输入为空");
     userPriceRange.priceRange[ind][str] = "";
     return;
   }
-  let s = false;
-  userPriceRange.priceRange.forEach((item, index) => {
-    if (
-      Number(item.priceMin) < Number(val) &&
-      Number(val) < Number(item.priceMax) &&
-      index !== ind
-    ) {
-      s = true;
-      return;
+  // console.log((ind + 1) !== userPriceRange.priceRange.length)
+  if (userPriceRange.priceRange[ind]['priceMax'] <= userPriceRange.priceRange[ind]['priceMin']) {
+    userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind]['priceMin'] + 1
+    if (ind + 1 !== userPriceRange.priceRange.length) {
+      // console.log(123123123)
+      userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMin'] + 1
     }
-  });
-  if (s) {
-    ElMessage.warning("输入价格与其他区间价格冲突");
-    userPriceRange.priceRange[ind][str] = "";
-    return;
   }
+
+  if (ind !== 0) {
+    if (str === 'priceMin') {
+      userPriceRange.priceRange[ind - 1]['priceMax'] = userPriceRange.priceRange[ind]['priceMin']
+    }
+  }
+  if (ind + 1 !== userPriceRange.priceRange.length) {
+    if (userPriceRange.priceRange[ind]['priceMax'] >= userPriceRange.priceRange[ind + 1]['priceMax']) {
+      userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind + 1]['priceMax'] - 1
+      userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind + 1]['priceMax'] - 1
+    }
+  }
+  if (str === 'priceMax') {
+    userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMax']
+  }
+
+  // if (s) {
+  //   ElMessage.warning("输入价格与其他区间价格冲突");
+  //   userPriceRange.priceRange[ind][str] = "";
+  //   return;
+  // }
 };
 
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(async (valid) => {
-    if (valid) {
+    if (!valid) {
       const data = {
         records: userPriceRange.priceRange,
         uid: userStore.userInfo.ID,
