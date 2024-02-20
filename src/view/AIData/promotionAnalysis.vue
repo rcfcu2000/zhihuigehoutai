@@ -280,7 +280,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="货盘：" v-if="state.tableSearchLv === 1">
-                    <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.current_inventory" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
                             :value="item.pallet" />
@@ -303,11 +303,9 @@
             </el-form>
         </div>
 
-        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="0" :clearData="clearData"
-            :current_inventory="current_inventory" @load-more="loadMore"></product_table>
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="0" :clearData="clearData" @load-more="loadMore"></product_table>
 
-        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="1" :clearData="clearData" @load-more="loadMore"
-            :current_inventory="cities">
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="1" :clearData="clearData" @load-more="loadMore">
         </plan_table>
         <goHome />
         <!-- 明细表格 -->
@@ -368,7 +366,6 @@ const searchData = reactive({
     scene_category: [] as Array<any>, //string 计划类型
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
-
     ids: [] as Array<any>,
 
     // 明细表格
@@ -545,13 +542,6 @@ const getData = async () => {
         const resp2 = await getSubGmvList(data);
         if (resp2.code === 0) {
             state.monthPallet = resp2.data.records;
-            state.monthPallet.forEach((element, index) => {
-                const obj = {
-                    text: element.current_inventory,
-                    value: element.current_inventory
-                }
-                current_inventory.push(obj)
-            })
             count.value++
         }
     }
@@ -736,8 +726,8 @@ const getDetailPlan = async (arr: any) => {
         planRes.data.records?.map((item: any) => {
             plan_ids.push(item.plan_id)
         })
+        planThend(plan_ids, planRes.data.records)
     }
-    planThend(plan_ids, planRes.data.records)
 }
 // 计划趋势
 const planThend = async (arr: Array<any>, records: Array<any>) => {

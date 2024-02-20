@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-19 18:14:49
+ * @LastEditTime: 2024-02-20 11:20:32
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -18,8 +18,7 @@
             :summary-method="getSummaries" element-loading-background="rgba(122, 122, 122, 0.8)"
             style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300"
             @filter-change="filterChange" @header-click="headerClick">
-            <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
-                :filter-method="filterTag" column-key="pallet">
+            <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center">
 
             </el-table-column>
 
@@ -90,12 +89,9 @@ const lineData = () => {
     }
     return arr
 }
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('商品明细')
-const current_inventory = reactive({
-    data: []
-})
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
 const countModel = defineModel({
