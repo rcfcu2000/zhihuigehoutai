@@ -347,7 +347,8 @@
                   @blur="checkNum(item.priceMin, index, 'priceMin')" />
                 -
               </el-form-item>
-              <el-form-item :prop="'priceRange.' + index + '.priceMax'" :rules="{
+
+              <el-form-item v-if="index <= 4" :prop="'priceRange.' + index + '.priceMax'" :rules="{
                 required: true,
                 message: '填写价格区间',
                 type: 'number',
@@ -357,11 +358,30 @@
                   :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')" :placeholder="item.placeholder" />
                 <span style="flex: 1">元</span>
               </el-form-item>
+              <el-form-item v-else>
+                <el-input input-style="text-align:center;" :value="'以上'" class="input_width input_style"
+                  :disabled="true" />
+                <span style="flex: 1">元</span>
+              </el-form-item>
+              <!-- 备选方案 -->
+              <!-- <el-form-item v-if="index + 1 === (userPriceRange.priceRange?.length)">
+                <el-input input-style="text-align:center;" :value="'以上'" class="input_width input_style"
+                  :disabled="true" />
+                <span style="flex: 1">元</span>
+              </el-form-item>
+              <el-form-item v-else :prop="'priceRange.' + index + '.priceMax'" :rules="{
+                required: true,
+                message: '填写价格区间',
+                type: 'number',
+                trigger: 'blur',
+              }">
+                <el-input-number v-model="item.priceMax" class="input_width input_style" :disabled="item.disabled"
+                  :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')" :placeholder="item.placeholder" />
+                <span style="flex: 1">元</span>
+              </el-form-item> -->
+
               <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
             </div>
-            <!-- <div  class="item_line dp-flex" v-if="index == 6">
-                123123
-            </div> -->
           </div>
         </el-form>
         <el-button class="mt-2 btn_style" style="width: 100%" @click="addDomain"
@@ -535,7 +555,7 @@ import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
-import { lineOptions, barOptions, lineOptions1 } from "./echartsOptions";
+import { XYlineOptionspalletAnalysis1, XYlineOptionspalletAnalysis2, barOptions, lineOptions1 } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -585,6 +605,7 @@ const state = reactive({
   loading: true,
   treeLevel: 0,
   gmvPrductList: [] as any,
+  gmvIndustryList: [] as any,
   priceRangedata: [] as any,
   responsibleList: [] as any,
   monthPallet: [] as any,
@@ -622,14 +643,12 @@ const restore = () => {
 };
 
 const addDomain = () => {
+  console.log(userPriceRange.priceRange.length)
   const count = userPriceRange.priceRange.length - 1
-  console.log(count)
   if (userPriceRange.priceRange.length === 5) {
     userPriceRange.priceRange.push({
       priceMin: userPriceRange.priceRange[count]['priceMax'],
-      priceMax: null,
-      disabled: true,
-      placeholder: '以上',
+      priceMax: 999999,
       uid: userStore.userInfo.ID,
     });
   } else {
@@ -648,21 +667,28 @@ const addDomain = () => {
     }
 
   }
-  console.log(userPriceRange.priceRange)
 };
 
 const checkNum = (val, ind, str) => {
-  // console.log(val, ind, str)
+  const length = ind + 1;
+  // console.log(val, length, str + '当前length' + userPriceRange.priceRange.length)
   if (!/^\d+$/.test(val)) {
     ElMessage.warning("输入格式错误或者输入为空");
     userPriceRange.priceRange[ind][str] = "";
     return;
   }
-  // console.log((ind + 1) !== userPriceRange.priceRange.length)
+  if (userPriceRange.priceRange[ind][str] >= 10000) {
+    userPriceRange.priceRange[ind][str] = 9999
+  }
   if (userPriceRange.priceRange[ind]['priceMax'] <= userPriceRange.priceRange[ind]['priceMin']) {
     userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind]['priceMin'] + 1
     if (ind + 1 !== userPriceRange.priceRange.length) {
-      // console.log(123123123)
+      userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMin'] + 1
+    }
+  }
+  if (ind !== 0 && ind + 1 !== userPriceRange.priceRange.length) {
+    if (userPriceRange.priceRange[ind]['priceMin'] >= userPriceRange.priceRange[ind]['priceMax'] && userPriceRange.priceRange[ind - 1]['priceMax'] >= userPriceRange.priceRange[ind]['priceMax']) {
+      userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind]['priceMin'] + 1
       userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMin'] + 1
     }
   }
@@ -677,10 +703,11 @@ const checkNum = (val, ind, str) => {
       userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind + 1]['priceMax'] - 1
       userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind + 1]['priceMax'] - 1
     }
+    if (str === 'priceMax') {
+      userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMax']
+    }
   }
-  if (str === 'priceMax') {
-    userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMax']
-  }
+
 
   // if (s) {
   //   ElMessage.warning("输入价格与其他区间价格冲突");
@@ -690,9 +717,10 @@ const checkNum = (val, ind, str) => {
 };
 
 const submitForm = (formEl: FormInstance | undefined) => {
+  // userPriceRange.priceRange[userPriceRange.priceRange.length - 1].priceMax = 999999
   if (!formEl) return;
   formEl.validate(async (valid) => {
-    if (!valid) {
+    if (valid) {
       const data = {
         records: userPriceRange.priceRange,
         uid: userStore.userInfo.ID,
@@ -708,7 +736,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           current_inventory: searchData.current_inventory,
           price_range_list: userPriceRange.priceRange,
         }
-        getPriceRangedatas(obj)
+        getPriceRangedatas()
       }
     } else {
       console.log("error submit!");
@@ -746,6 +774,8 @@ const changeCheckGroup = (type: string) => {
 const clearSelect = async () => {
   state.treeLevel = 0
   searchData.current_inventory = []
+  searchData.product_manager = []
+  searchData.inventory_change = []
   await getData()
 };
 
@@ -795,11 +825,12 @@ const getData = async () => {
     // console.log([resp1.data.records[0].responsible])
     searchData.product_manager = resp1.data.records[0].responsible;
     await getTree()
-    await getData2();
     if (res4.code === 0) {
       state.loading = false;
       state.dialogForm.records = JSON.stringify(res4.data.records ? res4.data.records : []);
       userPriceRange.priceRange = res4.data.records ? res4.data.records : [];
+      await getData2();
+      // getPriceRangedatas(obj)
       let obj = {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
@@ -808,30 +839,28 @@ const getData = async () => {
         current_inventory: searchData.current_inventory,
         price_range_list: userPriceRange.priceRange,
       }
-      getPriceRangedatas(obj)
+
+
     }
   }
 };
 
-const inventorygetProductThendListdatas = async () => {
-  state.loading = true;
-  let data = {
-    end_date: searchData.date[1],
-    start_date: searchData.date[0],
-    product_manager: searchData.product_manager,
-    inventory_change: searchData.inventory_change,
-    current_inventory: searchData.current_inventory,
-  };
-  const [res] = [await inventorygetProductThendListdata(data)];
-  if (res.code === 0) {
-    // state.gmvPrductList = res.data.gmvPrductList.records;
-    // state.oldNewList = res.data.oldNewList.records;
-    // state.priceRangedata = res2.data.records;
-    // await getData2Copy(data);
-    getEchartsData();
-    state.loading = false;
-  }
-}
+// 暂时不用这个接口
+// const inventorygetProductThendListdatas = async () => {
+//   state.loading = true;
+//   let data = {
+//     end_date: searchData.date[1],
+//     start_date: searchData.date[0],
+//     product_manager: searchData.product_manager,
+//     inventory_change: searchData.inventory_change,
+//     current_inventory: searchData.current_inventory,
+//   };
+//   const [res] = [await inventorygetProductThendListdata(data)];
+//   if (res.code === 0) {
+//     getEchartsData();
+//     state.loading = false;
+//   }
+// }
 
 const getData2 = async () => {
   state.loading = true;
@@ -842,23 +871,21 @@ const getData2 = async () => {
     inventory_change: searchData.inventory_change,
     current_inventory: searchData.current_inventory,
   };
+  data.price_range_list = userPriceRange.priceRange
   await getData2Copy(data)
-  // const [res] = [await getAlldata(data)];
-  // if (res.code === 0) {
-  //   state.tableData = res.data.prductInfoList.records || [];
-  //   state.titleData = res.data.index;
-  //   state.gmvPrductList = res.data.gmvPrductList.records || [];
-  //   state.oldNewList = res.data.oldNewList.records;
-  //   // await inventorygetProductThendListdatas()
-  //   // state.priceRangedata = res2.data.records;
-  //   // await getData2Copy(data);
-  //   getEchartsData();
-  //   state.loading = false;
-  // }
+
 };
 
-const getPriceRangedatas = async (data) => {
-  const res = await getPriceRangedata(data)
+const getPriceRangedatas = async () => {
+  let obj = {
+    end_date: searchData.date[1],
+    start_date: searchData.date[0],
+    product_manager: searchData.product_manager,
+    inventory_change: searchData.inventory_change,
+    current_inventory: searchData.current_inventory,
+    price_range_list: userPriceRange.priceRange,
+  }
+  const res = await getPriceRangedata(obj)
   if (res.code === 0) {
     state.priceRangedata = res.data.records;
     unitPriceGMV();
@@ -873,12 +900,12 @@ const getData2Copy = async (data: any) => {
   if (res.code === 0) {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
+    state.gmvIndustryList = res.data.gmvIndustryList.records || [];
     state.gmvPrductList = res.data.gmvPrductList.records || [];
     state.oldNewList = res.data.oldNewList.records;
-    // state.priceRangedata = res2.data.records;
     // await inventorygetProductThendListdatas()
     data.price_range_list = userPriceRange.priceRange
-    getPriceRangedatas(data)
+    getPriceRangedatas()
     getEchartsData2();
     state.loading = false;
   }
@@ -919,49 +946,42 @@ const contrastGMV = () => {
   const chartDom = document.getElementById("GMVcharts") as HTMLElement;
   chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
+  if (state.gmvIndustryList.length !== 0 && state.gmvIndustryList) {
+    let date = state.gmvIndustryList?.map(i => i.date)
+    let shop = state.gmvIndustryList?.map(i => i.store_gmv)
+    let industry = state.gmvIndustryList?.map(i => i.industry_transaction_amount)
+    const option = XYlineOptionspalletAnalysis1(date, shop, industry);
+    option && myChart.setOption(option);
+    let listener1 = function () {
+      if (myChart) {
+        myChart.resize();
+      }
+    };
+    EleResize.on(chartDom, listener1);
+  }
 
-  let arr = [
-    {
-      name: "店铺GMV",
-      data: data,
-    },
-    {
-      name: "行业交易金额",
-      data: data,
-    },
-  ];
-  const option = lineOptions(arr);
-  option && myChart.setOption(option);
-  let listener1 = function () {
-    if (myChart) {
-      myChart.resize();
-    }
-  };
-  EleResize.on(chartDom, listener1);
+
 };
 const contrastVisitor = () => {
   const chartDom = document.getElementById("Visitorcharts") as HTMLElement;
   chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
 
-  let arr = [
-    {
-      name: "店铺访客数",
-      data: data,
-    },
-    {
-      name: "行业访问人数",
-      data: data,
-    },
-  ];
-  const option = lineOptions(arr);
-  option && myChart.setOption(option);
-  let listener1 = function () {
-    if (myChart) {
-      myChart.resize();
-    }
-  };
-  EleResize.on(chartDom, listener1);
+  if (state.gmvIndustryList.length !== 0 && state.gmvIndustryList) {
+    let date = state.gmvIndustryList?.map(i => i.date)
+    let shop = state.gmvIndustryList?.map(i => i.store_visitors_count)
+    let industry = state.gmvIndustryList?.map(i => i.industry_visitors_count)
+    const option = XYlineOptionspalletAnalysis2(date, shop, industry);
+    option && myChart.setOption(option);
+    let listener1 = function () {
+      if (myChart) {
+        myChart.resize();
+      }
+    };
+    EleResize.on(chartDom, listener1);
+
+  }
+
 };
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;

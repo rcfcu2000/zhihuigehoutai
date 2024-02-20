@@ -172,7 +172,7 @@ export const lineOptions1 = (arr: any, date: any) => {
 // 多线图
 export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
-    console.log(linetype,"linetype")
+    console.log(linetype, "linetype")
     return {
         tooltip: {
             trigger: 'axis'
@@ -235,7 +235,7 @@ export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) =
             },
         },
         series: arr?.map((i: { name: any; data: any; }, index: number) => {
-            console.log(index,'index')
+            console.log(index, 'index')
             return {
                 name: i.name,
                 symbolSize: 1, // 设置数据点的大小为8像素
@@ -339,7 +339,7 @@ export const pieOptions = (arr: any) => {
             top: '5%',
             left: '10%',
             right: '10%',
-            bottom:'5%'
+            bottom: '5%'
         },
         title: {
             text: '本期货盘',
@@ -429,7 +429,7 @@ export const barOptionsX = (arr: any) => {
             top: '5%',
             left: '15%',
             right: '15%',
-            bottom:'5%'
+            bottom: '5%'
         },
         xAxis: {
             type: 'value',
@@ -784,7 +784,7 @@ export const lineOptionsNum = (arr: any) => {
     }
 }
 
-export const XYlineOptions = (date: any, leave: any, price: any) => {
+export const XYlineOptionspalletAnalysis1 = (date: any, shop: any, industry: any) => {
     return {
         tooltip: {
             trigger: "axis"
@@ -802,11 +802,260 @@ export const XYlineOptions = (date: any, leave: any, price: any) => {
             bottom: "5%",
             containLabel: true
         },
-        toolbox: {
-            feature: {
-                // 去掉图片下载
-                // saveAsImage: {}
+        xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+        },
+        yAxis: [
+            {
+                type: "value",
+                name: "店铺GMV",
+                // nameLocation:'center',
+                nameTextStyle: {
+                    color: "#fff"
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: "#fff"
+                    }
+                },
+                axisLine: {
+                    show: false
+                },
+                splitLine: {
+                    show: false,
+                },
+                axisTick: { show: false },
+
+            },
+            {
+                nameTextStyle: {
+                    color: "#fff"
+                },
+                type: "value",
+                name: "行业交易金额",
+                position: "right",
+                axisLine: {
+                    show: false
+                },
+                axisTick: { show: false },
+                // min: 0,
+                // max: 200,
+                axisLabel: {
+                    textStyle: {
+                        color: "#fff"
+                    },
+                    show: true,
+                    interval: "auto",
+                    formatter: "{value}"
+                },
+                splitLine: {
+                    show: false,
+                },
+                // show: true
             }
+        ],
+        series: [
+            {
+                name: "店铺GMV",
+                type: "line",
+                stack: "店铺GMV",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#a8f5a1",
+                        lineStyle: {
+                            color: "#a8f5a1"
+                        }
+                    }
+                },
+                data: shop,
+            },
+            {
+                name: "行业交易金额",
+                yAxisIndex: 1,
+                type: "line",
+                stack: "行业交易金额",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                data: industry
+            }
+        ]
+    }
+}
+
+export const XYlineOptionspalletAnalysis2 = (date: any, shop: any, industry: any) => {
+    return {
+        tooltip: {
+            trigger: "axis"
+        },
+        legend: {
+            top: "2%",
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: "4%",
+            right: "4%",
+            bottom: "5%",
+            containLabel: true
+        },
+        xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+        },
+        yAxis: [
+            {
+                type: "value",
+                name: "店铺访客数",
+                // nameLocation:'center',
+                nameTextStyle: {
+                    color: "#fff"
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: "#fff"
+                    }
+                },
+                axisLine: {
+                    show: false
+                },
+                splitLine: {
+                    show: false,
+                },
+                axisTick: { show: false },
+
+            },
+            {
+                nameTextStyle: {
+                    color: "#fff"
+                },
+                type: "value",
+                name: "行业访问人数",
+                position: "right",
+                axisLine: {
+                    show: false
+                },
+                axisTick: { show: false },
+                // min: 0,
+                // max: 200,
+                axisLabel: {
+                    textStyle: {
+                        color: "#fff"
+                    },
+                    show: true,
+                    interval: "auto",
+                    formatter: "{value}"
+                },
+                splitLine: {
+                    show: false,
+                },
+                // show: true
+            }
+        ],
+        series: [
+            {
+                name: "店铺访客数",
+                type: "line",
+                stack: "店铺访客数",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#a8f5a1",
+                        lineStyle: {
+                            color: "#a8f5a1"
+                        }
+                    }
+                },
+                data: shop,
+            },
+            {
+                name: "行业访问人数",
+                yAxisIndex: 1,
+                type: "line",
+                stack: "行业访问人数",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                data: industry
+            }
+        ]
+    }
+}
+
+export const XYlineOptions = (date: any, leave: any, price: any) => {
+    return {
+        tooltip: {
+            trigger: "axis"
+        },
+        legend: {
+            // data: ["价格力星级", "件单价"],
+            top: "2%",
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: "4%",
+            right: "4%",
+            bottom: "5%",
+            containLabel: true
         },
         xAxis: {
             type: "category",
@@ -1067,15 +1316,6 @@ export const pieItemOptions = (arr: any) => {
                     + '<span class="echartsToolTip">加购件数</span>' + parseFloat((params.data.add_to_cart_count).toFixed(2)) + '<br/>'
                     + '</div>';
             },
-            // formatter: function (params) {
-
-            //     return '<div>' + params.name + '<br>'
-            //         + '花费' + " : " + params.value + ' (' + parseFloat((params.data.cost_rate * 100).toFixed(2)) + ') %' + '<br/>'
-            //         + 'GMV' + " : " + params.data.gmv + ' (' + parseFloat((params.data.gmv_rate * 100).toFixed(2)) + ') %' + '<br/>'
-            //         + 'ROI' + " : " + params.data.roi
-            //         + '</div>';
-            // }
-
         },
         grid: {
             top: "10px",
@@ -1117,8 +1357,7 @@ export const pieItemOptions = (arr: any) => {
         series: [
             {
                 type: 'pie',
-                radius: ['40%', '60%'],
-                center: ['40%', '60%'],
+                radius: ['60%', '80%'],
                 // adjust the start angle
                 label: {
                     show: true,
