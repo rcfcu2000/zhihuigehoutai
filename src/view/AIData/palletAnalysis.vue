@@ -347,7 +347,7 @@
                   @blur="checkNum(item.priceMin, index, 'priceMin')" />
                 -
               </el-form-item>
-              <el-form-item :prop="'priceRange.' + index + '.priceMax'" :rules="{
+              <el-form-item v-if="index <= 4" :prop="'priceRange.' + index + '.priceMax'" :rules="{
                 required: true,
                 message: '填写价格区间',
                 type: 'number',
@@ -357,11 +357,13 @@
                   :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')" :placeholder="item.placeholder" />
                 <span style="flex: 1">元</span>
               </el-form-item>
+              <el-form-item v-else>
+                <el-input input-style="text-align:center;" :value="'以上'" class="input_width input_style"
+                  :disabled="true" />
+                <span style="flex: 1">元</span>
+              </el-form-item>
               <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
             </div>
-            <!-- <div  class="item_line dp-flex" v-if="index == 6">
-                123123
-            </div> -->
           </div>
         </el-form>
         <el-button class="mt-2 btn_style" style="width: 100%" @click="addDomain"
@@ -623,13 +625,10 @@ const restore = () => {
 
 const addDomain = () => {
   const count = userPriceRange.priceRange.length - 1
-  console.log(count)
   if (userPriceRange.priceRange.length === 5) {
     userPriceRange.priceRange.push({
       priceMin: userPriceRange.priceRange[count]['priceMax'],
-      priceMax: null,
-      disabled: true,
-      placeholder: '以上',
+      priceMax: 999999,
       uid: userStore.userInfo.ID,
     });
   } else {
@@ -657,6 +656,9 @@ const checkNum = (val, ind, str) => {
     ElMessage.warning("输入格式错误或者输入为空");
     userPriceRange.priceRange[ind][str] = "";
     return;
+  }
+  if (userPriceRange.priceRange[ind][str] >= 10000) {
+    userPriceRange.priceRange[ind][str] = 9999
   }
   // console.log((ind + 1) !== userPriceRange.priceRange.length)
   if (userPriceRange.priceRange[ind]['priceMax'] <= userPriceRange.priceRange[ind]['priceMin']) {
@@ -692,7 +694,7 @@ const checkNum = (val, ind, str) => {
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(async (valid) => {
-    if (!valid) {
+    if (valid) {
       const data = {
         records: userPriceRange.priceRange,
         uid: userStore.userInfo.ID,
