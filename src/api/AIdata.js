@@ -19,6 +19,17 @@ export const getAlldata = (data) => {
 }
 
 // 获取根据客单价GMV和访客对比
+export const inventorygetProductThendListdata = (data) => {
+    return service({
+        url: '/inventory/getProductThendListdata',
+        method: 'post',
+        data
+    })
+}
+
+
+
+// 获取根据客单价GMV和访客趋势
 export const getPriceRangedata = (data) => {
     return service({
         url: '/inventory/getPriceRangedata',

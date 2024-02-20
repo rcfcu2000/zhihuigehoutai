@@ -527,6 +527,7 @@ import {
   getResponsibleList,
   getCategoriesList,
   getSubGmvList,
+  inventorygetProductThendListdata,
 } from "@/api/AIdata";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
@@ -812,6 +813,26 @@ const getData = async () => {
   }
 };
 
+const inventorygetProductThendListdatas = async () => {
+  state.loading = true;
+  let data = {
+    end_date: searchData.date[1],
+    start_date: searchData.date[0],
+    product_manager: searchData.product_manager,
+    inventory_change: searchData.inventory_change,
+    current_inventory: searchData.current_inventory,
+  };
+  const [res] = [await inventorygetProductThendListdata(data)];
+  if (res.code === 0) {
+    // state.gmvPrductList = res.data.gmvPrductList.records;
+    // state.oldNewList = res.data.oldNewList.records;
+    // state.priceRangedata = res2.data.records;
+    // await getData2Copy(data);
+    getEchartsData();
+    state.loading = false;
+  }
+}
+
 const getData2 = async () => {
   state.loading = true;
   let data = {
@@ -821,17 +842,19 @@ const getData2 = async () => {
     inventory_change: searchData.inventory_change,
     current_inventory: searchData.current_inventory,
   };
-  const [res] = [await getAlldata(data)];
-  if (res.code === 0) {
-    state.tableData = res.data.prductInfoList.records || [];
-    state.titleData = res.data.index;
-    state.gmvPrductList = res.data.gmvPrductList.records;
-    state.oldNewList = res.data.oldNewList.records;
-
-    // state.priceRangedata = res2.data.records;
-    getEchartsData();
-    state.loading = false;
-  }
+  await getData2Copy(data)
+  // const [res] = [await getAlldata(data)];
+  // if (res.code === 0) {
+  //   state.tableData = res.data.prductInfoList.records || [];
+  //   state.titleData = res.data.index;
+  //   state.gmvPrductList = res.data.gmvPrductList.records || [];
+  //   state.oldNewList = res.data.oldNewList.records;
+  //   // await inventorygetProductThendListdatas()
+  //   // state.priceRangedata = res2.data.records;
+  //   // await getData2Copy(data);
+  //   getEchartsData();
+  //   state.loading = false;
+  // }
 };
 
 const getPriceRangedatas = async (data) => {
@@ -841,7 +864,6 @@ const getPriceRangedatas = async (data) => {
     unitPriceGMV();
     unitPriceTrend();
     state.dialogForm.visible = false;
-
   }
 }
 
@@ -851,8 +873,10 @@ const getData2Copy = async (data: any) => {
   if (res.code === 0) {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
-    state.gmvPrductList = res.data.gmvPrductList.records;
+    state.gmvPrductList = res.data.gmvPrductList.records || [];
+    state.oldNewList = res.data.oldNewList.records;
     // state.priceRangedata = res2.data.records;
+    // await inventorygetProductThendListdatas()
     data.price_range_list = userPriceRange.priceRange
     getPriceRangedatas(data)
     getEchartsData2();
@@ -893,6 +917,7 @@ let data = Array.from(new Array(30), (x, i) =>
 );
 const contrastGMV = () => {
   const chartDom = document.getElementById("GMVcharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
 
   let arr = [
@@ -912,11 +937,11 @@ const contrastGMV = () => {
       myChart.resize();
     }
   };
-  option && myChart.setOption(option);
   EleResize.on(chartDom, listener1);
 };
 const contrastVisitor = () => {
   const chartDom = document.getElementById("Visitorcharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
 
   let arr = [
@@ -930,61 +955,60 @@ const contrastVisitor = () => {
     },
   ];
   const option = lineOptions(arr);
-  myChart.hideLoading();
   option && myChart.setOption(option);
   let listener1 = function () {
     if (myChart) {
       myChart.resize();
     }
   };
-  option && myChart.setOption(option);
   EleResize.on(chartDom, listener1);
 };
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
-
-  const arr = state.gmvPrductList?.map((i) => {
+  let arr = [] as any;
+  arr = state.gmvPrductList?.map((i) => {
     return {
       name: i.class,
       date: i.data?.map((j) => j.date),
       data: i.data?.map((j) => j.store_gmv),
     };
   });
-  if (arr) {
-    const date = arr[0]?.date
-    const option = lineOptions1(arr, date);
-    option && myChart.setOption(option);
-  }
+  const date = arr[0]?.date
+  const option = lineOptions1(arr, date);
+  option && myChart.setOption(option);
   window.addEventListener("resize", () => {
     myChart.resize();
   });
 };
 const newOldContrast = () => {
   const chartDom = document.getElementById("newOldecharts") as HTMLElement;
+  chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
-  const date = state.oldNewList?.map(i => i.date)
-  let arr = [
-    {
-      name: "支付卖家数",
-      data: state.oldNewList?.map(i => i.paid_buyers_count),
-    },
-    {
-      name: "支付新卖家数",
-      data: state.oldNewList?.map(i => i.new_paid_buyers_count),
-    },
-    {
-      name: "支付老买家数",
-      data: state.oldNewList?.map(i => i.returning_paid_buyers_count),
-    },
-  ];
-  const option = lineOptions1(arr, date);
-  myChart.hideLoading();
-  option && myChart.setOption(option);
-
-  window.addEventListener("resize", () => {
-    myChart.resize();
-  });
+  if (state.oldNewList) {
+    const date = state.oldNewList?.map(i => i.date)
+    let arr = [
+      {
+        name: "支付卖家数",
+        data: state.oldNewList?.map(i => i.paid_buyers_count),
+      },
+      {
+        name: "支付新卖家数",
+        data: state.oldNewList?.map(i => i.new_paid_buyers_count),
+      },
+      {
+        name: "支付老买家数",
+        data: state.oldNewList?.map(i => i.returning_paid_buyers_count),
+      },
+    ];
+    const option = lineOptions1(arr, date);
+    myChart.clear(option)
+    option && myChart.setOption(option);
+    window.addEventListener("resize", () => {
+      myChart.resize();
+    });
+  }
 };
 const backColor = ['#01E5FF', '#C2FDF4', '#03FF91', '#FECD04', '#FD89EE']
 const unitPriceGMV = () => {
@@ -1005,6 +1029,7 @@ const unitPriceGMV = () => {
     };
   });
   const date = arr?.map(i => i.date)
+
   const option = barOptions(arr, date[0]);
   option && myChart.setOption(option);
   window.addEventListener("resize", () => {

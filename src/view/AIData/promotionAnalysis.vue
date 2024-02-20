@@ -188,29 +188,29 @@
                 </div>
                 <div class="echarts_size aiData_table" style="box-sizing: border-box; padding: 10px;">
                     <el-table :data="state.tableData" height="100%" style="width: 100%" @row-click="tableRwoClick">
-                        <el-table-column label="出价类型" show-overflow-tooltip>
+                        <el-table-column label="出价类型" width="150">
                             <template #default="scope">
                                 <span>{{ scope.row.bid_type }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="花费">
+                        <el-table-column label="花费" width="100">
                             <template #default="scope">
                                 <span>{{ lueNum(scope.row.spend) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="GMV">
+                        <el-table-column label="GMV" width="100">
                             <template #default="scope">
                                 <span>{{ lueNum(scope.row.gmv) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="GMV占比">
+                        <el-table-column label="GMV占比" width="120">
                             <template #default="scope">
                                 <span> {{ parseFloat((scope.row.gmv_percentage * 100).toFixed(2)) }} %</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="点击量">
+                        <el-table-column label="点击量" width="100">
                             <template #default="scope">
-                                <span> {{ lueNum(parseFloat((scope.row.clicks).toFixed(2))) }}</span>
+                                <span> {{ lueNum(scope.row.clicks) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="点击率">
@@ -233,9 +233,9 @@
                                 <span>{{ lueNum(scope.row.transaction_cost) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="推广转化率">
+                        <el-table-column label="推广转化率" width="120">
                             <template #default="scope">
-                                <span>{{ parseFloat((scope.row.conversion_rate * 100).toFixed(2)) }}</span>
+                                <span>{{ parseFloat((scope.row.conversion_rate * 100).toFixed(2)) }} %</span>
                             </template>
                         </el-table-column>
                         <template #empty>
@@ -337,7 +337,7 @@ import 'echarts/extension/bmap/bmap'
 import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
-import { lueNum } from "@/utils/format.js"
+import { lueNum, lueNumInteger } from "@/utils/format.js"
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
 const pageSize = ref(20)
