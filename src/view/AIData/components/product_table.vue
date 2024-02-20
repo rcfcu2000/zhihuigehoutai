@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-20 11:20:32
+ * @LastEditTime: 2024-02-20 20:45:41
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,7 +17,7 @@
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType" show-summary
             :summary-method="getSummaries" element-loading-background="rgba(122, 122, 122, 0.8)"
             style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300"
-            @filter-change="filterChange" @header-click="headerClick">
+            @filter-change="filterChange" @header-click="headerClick" @row-click="rowClick">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center">
 
             </el-table-column>
@@ -39,7 +39,8 @@
                         {{ scope.row.product_alias }}
                     </div>
 
-                    <div v-else-if="scope.column.property == 'cost' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
+                    <div
+                        v-else-if="scope.column.property == 'cost' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
                         {{ roundNum(scope.row[scope.column.property]) }}
                     </div>
                     <div v-else-if="head.unit == '%'">
@@ -57,6 +58,13 @@
 
                 </template>
             </el-table-column>
+            <template #append v-if="nomore">
+                <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                    <el-icon>
+                        <MagicStick />
+                    </el-icon> <span>没有更多了</span>
+                </div>
+            </template>
         </el-table>
     </div>
 </template>
@@ -89,8 +97,8 @@ const lineData = () => {
     }
     return arr
 }
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData'])
-const emit = defineEmits(['loadMore', 'changePallet'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'tableCount'])
+const emit = defineEmits(['loadMore', 'changePallet','row_Click'])
 const componentTitle = ref('商品明细')
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
@@ -107,6 +115,7 @@ const filterChange = (res) => {
 }
 let randomStrings = [] as Array<any>
 const tableListRef = ref();
+const nomore = ref(false)
 
 onMounted(() => {
 
@@ -119,13 +128,15 @@ const refreshTable = () => {
     //强制刷新组件
     table.doLayout()
 }
-watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
-    console.log(newD, newE, "newE")
+watch([propData.clearData], ([newD]) => {
+    if (newD[0]) {
+        tableData = []
+        loadType.value = true
+    }
+})
+watch([propData.Commodity_detail], ([newD]) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
-    if (newE[0]) {
-        tableData = []
-    }
     tableData = tableData.concat(newD.data)
     countModel.value = tableData.length
     refreshTable()
@@ -139,15 +150,15 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
             let chartDom2: any = document.getElementById(domId_2);
             let chartDom3: any = document.getElementById(domId_3);
             let myChart1 = echarts.init(chartDom1);
-            if (newE[0] && chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
+            if (chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
                 myChart1.clear()
             }
             let myChart2 = echarts.init(chartDom2);
-            if (newE[0] && chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
+            if (chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
                 myChart2.clear()
             }
             let myChart3 = echarts.init(chartDom3);
-            if (newE[0] && chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
+            if (chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
                 myChart3.clear()
             }
             let option1 = table_lineOptions(item.gmv_trend, item.times);
@@ -178,12 +189,19 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE]) => {
 const loadMore = (res) => {
     if (componentTitle.value == "商品明细") {
         console.log('商品明细')
-        if (!loadType.value) {
+        if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'product')
+        } else {
+            nomore.value = true
         }
     }
 }
+
+const rowClick = (row: any, column: any, event: any) => {
+    emit('row_Click', row.product_id)
+}
+
 interface Product {
     pallet: string
     product_alias: string
@@ -223,9 +241,9 @@ const getSummaries = (param: SummaryMethodProps) => {
             sums[index] = `${values.reduce((prev, curr) => {
                 const value = Number(curr)
                 if (!Number.isNaN(value)) {
-                    if(column.property == 'cost' || column.property == 'clicks' || column.property == 'direct_transaction_count' ||column.property == 'indirect_transaction_count'){
+                    if (column.property == 'cost' || column.property == 'clicks' || column.property == 'direct_transaction_count' || column.property == 'indirect_transaction_count') {
                         return roundNum(Number(prev) + curr)
-                    }else{
+                    } else {
                         return floatNum(Number(prev) + curr)
                     }
                 } else {
@@ -236,7 +254,6 @@ const getSummaries = (param: SummaryMethodProps) => {
             sums[index] = 'N/A'
         }
     })
-    console.log(sums,"sums")
     return sums
 }
 

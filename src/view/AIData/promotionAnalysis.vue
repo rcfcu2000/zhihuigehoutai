@@ -303,9 +303,12 @@
             </el-form>
         </div>
 
-        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="0" :clearData="clearData" @load-more="loadMore"></product_table>
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length"
+            :clearData="clearDataPro" @load-more="loadMore" :tableCount="proCount" @row_Click="pro_row_click">
+        </product_table>
 
-        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="1" :clearData="clearData" @load-more="loadMore">
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length"
+            :clearData="clearDataPlan" @load-more="loadMore" :tableCount="planCount">
         </plan_table>
         <goHome />
         <!-- 明细表格 -->
@@ -341,6 +344,8 @@ import { lueNum, lueNumInteger } from "@/utils/format.js"
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
 const pageSize = ref(20)
+const proCount = ref(0)
+const planCount = ref(0)
 const cities = [
     {
         value: "场景推广",
@@ -411,6 +416,7 @@ const current_inventory = reactive([])
 const allData = reactive([{
     componentTitle: '商品明细',
     data: [] as Array<any>,
+    sumTrend: {} as Object,
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
         { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
@@ -440,30 +446,32 @@ const allData = reactive([{
 }, {
     componentTitle: '计划明细',
     data: [] as Array<any>,
+    sumTrend: {} as Object,
     column: [
         // { title: '计划类型', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '',},
-        { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
-        { title: '出价类型', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
         { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
-        // { title: '场景名称', width: 100, align: 'center', dataKey: 'promotion_type', key: 'promotion_type', unit: '' },
-
         { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
         { title: 'GMV趋势', width: 130, align: 'center', dataKey: 'gmv_trend', key: 'gmv_trend', },
-        { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
-        { title: 'ROI趋势', width: 130, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', unit: '' },
         { title: '花费', width: 100, align: 'center', dataKey: 'spend', key: 'spend', unit: '' },
         { title: '花费趋势', width: 130, align: 'center', dataKey: 'spend_trend', key: 'spend_trend', unit: '' },
-        { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', unit: '' },
         { title: '点击率(%)', width: 100, align: 'center', dataKey: 'click_through_rate', key: 'click_through_rate', unit: '%' },
         { title: '点击量', width: 100, align: 'center', dataKey: 'clicks', key: 'clicks', unit: '' },
         { title: '转化率(%)', width: 100, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%' },
-        { title: '每次点击成本', width: 120, align: 'center', dataKey: 'cpc', key: 'cpc', unit: '' },
+        { title: '加购成本', width: 100, align: 'center', dataKey: 'add_to_cart_cost', key: 'add_to_cart_cost', unit: '' },
+        { title: '成交成本', width: 100, align: 'center', dataKey: 'transaction_cost', key: 'transaction_cost', unit: '' },
+        { title: 'ROI', width: 100, align: 'center', dataKey: 'roi', key: 'roi', unit: '' },
+        { title: 'ROI趋势', width: 130, align: 'center', dataKey: 'roi_trend', key: 'roi_trend', unit: '' },
         { title: '直接ROI', width: 100, align: 'center', dataKey: 'direct_roi', key: 'direct_roi', unit: '' },
+        { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', unit: '' },
+        { title: 'CPC', width: 120, align: 'center', dataKey: 'cpc', key: 'cpc', unit: '' },
         { title: '直接成交金额', width: 120, align: 'center', dataKey: 'direct_transaction_amount', key: 'direct_transaction_amount', unit: '' },
         { title: '直接成交笔数', width: 120, align: 'center', dataKey: 'direct_transaction_count', key: 'direct_transaction_count', unit: '' },
-        { title: '间接ROI', width: 100, align: 'center', dataKey: 'indirect_roi', key: 'indirect_roi', unit: '' },
         { title: '间接成交金额', width: 120, align: 'center', dataKey: 'indirect_transaction_amount', key: 'indirect_transaction_amount', unit: '' },
         { title: '间接成交笔数', width: 120, align: 'center', dataKey: 'indirect_transaction_count', key: 'indirect_transaction_count', unit: '' },
+
+        { title: '出价类型', width: 100, align: 'center', dataKey: 'bid_type', key: 'bid_type', unit: '' },
+        // { title: '场景名称', width: 100, align: 'center', dataKey: 'promotion_type', key: 'promotion_type', unit: '' },
+
 
         // { title: '计划编号', width: 100, align: 'center', dataKey: 'plan_id', key: 'plan_id', },
         // { title: '花费全店占比', width: 100, align: 'center', dataKey: 'cost_percentage', key: 'cost_percentage', },
@@ -663,7 +671,8 @@ const getAll = async (arr: any) => {
     count.value++
 }
 
-let clearData = reactive([false])
+let clearDataPro = reactive([false])
+let clearDataPlan = reactive([false])
 const product_ids = [] as Array<any>;
 const count = ref()
 // 产品明细
@@ -675,6 +684,7 @@ const getDetailPro = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0 && proRes.data.records) {
+        proCount.value = proRes.data.count
         proRes.data.records?.map((item: any) => {
             product_ids.push(item.product_id)
         })
@@ -709,8 +719,29 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
             items.times = thendObj.times
         })
         allData[0].data = records
+        let thendObj = {
+            gmv_trend: [] as Array<any>,
+            roi_trend: [] as Array<any>,
+            cost_trend: [] as Array<any>,
+            times: [] as Array<any>,
+        }
+        thendList.data.sum.records?.map((item: any) => {
+            thendObj.gmv_trend.push(item.gmv_trend)
+            thendObj.roi_trend.push(item.roi_trend)
+            thendObj.cost_trend.push(item.spend_trend)
+            thendObj.times.push(item.date)
+        })
+        allData[0].sumTrend = thendObj
     }
     product_ids.splice(0, product_ids.length)
+}
+// 商品表格行点击
+const pro_row_click = (res) => {
+    searchData.ids = []
+    searchData.ids.push(res)
+    pageNum_plan.value = 0
+    clearDataPlan[0] = true
+    getDetailPlan(searchData)
 }
 
 const plan_ids = [] as Array<any>
@@ -723,6 +754,7 @@ const getDetailPlan = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0 && planRes.data.records) {
+        planCount.value = planRes.data.count
         planRes.data.records?.map((item: any) => {
             plan_ids.push(item.plan_id)
         })
@@ -757,16 +789,30 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
             items.times = thendObj.times
         })
         allData[1].data = records
+        let thendObj = {
+            gmv_trend: [] as Array<any>,
+            roi_trend: [] as Array<any>,
+            cost_trend: [] as Array<any>,
+            times: [] as Array<any>,
+        }
+        thendList.data.sum.records?.map((item: any) => {
+            thendObj.gmv_trend.push(item.gmv_trend)
+            thendObj.roi_trend.push(item.roi_trend)
+            thendObj.cost_trend.push(item.spend_trend)
+            thendObj.times.push(item.date)
+        })
+        allData[1].sumTrend = thendObj
     }
     plan_ids.splice(0, plan_ids.length)
 }
 
 const loadMore = (at: string) => {
-    clearData[0] = false
     if (at == 'product') {
+        clearDataPro[0] = false
         getDetailPro(searchData)
     }
     if (at == 'plan') {
+        clearDataPlan[0] = false
         getDetailPlan(searchData)
     }
 }
@@ -785,7 +831,8 @@ const changePlan_Pallet = (value: Array<any>) => {
 
 // 筛选条件改变时
 const selectChange = () => {
-    clearData[0] = true
+    clearDataPro[0] = true
+    clearDataPlan[0] = true
     pageNum_pro.value = 0
     pageNum_plan.value = 0
     getDetailPlan(searchData)

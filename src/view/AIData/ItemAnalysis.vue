@@ -207,8 +207,8 @@ const searchData = reactive({
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     loading: false,
     date: ['2024-01-01', '2024-01-11'],
-    page_num: 0,
-    page_size: pageSize,
+    pageNum: 0,
+    pageSize: pageSize,
     product_id: '',
     start_date: '',
     end_date: '',
@@ -332,12 +332,12 @@ const getTopData = async () => {
 // 关键字分析
 const getWordsList = async (arr: any) => {
     pageNum_words.value++
-    arr.page_num = pageNum_words.value
+    arr.pageNum = pageNum_words.value
     arr.start_date = arr.date[0]
     arr.end_date = arr.date[1]
     const res = await getKeywordList(arr)
     if (res.code == 0 && res.data.records) {
-
+        wordsCount.value = res.data.count
         allData[0].data = res.data.records
     } else {
         ElMessage.error(res.msg)
@@ -346,11 +346,12 @@ const getWordsList = async (arr: any) => {
 // 每日明细
 const getDayList = async (arr: any) => {
     pageNum_day.value++
-    arr.page_num = pageNum_day.value
+    arr.pageNum = pageNum_day.value
     arr.start_date = arr.date[0]
     arr.end_date = arr.date[1]
     const res = await getProductDayList(arr)
     if (res.code == 0 && res.data.records) {
+        dayCount.value = res.data.count
         allData[1].data = res.data.records
     } else {
         ElMessage.error(res.msg)

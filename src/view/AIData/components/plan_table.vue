@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-19 10:33:01
+ * @LastEditTime: 2024-02-20 20:50:18
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -12,9 +12,9 @@
     </div>
     <div class="aiData_table table" :key="count">
         <!--  v-loading="loadType" -->
-        <el-table ref="planTableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
-            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange">
+        <el-table ref="planTableListRef" :id="'table' + comKey" :data="tableData" border show-summary
+            :summary-method="getSummaries" v-loading="loadType" element-loading-background="rgba(122, 122, 122, 0.8)"
+            style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300">
             <!-- <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="plan_pallet"> -->
             <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" column-key="plan_pallet">
@@ -30,19 +30,16 @@
                         </div>
                     </div>
 
-                    <!-- <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
-                            class="text_hidden">
-                            {{ scope.row.product_alias }}
-                        </div> -->
-
-                    <div v-else-if="scope.column.property == 'spend' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
+                    <div
+                        v-else-if="scope.column.property == 'spend' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
                         {{ roundNum(scope.row[scope.column.property]) }}
                     </div>
                     <div v-else-if="head.unit == '%'">
                         {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
                     </div>
 
-                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden" :title="scope.row[scope.column.property]">
+                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden"
+                        :title="scope.row[scope.column.property]">
                         {{ scope.row[scope.column.property] }}
                     </div>
 
@@ -52,6 +49,13 @@
 
                 </template>
             </el-table-column>
+            <template #append v-if="nomore">
+                <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                    <el-icon>
+                        <MagicStick />
+                    </el-icon> <span>没有更多了</span>
+                </div>
+            </template>
         </el-table>
     </div>
 </template>
@@ -61,6 +65,7 @@ import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted } from 'v
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
+import type { TableColumnCtx } from 'element-plus'
 
 import * as echarts from 'echarts';
 
@@ -72,6 +77,11 @@ let tableHead = ref([
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
 let tableData = reactive([] as Array<any>)
+let tableDataSum = reactive({} as Object)
+const comKey = ref(0)
+const countModel = defineModel({
+    type: Number, default: 0
+})
 
 // mock趋势折线数据
 const lineData = () => {
@@ -85,7 +95,7 @@ const lineData = () => {
     return arr
 }
 
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory', 'tableCount'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('计划明细')
 const current_inventory = reactive({
@@ -93,6 +103,7 @@ const current_inventory = reactive({
 })
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
+comKey.value = tableData.length
 const filterTag = (value: string, row: User) => {
     return row.promotion_type === value
 }
@@ -102,6 +113,7 @@ const filterChange = (res) => {
 }
 let randomStrings = []
 const planTableListRef = ref();
+const nomore = ref(false)
 
 onMounted(() => {
 })
@@ -112,17 +124,27 @@ const refreshTable = () => {
     let table = planTableListRef.value;
     table.doLayout()
 }
-watch([propData.Commodity_detail, propData.clearData], ([newD, newE], oldD) => {
+watch([propData.Commodity_detail,propData.clearData], ([newD,newD2]) => {
+    
+    console.log(newD,newD2, "clearDataPlan")
+    if (newD2[0]) {
+        tableData = []
+        comKey.value = 0
+        refreshTable()
+        loadType.value = true
+    }
+
+
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
-    if (newE[0]) {
-        tableData = []
-    }
     tableData = tableData.concat(newD.data)
-    console.log(tableData,"tableData")
-    loadType.value = false
+    tableDataSum = newD.sumTrend
+    console.log(tableData, "tableData2")
+    countModel.value = tableData.length
+    comKey.value = tableData.length
     refreshTable()
     nextTick(() => {
+        loadType.value = false
         newD.data.forEach((item: any) => {
             const domId_1 = item.plan_id + '_' + 'gmv_trend'
             const domId_2 = item.plan_id + '_' + 'spend_trend'
@@ -131,15 +153,15 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE], oldD) => {
             let chartDom2: any = document.getElementById(domId_2);
             let chartDom3: any = document.getElementById(domId_3);
             let myChart1 = echarts.init(chartDom1);
-            if (newE[0] && chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
+            if (chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
                 myChart1.clear()
             }
             let myChart2 = echarts.init(chartDom2);
-            if (newE[0] && chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
+            if (chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
                 myChart2.clear()
             }
             let myChart3 = echarts.init(chartDom3);
-            if (newE[0] && chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
+            if (chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
                 myChart3.clear()
             }
             let option1 = table_lineOptions(item.gmv_trend, item.times);
@@ -166,18 +188,74 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newE], oldD) => {
         refreshTable()
     })
     // count.value++
-}, { deep: true })
+})
 
 const loadMore = (res) => {
     if (componentTitle.value == "计划明细") {
         console.log('计划明细')
-        if (!loadType.value) {
+        if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'plan')
+        } else {
+            nomore.value = true
         }
     }
 }
 
+interface Product {
+    add_to_cart_cost: string
+    bid_type: string
+    campaign_name: string
+    gmv: string
+    roi: number
+    spend: number
+    click_through_rate: number
+    clicks: number
+    conversion_rate: number
+    cpc: number
+    direct_roi: number
+    direct_transaction_amount: number
+    direct_transaction_count: number
+    indirect_roi: number
+    indirect_transaction_amount: number
+    indirect_transaction_count: number
+    // average_order_value: number
+    // existing_customer_percentage: number
+    // favorite_add_to_cart_rate: number
+}
+interface SummaryMethodProps<T = Product> {
+    columns: TableColumnCtx<T>[]
+    data: T[]
+}
+
+const getSummaries = (param: SummaryMethodProps) => {
+    const { columns, data } = param
+    const sums: any[] = []
+    columns.forEach((column, index) => {
+        if (index === 0) {
+            sums[index] = '合计'
+            return
+        }
+        const values = data.map((item) => Number(item[column.property]))
+        if (!values.every((value) => Number.isNaN(value))) {
+            sums[index] = `${values.reduce((prev, curr) => {
+                const value = Number(curr)
+                if (!Number.isNaN(value)) {
+                    if (column.property == 'cost' || column.property == 'clicks' || column.property == 'direct_transaction_count' || column.property == 'indirect_transaction_count') {
+                        return roundNum(Number(prev) + curr)
+                    } else {
+                        return floatNum(Number(prev) + curr)
+                    }
+                } else {
+                    return prev
+                }
+            }, 0)}`
+        } else {
+            sums[index] = 'N/A'
+        }
+    })
+    return sums
+}
 
 // 不重复随机数
 /**
