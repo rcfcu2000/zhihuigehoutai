@@ -405,7 +405,6 @@ const state = reactive({
     echartsData3: [] as any,
     echartsData4: [] as any,
     tableSearchLv: 1,
-    planAnalysis: [] as any,
 })
 
 const current_inventory = reactive([])
@@ -484,9 +483,10 @@ const all = reactive({
 })
 
 onMounted(async () => {
-    await getAll(searchData)
     await getData()
     await getData2()
+    // await getAll(searchData)
+
 })
 const tableRwoClick = async (row, column, event) => {
     console.log(row, column, event)
@@ -510,13 +510,7 @@ const getEchartsData = async () => {
     };
     const res = await getSearchdata(data)
     if (res.code === 0) {
-        state.tableData = res.data.bidTypeAnalysis.records
-        state.echartsData2 = res.data.palletCost.records
-        state.echartsData3 = res.data.keywordCost.records
-        state.echartsData4 = res.data.crowdSpend.records
-        await echarts2()
-        await echarts3()
-        await echarts4()
+
     }
 
 }
@@ -524,8 +518,13 @@ const getEchartsData = async () => {
 const getData2 = async () => {
     pageNum_pro.value = 0
     pageNum_plan.value = 0
-    await getEchartsData()
-    await getPromotionGetAll()
+    searchData.keyword_filter = [] // 关键词
+    searchData.audience_filter = [] // 人群
+    searchData.pallet = [] // 货盘
+    searchData.bid_type = [];
+    clearData[0] = true
+    // await getEchartsData()
+    await getAll(searchData)
     await getDetailPro(searchData)
     await getDetailPlan(searchData)
 };
@@ -557,31 +556,26 @@ const getData = async () => {
     }
 }
 
-const getPromotionGetAll = async () => {
-    let data = {
-        end_date: searchData.date[1],
-        start_date: searchData.date[0],
-        current_inventory: [],
-        product_manager: searchData.product_manager,
-        scene_category: searchData.scene_category,
-    };
-    const res = await getPromotionGetAlldata(data);
-    if (res.code === 0) {
-        state.titleData = res.data.promotionIndex1
-        state.extendList = res.data.promotionIndex2.records
-
-        res.data.planAnalysis?.records?.map(item => {
-            item.value = item.promotion_type
-            item.text = item.promotion_type
-        })
-        state.planAnalysis = res.data.planAnalysis?.records ?? []
-    }
-}
+// const getPromotionGetAll 废弃 = async () => {
+//     let data = {
+//         end_date: searchData.date[1],
+//         start_date: searchData.date[0],
+//         current_inventory: [],
+//         product_manager: searchData.product_manager,
+//         scene_category: searchData.scene_category,
+//     };
+//     const res = await getPromotionGetAlldata(data);
+//     if (res.code === 0) {
+//         state.titleData = res.data.promotionIndex1
+//         state.extendList = res.data.promotionIndex2.records
+//     }
+// }
 
 
 
 const echarts2 = async () => {
     const chartDom = document.getElementById("PromtionEcharts2") as HTMLElement;
+    chartDom.removeAttribute('_echarts_instance_')
     const myChart = echarts.init(chartDom);
 
     const arr = state.echartsData2
@@ -603,6 +597,7 @@ const echarts2 = async () => {
 
 const echarts3 = async () => {
     const chartDom = document.getElementById("PromtionEcharts3") as HTMLElement;
+    chartDom.removeAttribute('_echarts_instance_')
     const myChart = echarts.init(chartDom);
 
     const arr = state.echartsData3?.map(i => {
@@ -631,6 +626,7 @@ const echarts3 = async () => {
 
 const echarts4 = async () => {
     const chartDom = document.getElementById("PromtionEcharts4") as HTMLElement;
+    chartDom.removeAttribute('_echarts_instance_')
     const myChart = echarts.init(chartDom);
 
     const arr = state.echartsData4?.map(i => {
@@ -669,6 +665,17 @@ const getAll = async (arr: any) => {
         all.allData.palletCost.records = allRes.data.palletCost.records
         all.allData.keywordCost.records = allRes.data.keywordCost.records
         all.allData.crowdSpend.records = allRes.data.crowdSpend.records
+
+        state.titleData = allRes.data.promotionIndex1
+        state.extendList = allRes.data.promotionIndex2.records
+
+        state.tableData = allRes.data.bidTypeAnalysis.records
+        state.echartsData2 = allRes.data.palletCost.records
+        state.echartsData3 = allRes.data.keywordCost.records
+        state.echartsData4 = allRes.data.crowdSpend.records
+        await echarts2()
+        await echarts3()
+        await echarts4()
     }
     count.value++
 }
