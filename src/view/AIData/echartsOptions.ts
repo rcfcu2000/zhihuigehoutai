@@ -335,8 +335,14 @@ export const pieOptions = (arr: any) => {
             }
 
         },
+        grid: {
+            top: '5%',
+            left: '10%',
+            right: '10%',
+            bottom:'5%'
+        },
         title: {
-            text: '本月货盘',
+            text: '本期货盘',
             right: 20,
             top: "32%",
             textStyle: {
@@ -355,8 +361,8 @@ export const pieOptions = (arr: any) => {
         series: [
             {
                 type: 'pie',
-                radius: ['40%', '60%'],
-                center: ['40%', '60%'],
+                radius: ['60%', '80%'],
+                // center: ['40%', '60%'],
                 // adjust the start angle
                 label: {
                     show: true,
@@ -420,10 +426,10 @@ export const barOptionsX = (arr: any) => {
             }
         },
         grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
+            top: '5%',
+            left: '15%',
+            right: '15%',
+            bottom:'5%'
         },
         xAxis: {
             type: 'value',
