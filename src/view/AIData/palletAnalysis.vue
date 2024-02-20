@@ -537,7 +537,7 @@ import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
-import { lineOptions, barOptions, lineOptions1 } from "./echartsOptions";
+import { XYlineOptionspalletAnalysis1, XYlineOptionspalletAnalysis2, barOptions, lineOptions1 } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -587,6 +587,7 @@ const state = reactive({
   loading: true,
   treeLevel: 0,
   gmvPrductList: [] as any,
+  gmvIndustryList: [] as any,
   priceRangedata: [] as any,
   responsibleList: [] as any,
   monthPallet: [] as any,
@@ -647,7 +648,6 @@ const addDomain = () => {
     }
 
   }
-  console.log(userPriceRange.priceRange)
 };
 
 const checkNum = (val, ind, str) => {
@@ -660,6 +660,9 @@ const checkNum = (val, ind, str) => {
   if (userPriceRange.priceRange[ind][str] >= 10000) {
     userPriceRange.priceRange[ind][str] = 9999
   }
+  // if (userPriceRange.priceRange[ind][str] >= 10000) {
+  //   userPriceRange.priceRange[ind][str] = 999998
+  // }
   // console.log((ind + 1) !== userPriceRange.priceRange.length)
   if (userPriceRange.priceRange[ind]['priceMax'] <= userPriceRange.priceRange[ind]['priceMin']) {
     userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind]['priceMin'] + 1
@@ -817,25 +820,22 @@ const getData = async () => {
   }
 };
 
-const inventorygetProductThendListdatas = async () => {
-  state.loading = true;
-  let data = {
-    end_date: searchData.date[1],
-    start_date: searchData.date[0],
-    product_manager: searchData.product_manager,
-    inventory_change: searchData.inventory_change,
-    current_inventory: searchData.current_inventory,
-  };
-  const [res] = [await inventorygetProductThendListdata(data)];
-  if (res.code === 0) {
-    // state.gmvPrductList = res.data.gmvPrductList.records;
-    // state.oldNewList = res.data.oldNewList.records;
-    // state.priceRangedata = res2.data.records;
-    // await getData2Copy(data);
-    getEchartsData();
-    state.loading = false;
-  }
-}
+// 暂时不用这个接口
+// const inventorygetProductThendListdatas = async () => {
+//   state.loading = true;
+//   let data = {
+//     end_date: searchData.date[1],
+//     start_date: searchData.date[0],
+//     product_manager: searchData.product_manager,
+//     inventory_change: searchData.inventory_change,
+//     current_inventory: searchData.current_inventory,
+//   };
+//   const [res] = [await inventorygetProductThendListdata(data)];
+//   if (res.code === 0) {
+//     getEchartsData();
+//     state.loading = false;
+//   }
+// }
 
 const getData2 = async () => {
   state.loading = true;
@@ -847,18 +847,7 @@ const getData2 = async () => {
     current_inventory: searchData.current_inventory,
   };
   await getData2Copy(data)
-  // const [res] = [await getAlldata(data)];
-  // if (res.code === 0) {
-  //   state.tableData = res.data.prductInfoList.records || [];
-  //   state.titleData = res.data.index;
-  //   state.gmvPrductList = res.data.gmvPrductList.records || [];
-  //   state.oldNewList = res.data.oldNewList.records;
-  //   // await inventorygetProductThendListdatas()
-  //   // state.priceRangedata = res2.data.records;
-  //   // await getData2Copy(data);
-  //   getEchartsData();
-  //   state.loading = false;
-  // }
+
 };
 
 const getPriceRangedatas = async (data) => {
@@ -877,9 +866,9 @@ const getData2Copy = async (data: any) => {
   if (res.code === 0) {
     state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
+    state.gmvIndustryList = res.data.gmvIndustryList.records || [];
     state.gmvPrductList = res.data.gmvPrductList.records || [];
     state.oldNewList = res.data.oldNewList.records;
-    // state.priceRangedata = res2.data.records;
     // await inventorygetProductThendListdatas()
     data.price_range_list = userPriceRange.priceRange
     getPriceRangedatas(data)
@@ -923,49 +912,42 @@ const contrastGMV = () => {
   const chartDom = document.getElementById("GMVcharts") as HTMLElement;
   chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
+  if (state.gmvIndustryList.length !== 0 && state.gmvIndustryList) {
+    let date = state.gmvIndustryList?.map(i => i.date)
+    let shop = state.gmvIndustryList?.map(i => i.store_gmv)
+    let industry = state.gmvIndustryList?.map(i => i.industry_transaction_amount)
+    const option = XYlineOptionspalletAnalysis1(date, shop, industry);
+    option && myChart.setOption(option);
+    let listener1 = function () {
+      if (myChart) {
+        myChart.resize();
+      }
+    };
+    EleResize.on(chartDom, listener1);
+  }
 
-  let arr = [
-    {
-      name: "店铺GMV",
-      data: data,
-    },
-    {
-      name: "行业交易金额",
-      data: data,
-    },
-  ];
-  const option = lineOptions(arr);
-  option && myChart.setOption(option);
-  let listener1 = function () {
-    if (myChart) {
-      myChart.resize();
-    }
-  };
-  EleResize.on(chartDom, listener1);
+
 };
 const contrastVisitor = () => {
   const chartDom = document.getElementById("Visitorcharts") as HTMLElement;
   chartDom.removeAttribute('_echarts_instance_')
   const myChart = echarts.init(chartDom);
 
-  let arr = [
-    {
-      name: "店铺访客数",
-      data: data,
-    },
-    {
-      name: "行业访问人数",
-      data: data,
-    },
-  ];
-  const option = lineOptions(arr);
-  option && myChart.setOption(option);
-  let listener1 = function () {
-    if (myChart) {
-      myChart.resize();
-    }
-  };
-  EleResize.on(chartDom, listener1);
+  if (state.gmvIndustryList.length !== 0 && state.gmvIndustryList) {
+    let date = state.gmvIndustryList?.map(i => i.date)
+    let shop = state.gmvIndustryList?.map(i => i.store_visitors_count)
+    let industry = state.gmvIndustryList?.map(i => i.industry_visitors_count)
+    const option = XYlineOptionspalletAnalysis2(date, shop, industry);
+    option && myChart.setOption(option);
+    let listener1 = function () {
+      if (myChart) {
+        myChart.resize();
+      }
+    };
+    EleResize.on(chartDom, listener1);
+
+  }
+
 };
 const palletTrend = () => {
   const chartDom = document.getElementById("Palletecharts") as HTMLElement;
