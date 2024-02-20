@@ -625,6 +625,7 @@ const restore = () => {
 };
 
 const addDomain = () => {
+  console.log(userPriceRange.priceRange.length)
   const count = userPriceRange.priceRange.length - 1
   if (userPriceRange.priceRange.length === 5) {
     userPriceRange.priceRange.push({
@@ -651,7 +652,8 @@ const addDomain = () => {
 };
 
 const checkNum = (val, ind, str) => {
-  // console.log(val, ind, str)
+  const length = ind + 1;
+  // console.log(val, length, str + '当前length' + userPriceRange.priceRange.length)
   if (!/^\d+$/.test(val)) {
     ElMessage.warning("输入格式错误或者输入为空");
     userPriceRange.priceRange[ind][str] = "";
@@ -660,14 +662,15 @@ const checkNum = (val, ind, str) => {
   if (userPriceRange.priceRange[ind][str] >= 10000) {
     userPriceRange.priceRange[ind][str] = 9999
   }
-  // if (userPriceRange.priceRange[ind][str] >= 10000) {
-  //   userPriceRange.priceRange[ind][str] = 999998
-  // }
-  // console.log((ind + 1) !== userPriceRange.priceRange.length)
   if (userPriceRange.priceRange[ind]['priceMax'] <= userPriceRange.priceRange[ind]['priceMin']) {
     userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind]['priceMin'] + 1
     if (ind + 1 !== userPriceRange.priceRange.length) {
-      // console.log(123123123)
+      userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMin'] + 1
+    }
+  }
+  if (ind !== 0 && ind + 1 !== userPriceRange.priceRange.length) {
+    if (userPriceRange.priceRange[ind]['priceMin'] >= userPriceRange.priceRange[ind]['priceMax'] && userPriceRange.priceRange[ind - 1]['priceMax'] >= userPriceRange.priceRange[ind]['priceMax']) {
+      userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind]['priceMin'] + 1
       userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMin'] + 1
     }
   }
@@ -682,10 +685,11 @@ const checkNum = (val, ind, str) => {
       userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind + 1]['priceMax'] - 1
       userPriceRange.priceRange[ind]['priceMax'] = userPriceRange.priceRange[ind + 1]['priceMax'] - 1
     }
+    if (str === 'priceMax') {
+      userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMax']
+    }
   }
-  if (str === 'priceMax') {
-    userPriceRange.priceRange[ind + 1]['priceMin'] = userPriceRange.priceRange[ind]['priceMax']
-  }
+
 
   // if (s) {
   //   ElMessage.warning("输入价格与其他区间价格冲突");
