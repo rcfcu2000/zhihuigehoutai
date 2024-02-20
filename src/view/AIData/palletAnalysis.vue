@@ -347,6 +347,7 @@
                   @blur="checkNum(item.priceMin, index, 'priceMin')" />
                 -
               </el-form-item>
+
               <el-form-item v-if="index <= 4" :prop="'priceRange.' + index + '.priceMax'" :rules="{
                 required: true,
                 message: '填写价格区间',
@@ -362,6 +363,23 @@
                   :disabled="true" />
                 <span style="flex: 1">元</span>
               </el-form-item>
+              <!-- 备选方案 -->
+              <!-- <el-form-item v-if="index + 1 === (userPriceRange.priceRange?.length)">
+                <el-input input-style="text-align:center;" :value="'以上'" class="input_width input_style"
+                  :disabled="true" />
+                <span style="flex: 1">元</span>
+              </el-form-item>
+              <el-form-item v-else :prop="'priceRange.' + index + '.priceMax'" :rules="{
+                required: true,
+                message: '填写价格区间',
+                type: 'number',
+                trigger: 'blur',
+              }">
+                <el-input-number v-model="item.priceMax" class="input_width input_style" :disabled="item.disabled"
+                  :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')" :placeholder="item.placeholder" />
+                <span style="flex: 1">元</span>
+              </el-form-item> -->
+
               <el-button class="mt-2 btn_style position_right" @click.prevent="removeLine(item)">-</el-button>
             </div>
           </div>
@@ -699,6 +717,7 @@ const checkNum = (val, ind, str) => {
 };
 
 const submitForm = (formEl: FormInstance | undefined) => {
+  // userPriceRange.priceRange[userPriceRange.priceRange.length - 1].priceMax = 999999
   if (!formEl) return;
   formEl.validate(async (valid) => {
     if (valid) {
@@ -717,7 +736,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           current_inventory: searchData.current_inventory,
           price_range_list: userPriceRange.priceRange,
         }
-        getPriceRangedatas(obj)
+        getPriceRangedatas()
       }
     } else {
       console.log("error submit!");
@@ -806,11 +825,12 @@ const getData = async () => {
     // console.log([resp1.data.records[0].responsible])
     searchData.product_manager = resp1.data.records[0].responsible;
     await getTree()
-    await getData2();
     if (res4.code === 0) {
       state.loading = false;
       state.dialogForm.records = JSON.stringify(res4.data.records ? res4.data.records : []);
       userPriceRange.priceRange = res4.data.records ? res4.data.records : [];
+      await getData2();
+      // getPriceRangedatas(obj)
       let obj = {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
@@ -819,7 +839,8 @@ const getData = async () => {
         current_inventory: searchData.current_inventory,
         price_range_list: userPriceRange.priceRange,
       }
-      getPriceRangedatas(obj)
+
+
     }
   }
 };
@@ -850,12 +871,21 @@ const getData2 = async () => {
     inventory_change: searchData.inventory_change,
     current_inventory: searchData.current_inventory,
   };
+  data.price_range_list = userPriceRange.priceRange
   await getData2Copy(data)
 
 };
 
-const getPriceRangedatas = async (data) => {
-  const res = await getPriceRangedata(data)
+const getPriceRangedatas = async () => {
+  let obj = {
+    end_date: searchData.date[1],
+    start_date: searchData.date[0],
+    product_manager: searchData.product_manager,
+    inventory_change: searchData.inventory_change,
+    current_inventory: searchData.current_inventory,
+    price_range_list: userPriceRange.priceRange,
+  }
+  const res = await getPriceRangedata(obj)
   if (res.code === 0) {
     state.priceRangedata = res.data.records;
     unitPriceGMV();
@@ -875,7 +905,7 @@ const getData2Copy = async (data: any) => {
     state.oldNewList = res.data.oldNewList.records;
     // await inventorygetProductThendListdatas()
     data.price_range_list = userPriceRange.priceRange
-    getPriceRangedatas(data)
+    getPriceRangedatas()
     getEchartsData2();
     state.loading = false;
   }
