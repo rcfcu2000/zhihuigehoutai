@@ -279,7 +279,7 @@
                             :label="item.bid_type" :value="item.bid_type" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="货盘：" v-if="state.tableSearchLv === 2">
+                <el-form-item label="货盘：" v-if="state.tableSearchLv === 1">
                     <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
@@ -592,7 +592,7 @@ const echarts2 = async () => {
         searchData.keyword_filter = [], // 关键词
             searchData.audience_filter = [], // 人群
             searchData.bid_type = [], // 出价方式
-            state.tableSearchLv = 2;
+            state.tableSearchLv = 1;
         searchData.pallet = [params.name]
         selectChange()
     })

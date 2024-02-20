@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 12:03:57
+ * @LastEditTime: 2024-02-19 09:45:49
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -46,6 +46,12 @@ export const persentNum = (num) => {
 export const floatNum = (num) => {
   num = Number(num)
   return num.toFixed(2)
+}
+
+// 小数四舍五入
+export const roundNum = (num) => {
+  num = Math.round(num)
+  return num
 }
 
 // 数位换算

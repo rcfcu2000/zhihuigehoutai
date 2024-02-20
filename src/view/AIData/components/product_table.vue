@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 12:30:03
+ * @LastEditTime: 2024-02-19 18:14:49
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -40,6 +40,9 @@
                         {{ scope.row.product_alias }}
                     </div>
 
+                    <div v-else-if="scope.column.property == 'cost' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
+                        {{ roundNum(scope.row[scope.column.property]) }}
+                    </div>
                     <div v-else-if="head.unit == '%'">
                         <!-- {{ persentNum(scope.row) }} -->
                         {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
@@ -63,7 +66,7 @@
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdated } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { persentNum, floatNum, lueNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
 import type { TableColumnCtx } from 'element-plus'
 
 import * as echarts from 'echarts';
@@ -213,7 +216,7 @@ interface SummaryMethodProps<T = Product> {
 
 const getSummaries = (param: SummaryMethodProps) => {
     const { columns, data } = param
-    const sums: string[] = []
+    const sums: any[] = []
     columns.forEach((column, index) => {
         if (index === 0) {
             sums[index] = '合计'
@@ -224,9 +227,13 @@ const getSummaries = (param: SummaryMethodProps) => {
             sums[index] = `${values.reduce((prev, curr) => {
                 const value = Number(curr)
                 if (!Number.isNaN(value)) {
-                    return Number(prev + curr)
+                    if(column.property == 'cost' || column.property == 'clicks' || column.property == 'direct_transaction_count' ||column.property == 'indirect_transaction_count'){
+                        return roundNum(Number(prev) + curr)
+                    }else{
+                        return floatNum(Number(prev) + curr)
+                    }
                 } else {
-                    return Number(prev)
+                    return prev
                 }
             }, 0)}`
         } else {
