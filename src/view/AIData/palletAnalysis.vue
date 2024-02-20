@@ -748,6 +748,8 @@ const changeCheckGroup = (type: string) => {
 const clearSelect = async () => {
   state.treeLevel = 0
   searchData.current_inventory = []
+  searchData.product_manager = []
+  searchData.inventory_change = []
   await getData()
 };
 
