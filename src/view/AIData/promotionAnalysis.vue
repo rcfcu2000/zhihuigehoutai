@@ -527,7 +527,8 @@ const getData2 = async () => {
     searchData.audience_filter = [] // 人群
     searchData.pallet = [] // 货盘
     searchData.bid_type = [];
-    clearData[0] = true
+    clearDataPro[0] = true
+    clearDataPlan[0] = true
     // await getEchartsData()
     await getAll(searchData)
     await getDetailPro(searchData)
