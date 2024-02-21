@@ -14,7 +14,7 @@
               </el-select>
             </div>
             <div class="search_line">
-              本月货盘
+              本期货盘
               <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable multiple
                 @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
@@ -22,7 +22,7 @@
               </el-select>
             </div>
             <div class="search_line">
-              货盘变化
+              场景分类
               <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable multiple
                 @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
