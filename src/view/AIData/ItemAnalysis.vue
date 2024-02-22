@@ -5,22 +5,20 @@
                 <span class="titl1_h1">单品分析</span>
                 <div class="search">
                     <div class="search_left">
-
-                    </div>
-                    <div class="search_right">
                         <div class="search_line">
                             商品选择
                             <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择"
-                                @change="getData" size="small" filterable remote reserve-keyword remote-show-suffix
+                                @change="getData" filterable remote reserve-keyword remote-show-suffix
                                 :remote-method="remoteMethod" :loading="searchData.loading">
                                 <el-option v-for="item in state.shopList" :key="item.product_id" :label="item.product_name"
                                     :value="item.product_id" />
                             </el-select>
                         </div>
-
+                    </div>
+                    <div class="search_right">
                         <div class="search_line">
                             请选择起止时间
-                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" size="small"
+                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false"
                                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                                 start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
@@ -540,9 +538,11 @@ $echarts_bg_img: url("./images/_2.png");
 
             .search_left {
                 display: flex;
-                flex: 0.35;
+                flex: 0.4;
                 // justify-content: space-between;
-
+                .select_width {
+                    width: 60%;
+                }
             }
 
             .search_right {
@@ -552,14 +552,15 @@ $echarts_bg_img: url("./images/_2.png");
 
             .search_line {
                 margin: 0 10px;
+                width: 100%;
 
                 .line {
                     display: flex;
                 }
 
-                .select_width {
-                    width: 100px;
-                }
+                // .select_width {
+                //     width: 100px;
+                // }
 
             }
         }

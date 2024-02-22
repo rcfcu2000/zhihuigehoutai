@@ -620,7 +620,7 @@ const searchData = reactive({
   inventory_change: [],
   all: 999 as any,
   // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-  date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
+  date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
 });
 
 // 调整价格区间data

@@ -118,7 +118,7 @@
                         <div class="echarts_title">货盘GMV达成率</div>
                         <div class="aiData_table table">
                             <el-table :data="state.tableData">
-                                <el-table-column label="" width="120">
+                                <el-table-column label="" width="100">
                                     <template #default="scope">
                                         <span>{{ scope.row.name }}</span>
                                     </template>
@@ -203,6 +203,7 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
+import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { pieOptionsHome, wordsCloud, lineOptions } from "./echartsOptions";
 // import dayListTbale from './components/dayList_table.vue'
 // import wordsTbale from './components/words_table.vue'
@@ -260,7 +261,7 @@ const disabledDate = (time: Date) => {
 const searchData = reactive({
     shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: '',
     end_date: '',
 });
@@ -323,13 +324,18 @@ const pieCharts = async () => {
 
     option1 && myChart1.setOption(option1);
     option2 && myChart2.setOption(option2);
-
-    window.addEventListener("resize", () => {
-        myChart1.resize();
-        myChart2.resize();
-
-    });
-
+    let listener1 = function () {
+        if (myChart1) {
+            myChart1.resize();
+        }
+    };
+    let listener2 = function () {
+        if (myChart2) {
+            myChart2.resize();
+        }
+    };
+    EleResize.on(chartDom1, listener1);
+    EleResize.on(chartDom2, listener2);
 }
 
 const GMVDismantling = () => {
@@ -992,9 +998,12 @@ const getbox2Echarts = () => {
     const option1 = lineOptions(arr1);
     option1 && myChart1.setOption(option1);
 
-    window.addEventListener("resize", () => {
-        myChart1.resize();
-    });
+    let listener1 = function () {
+        if (myChart1) {
+            myChart1.resize();
+        }
+    };
+    EleResize.on(chartDom1, listener1);
 }
 
 const getBox4 = () => {
@@ -1032,10 +1041,18 @@ const getBox4 = () => {
     const option2 = lineOptions(arr2);
     option2 && myChart2.setOption(option2);
 
-    window.addEventListener("resize", () => {
-        myChart1.resize();
-        myChart2.resize();
-    });
+    let listener1 = function () {
+        if (myChart1) {
+            myChart1.resize();
+        }
+    };
+    let listener2 = function () {
+        if (myChart2) {
+            myChart2.resize();
+        }
+    };
+    EleResize.on(chartDom1, listener1);
+    EleResize.on(chartDom2, listener2);
 }
 
 </script>
@@ -1189,13 +1206,14 @@ $echarts_bg_img: url("./images/_2.png");
             justify-content: space-between;
 
             .box2_center_top {
-                height: 38%;
+                height: 50%;
                 width: 100%;
                 display: flex;
                 justify-content: space-between;
 
                 >div {
-                    flex: 0.48;
+                    flex: 0.49;
+                    overflow: auto;
 
                     .box2_center_top_left_center {
                         display: flex;
@@ -1269,7 +1287,7 @@ $echarts_bg_img: url("./images/_2.png");
             }
 
             .box2_center_btn {
-                height: 60%;
+                height: 50%;
                 width: 100%;
                 background-image: $echarts_bg_img;
                 background-size: 100% 100%;
@@ -1381,6 +1399,10 @@ $echarts_bg_img: url("./images/_2.png");
 }
 
 ::v-deep(.el-table) {
+    .el-table__cell {
+        padding: 1% 0;
+    }
+
     .el-table__header {
         border-bottom: 1px solid rgb(16, 97, 197);
 

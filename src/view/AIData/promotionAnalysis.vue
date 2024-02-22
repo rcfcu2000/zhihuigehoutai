@@ -369,8 +369,8 @@ const searchData = reactive({
     current_inventory: [] as Array<any>, // string 当期货盘
     promotion_type: [], // string
     scene_category: [] as Array<any>, //string 计划类型
-    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    // date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
     ids: [] as Array<any>,
 
     // 明细表格
