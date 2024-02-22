@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-22 19:26:45
+ * @LastEditTime: 2024-02-22 19:58:26
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——每日明细 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -26,13 +26,15 @@
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
                 :fixed="head.fixed" :align="head.align" :width="head.width">
                 <template #default="scope">
-                    <div v-if="scope.column.property == 'payment_conversion_rate' || scope.column.property == 'refund_rate' || scope.column.property == 'free_search_click_through_rate' || scope.column.property == 'repeat_purchase_rate' || scope.column.property == 'search_gmv_ratio' || scope.column.property == 'returning_customer_ratio' || scope.column.property == 'search_visitor_ratio' || scope.column.property == 'promotion_roi'">
+                    <div
+                        v-if="scope.column.property == 'payment_conversion_rate' || scope.column.property == 'refund_rate' || scope.column.property == 'free_search_click_through_rate' || scope.column.property == 'repeat_purchase_rate' || scope.column.property == 'search_gmv_ratio' || scope.column.property == 'returning_customer_ratio' || scope.column.property == 'search_visitor_ratio' || scope.column.property == 'promotion_roi'">
                         {{ persentNum(scope.row[scope.column.property]) }} {{ head.unit }}
                     </div>
                     <div v-else-if="scope.column.property == 'gmv'">
                         {{ lueNum(scope.row[scope.column.property]) }}
                     </div>
-                    <div v-else-if="scope.column.property == 'promotion_cost' || scope.column.property == 'product_visitor_count'">
+                    <div
+                        v-else-if="scope.column.property == 'promotion_cost' || scope.column.property == 'product_visitor_count'">
                         {{ roundNum(scope.row[scope.column.property]) }}
                     </div>
                     <div v-else>
@@ -53,7 +55,7 @@
 
 <script setup lang="ts" name="comTable">
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdated } from 'vue'
-import { persentNum, floatNum, lueNum,roundNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
 import type { TableColumnCtx } from 'element-plus'
 
 
@@ -178,10 +180,14 @@ const getSummaries = (param: SummaryMethodProps) => {
         }
     })
     return sums.map((sum, index) => {
-        if (index == 3 || index == 4 || index == 8 || index == 9 || index == 13 || index == 14) {
-            return (sum*100).toFixed(2) + '%'
-        } else {
+        if (index == 3 || index == 4 || index == 5 || index == 6 || index == 7 || index == 10 || index == 12 || index == 14) {
+            return (Number(sum) * 100).toFixed(2) + '%'
+        }
+        else if (index == 0) {
             return sum
+        }
+        else {
+            return lueNum(roundNum(Number(sum)))
         }
     })
 }
