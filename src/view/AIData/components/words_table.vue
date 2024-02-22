@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 18:27:37
+ * @LastEditTime: 2024-02-22 18:45:09
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,7 +17,7 @@
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 320px;"
             v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange"
-            @header-click="headerClick">
+            @header-click="headerClick" show-summary :summary-method="getSummaries">
             <!-- <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">
 
@@ -28,7 +28,11 @@
                 <el-table-column v-for="item, idx in head.children" :key="idx" :prop="item.dataKey" :label="item.title"
                     :align="item.align" :width="item.width">
                     <template #default="scope">
-                        <div>
+                        <div
+                            v-if="scope.column.property == 'add_to_cart_rate' || scope.column.property == 'conversion_rate'">
+                            {{ persentNum(scope.row[scope.column.property]) }} {{ head.unit }}
+                        </div>
+                        <div v-else>
                             {{ scope.row[scope.column.property] }}
                         </div>
                     </template>
@@ -36,7 +40,9 @@
             </el-table-column>
             <template #append v-if="nomore">
                 <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
-                    <el-icon><MagicStick /></el-icon> <span>没有更多了</span>
+                    <el-icon>
+                        <MagicStick />
+                    </el-icon> <span>没有更多了</span>
                 </div>
             </template>
         </el-table>
@@ -48,6 +54,7 @@ import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdate
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum, lueNum } from "@/utils/format.js"
+import type { TableColumnCtx } from 'element-plus'
 
 import * as echarts from 'echarts';
 
@@ -126,12 +133,64 @@ const loadMore = (res) => {
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'product')
-        }else{
+        } else {
             nomore.value = true
         }
     }
 }
 
+interface Product {
+    visitor_count: string
+    add_to_cart_rate: string
+    conversion_rate: string
+    fans_paid_buyers_count: Array<any>
+    direct_paid_buyers_count: string
+    // average_order_value: number
+    // existing_customer_percentage: number
+    // favorite_add_to_cart_rate: number
+}
+interface SummaryMethodProps<T = Product> {
+    columns: TableColumnCtx<T>[]
+    data: T[]
+}
+
+const getSummaries = (param: SummaryMethodProps) => {
+    const { columns, data } = param
+
+    const sums: any[] = []
+    columns.forEach((column, index) => {
+        if (index === 0) {
+            sums[index] = '合计'
+            return
+        }
+        const values = data.map((item) => Number(item[column.property]))
+
+        if (!values.every((value) => Number.isNaN(value))) {
+            sums[index] = `${values.reduce((prev, curr) => {
+                const value = Number(curr)
+                if (!Number.isNaN(value)) {
+                    if (column.property == 'add_to_cart_rate' || column.property == 'conversion_rate') {
+                        return floatNum(Number(prev) + curr)
+                    }
+                    else {
+                        return floatNum(Number(prev) + curr)
+                    }
+                } else {
+                    return prev
+                }
+            }, 0)}`
+        } else {
+            sums[index] = 'N/A'
+        }
+    })
+    return sums.map((sum, index) => {
+        if (index == 3 || index == 4 || index == 8 || index == 9 || index == 13 || index == 14) {
+            return sum*100 +'%'
+        } else {
+            return sum
+        }
+    })
+}
 
 // 不重复随机数
 /**
@@ -298,5 +357,4 @@ const headerClick = () => {
             }
         }
     }
-}
-</style>
+}</style>

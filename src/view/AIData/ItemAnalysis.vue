@@ -262,8 +262,8 @@ const allData = reactive([{
         {
             title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
                 { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'add_to_cart_rate', key: 'add_to_cart_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%', },
                 { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
                 { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
             ]

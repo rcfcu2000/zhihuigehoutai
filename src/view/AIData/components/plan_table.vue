@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-20 20:50:18
+ * @LastEditTime: 2024-02-22 17:21:38
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -12,9 +12,9 @@
     </div>
     <div class="aiData_table table" :key="count">
         <!--  v-loading="loadType" -->
-        <el-table ref="planTableListRef" :id="'table' + comKey" :data="tableData" border show-summary
-            :summary-method="getSummaries" v-loading="loadType" element-loading-background="rgba(122, 122, 122, 0.8)"
-            style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300">
+        <el-table ref="planTableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+            element-loading-background="rgba(122, 122, 122, 0.8)" style="height: 280px;"
+            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @current-change="currentChange">
             <!-- <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="plan_pallet"> -->
             <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" column-key="plan_pallet">
@@ -49,7 +49,8 @@
 
                 </template>
             </el-table-column>
-            <template #append v-if="nomore">
+            <template #append v-if="nomore && tableData.length > 0">
+
                 <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
                     <el-icon>
                         <MagicStick />
@@ -57,11 +58,44 @@
                 </div>
             </template>
         </el-table>
+        <el-table ref="planTableListRef_sum" :data="tableDataSum" :show-header="false" empty-text="--">
+            <el-table-column label="合计" fixed width="120" align="center" column-key="plan_pallet">
+                <template #default>
+                    <div>合计</div>
+                </template>
+            </el-table-column>
+            <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
+                :fixed="head.fixed" :align="head.align" :width="head.width">
+                <template #default="scope">
+                    <div
+                        v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend' || scope.column.property == 'gmv_trend'">
+                        <div :id="scope.row.id + '_' + scope.column.property" style="width: 8dvw;height: 30px;">
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="scope.column.property == 'spend' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
+                        {{ roundNum(scope.row[scope.column.property]) }}
+                    </div>
+                    <div v-else-if="head.unit == '%'">
+                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                    </div>
+
+                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden"
+                        :title="scope.row[scope.column.property]">
+                        {{ scope.row[scope.column.property] }}
+                    </div>
+
+                    <div v-else>
+                        {{ lueNum(scope.row[scope.column.property]) }}
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
     </div>
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted } from 'vue'
+import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
@@ -77,7 +111,7 @@ let tableHead = ref([
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
 let tableData = reactive([] as Array<any>)
-let tableDataSum = reactive({} as Object)
+let tableDataSum = reactive([] as Array<any>)
 const comKey = ref(0)
 const countModel = defineModel({
     type: Number, default: 0
@@ -95,6 +129,7 @@ const lineData = () => {
     return arr
 }
 
+
 const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory', 'tableCount'])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('计划明细')
@@ -103,6 +138,7 @@ const current_inventory = reactive({
 })
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
+tableDataSum = [propData.Commodity_detail.sumTrend]
 comKey.value = tableData.length
 const filterTag = (value: string, row: User) => {
     return row.promotion_type === value
@@ -113,10 +149,53 @@ const filterChange = (res) => {
 }
 let randomStrings = []
 const planTableListRef = ref();
+const planTableListRefs = ref();
+const planTableListRef_sum = ref();
 const nomore = ref(false)
+const syncScroll = (source: any) => {
+    console.log(planTableListRefs.value.scrollLeft, "planTableListRef.value.scrollLeft")
+    // 当主表格滚动时，更新合计表格的滚动位置
+    planTableListRefs.value.scrollLeft = planTableListRef_sum.value.scrollLeft;
 
+    // 设置一个标记，防止循环引用
+    if (source === 'table1' && planTableListRef_sum.value && !planTableListRef_sum.value.isSyncing) {
+        planTableListRefs.value.isSyncing = true; // 设置正在同步的标记
+        planTableListRef_sum.value.scrollLeft = planTableListRefs.value.scrollLeft;
+        planTableListRefs.value.isSyncing = false; // 同步完成，清除标记
+    } else if (source === 'table2' && planTableListRefs.value && !planTableListRefs.value.isSyncing) {
+        planTableListRef_sum.value.isSyncing = true; // 设置正在同步的标记
+        planTableListRefs.value.scrollLeft = planTableListRef_sum.value.scrollLeft;
+        planTableListRef_sum.value.isSyncing = false; // 同步完成，清除标记
+    }
+};
+
+const currentChange = (currentRow: any, oldCurrentRow: any) => {
+    console.log(currentRow, oldCurrentRow, "currentRow, oldCurrentRow")
+}
 onMounted(() => {
+    const tableWrapper = planTableListRef.value?.$el.querySelector('.el-table__body-wrapper');
+    if (tableWrapper) {
+        tableWrapper.addEventListener('scroll', handleTableScroll);
+    }
+    nextTick(() => {
+        planTableListRefs.value.isSyncing = false;
+        planTableListRef_sum.value.isSyncing = false;
+    })
 })
+
+function handleTableScroll(event:any) {
+    // 事件处理逻辑
+    console.log(event.target,'event.target');
+}
+
+onBeforeUnmount(() => {
+    if (planTableListRefs.value) {
+        planTableListRefs.value.removeEventListener('scroll', syncScroll);
+    }
+    if (planTableListRef_sum.value) {
+        planTableListRef_sum.value.removeEventListener('scroll', syncScroll);
+    }
+});
 /**
      * 刷新table,防止滚动条跑到最上面
     */
@@ -124,9 +203,7 @@ const refreshTable = () => {
     let table = planTableListRef.value;
     table.doLayout()
 }
-watch([propData.Commodity_detail,propData.clearData], ([newD,newD2]) => {
-    
-    console.log(newD,newD2, "clearDataPlan")
+watch([propData.Commodity_detail, propData.clearData], ([newD, newD2]) => {
     if (newD2[0]) {
         tableData = []
         comKey.value = 0
@@ -134,12 +211,10 @@ watch([propData.Commodity_detail,propData.clearData], ([newD,newD2]) => {
         loadType.value = true
     }
 
-
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     tableData = tableData.concat(newD.data)
-    tableDataSum = newD.sumTrend
-    console.log(tableData, "tableData2")
+    tableDataSum = [newD.sumTrend]
     countModel.value = tableData.length
     comKey.value = tableData.length
     refreshTable()
@@ -185,6 +260,46 @@ watch([propData.Commodity_detail,propData.clearData], ([newD,newD2]) => {
             EleResize.on(chartDom2, listener);
             EleResize.on(chartDom3, listener);
         })
+        tableDataSum.forEach((item: any) => {
+            const domId_1 = item.id + '_' + 'gmv_trend'
+            const domId_2 = item.id + '_' + 'spend_trend'
+            const domId_3 = item.id + '_' + 'roi_trend'
+            let chartDom1: any = document.getElementById(domId_1);
+            let chartDom2: any = document.getElementById(domId_2);
+            let chartDom3: any = document.getElementById(domId_3);
+            let myChart1 = echarts.init(chartDom1);
+            if (chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
+                myChart1.clear()
+            }
+            let myChart2 = echarts.init(chartDom2);
+            if (chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
+                myChart2.clear()
+            }
+            let myChart3 = echarts.init(chartDom3);
+            if (chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
+                myChart3.clear()
+            }
+            let option1 = table_lineOptions(item.gmv_trend, item.times);
+            let option2 = table_lineOptions(item.spend_trend, item.times);
+            let option3 = table_lineOptions(item.roi_trend, item.times);
+            let listener = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+                if (myChart2) {
+                    myChart2.resize();
+                }
+                if (myChart3) {
+                    myChart3.resize();
+                }
+            };
+            option1 && myChart1.setOption(option1);
+            option2 && myChart2.setOption(option2);
+            option3 && myChart3.setOption(option3);
+            EleResize.on(chartDom1, listener);
+            EleResize.on(chartDom2, listener);
+            EleResize.on(chartDom3, listener);
+        })
         refreshTable()
     })
     // count.value++
@@ -192,7 +307,7 @@ watch([propData.Commodity_detail,propData.clearData], ([newD,newD2]) => {
 
 const loadMore = (res) => {
     if (componentTitle.value == "计划明细") {
-        console.log('计划明细')
+        console.log(propData.tableCount, '计划明细')
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'plan')
@@ -206,9 +321,12 @@ interface Product {
     add_to_cart_cost: string
     bid_type: string
     campaign_name: string
+    gmv_trend: Array<any>
     gmv: string
     roi: number
+    roi_trend: Array<any>
     spend: number
+    spend_trend: Array<any>
     click_through_rate: number
     clicks: number
     conversion_rate: number
@@ -230,6 +348,7 @@ interface SummaryMethodProps<T = Product> {
 
 const getSummaries = (param: SummaryMethodProps) => {
     const { columns, data } = param
+
     const sums: any[] = []
     columns.forEach((column, index) => {
         if (index === 0) {
@@ -237,13 +356,15 @@ const getSummaries = (param: SummaryMethodProps) => {
             return
         }
         const values = data.map((item) => Number(item[column.property]))
+
         if (!values.every((value) => Number.isNaN(value))) {
             sums[index] = `${values.reduce((prev, curr) => {
                 const value = Number(curr)
                 if (!Number.isNaN(value)) {
                     if (column.property == 'cost' || column.property == 'clicks' || column.property == 'direct_transaction_count' || column.property == 'indirect_transaction_count') {
                         return roundNum(Number(prev) + curr)
-                    } else {
+                    }
+                    else {
                         return floatNum(Number(prev) + curr)
                     }
                 } else {
@@ -254,7 +375,13 @@ const getSummaries = (param: SummaryMethodProps) => {
             sums[index] = 'N/A'
         }
     })
-    return sums
+    return sums.map((sum, index) => {
+        if (index == 3 || index == 5 || index == 12) {
+            return ''
+        } else {
+            return sum
+        }
+    })
 }
 
 // 不重复随机数
@@ -283,6 +410,10 @@ const generateRandomString = () => {
 </script>
 
 <style lang="scss" scoped>
+.table-wrapper {
+    overflow-x: auto;
+}
+
 ::v-deep(.echarts-tooltip) {
     padding: 0 !important;
     // position: fixed !important;
@@ -368,10 +499,10 @@ const generateRandomString = () => {
 }
 
 .table {
-    height: 280px;
+    height: 310px;
     padding: 10px;
     // width: 98%;
-    overflow: auto;
+    // overflow: auto;
     margin-bottom: 10px;
     margin-top: 4px;
     // border: 1px solid #fff;
