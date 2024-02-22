@@ -10,7 +10,7 @@
 
                         <div class="search_line">
                             请选择起止时间
-                            <el-date-picker v-model="searchData.date" :clearable="false" size="small" format="YYYY/MM/DD"
+                            <el-date-picker v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
                                 value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                                 start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
