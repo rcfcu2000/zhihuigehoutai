@@ -32,7 +32,7 @@
         <div class="box">
             <div class="child" style="flex: 0.58;">
                 <div class="title">单品重点指标</div>
-                <div class="box_container">
+                <div class="box_container" style="display:flex; flex-direction:column;justify-content: space-between;">
                     <div class="roduct_num">
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts1"></div>
@@ -216,12 +216,20 @@ const searchData = reactive({
 
 onMounted(async () => {
     state.loading = true
-    await getSearchShopList()
-    setTimeout(async () => {
-        // console.log(state.shopList)
+    const res = await getProductlist(
+        { key: state.key }
+    )
+    if (res.code === 0) {
+        state.shopList = res.data.records
         searchData.product_id = state.shopList[0]?.product_id
         await getData()
-    }, 2000)
+        searchData.loading = false
+    }
+
+    // await getSearchShopList()
+    // setTimeout(async () => {
+    // await getData()
+    // }, 3000)
 })
 
 const getSearchShopList = useThrottle(async () => {
@@ -557,17 +565,17 @@ $echarts_bg_img: url("./images/_2.png");
     .box {
         display: flex;
         justify-content: space-around;
+        height: 30%;
 
         .child {
             height: 100%;
             flex: 0.48;
 
             .box_container {
-                height: 300px;
-
+                height: calc(100% - 70px);
 
                 .roduct_num {
-                    height: 148px;
+                    height: 44%;
                     margin: 1px 0;
                     background-image: url("./images/image-3.png");
                     background-size: 100% 100%;
@@ -592,19 +600,24 @@ $echarts_bg_img: url("./images/_2.png");
 
                         .roduct_num_box_text {
                             position: relative;
-                            z-index: 1;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
+                            text-align: center;
+                            height: 100%;
+                            // z-index: 1;
+                            // display: flex;
+                            // flex-direction: column;
+                            // align-items: center;
+                            // justify-content: center;
 
                             .tit {
-                                font-size: 18px;
+                                font-size: 16px;
                             }
 
                             .num {
-                                line-height: 120px;
-                                font-size: 48px;
+                                font-size: 38px;
+                                position: absolute;
+                                inset: 0;
+                                height: 40px;
+                                margin: auto;
                             }
                         }
                     }
