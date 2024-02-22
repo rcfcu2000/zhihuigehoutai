@@ -818,7 +818,7 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
         })
         allData[1].sumTrend.gmv_trend = thendObj.gmv_trend
         allData[1].sumTrend.roi_trend = thendObj.roi_trend
-        allData[1].sumTrend.cost_trend = thendObj.cost_trend
+        allData[1].sumTrend.spend_trend = thendObj.cost_trend
         allData[1].sumTrend.times = thendObj.times
     }
     plan_ids.splice(0, plan_ids.length)

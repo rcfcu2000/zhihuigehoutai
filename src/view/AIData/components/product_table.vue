@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-22 18:10:57
+ * @LastEditTime: 2024-02-22 19:36:21
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -87,11 +87,11 @@
 
                     <div
                         v-else-if="scope.column.property == 'cost' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
-                        {{ roundNum(scope.row[scope.column.property]) }}
+                        {{ lueNum(roundNum(scope.row[scope.column.property])) }}
                     </div>
                     <div v-else-if="head.unit == '%'">
                         <!-- {{ persentNum(scope.row) }} -->
-                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                        {{ persentNum(scope.row[scope.column.property])*100 }}{{ head.unit }}
                     </div>
 
                     <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
@@ -284,7 +284,7 @@ watch([propData.Commodity_detail], ([newD]) => {
                 myChart3.clear()
             }
             let option1 = table_lineOptions(item.gmv_trend, item.times);
-            let option2 = table_lineOptions(item.spend_trend, item.times);
+            let option2 = table_lineOptions(item.cost_trend, item.times);
             let option3 = table_lineOptions(item.roi_trend, item.times);
             let listener = function () {
                 if (myChart1) {

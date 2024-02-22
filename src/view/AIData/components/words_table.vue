@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-22 18:45:09
+ * @LastEditTime: 2024-02-22 19:11:30
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -184,8 +184,12 @@ const getSummaries = (param: SummaryMethodProps) => {
         }
     })
     return sums.map((sum, index) => {
-        if (index == 3 || index == 4 || index == 8 || index == 9 || index == 13 || index == 14) {
-            return sum*100 +'%'
+        if (index == 2 || index == 3 || index == 7 || index == 8 || index == 13 || index == 12) {
+            if (sum) {
+                return (sum * 100).toFixed(2) + '%'
+            }else{
+                return 'N/A'
+            }
         } else {
             return sum
         }
@@ -357,4 +361,5 @@ const headerClick = () => {
             }
         }
     }
-}</style>
+}
+</style>
