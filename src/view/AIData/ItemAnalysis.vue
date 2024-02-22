@@ -369,42 +369,55 @@ const getDayList = async (arr: any) => {
 
 const getHeaderChart = () => {
     const chartDom1 = document.getElementById("echarts1") as HTMLElement;
+    chartDom1.removeAttribute('_echarts_instance_')
     const myChart1 = echarts.init(chartDom1);
 
     const chartDom2 = document.getElementById("echarts2") as HTMLElement;
+    chartDom2.removeAttribute('_echarts_instance_')
     const myChart2 = echarts.init(chartDom2);
 
     const chartDom3 = document.getElementById("echarts3") as HTMLElement;
+    chartDom3.removeAttribute('_echarts_instance_')
     const myChart3 = echarts.init(chartDom3);
 
     const chartDom4 = document.getElementById("echarts4") as HTMLElement;
+    chartDom4.removeAttribute('_echarts_instance_')
     const myChart4 = echarts.init(chartDom4);
 
     const chartDom5 = document.getElementById("echarts5") as HTMLElement;
+    chartDom5.removeAttribute('_echarts_instance_')
     const myChart5 = echarts.init(chartDom5);
 
     const chartDom6 = document.getElementById("echarts6") as HTMLElement;
+    chartDom6.removeAttribute('_echarts_instance_')
     const myChart6 = echarts.init(chartDom6);
 
     const chartDom7 = document.getElementById("echarts7") as HTMLElement;
+    chartDom7.removeAttribute('_echarts_instance_')
     const myChart7 = echarts.init(chartDom7);
 
     const chartDom8 = document.getElementById("echarts8") as HTMLElement;
+    chartDom8.removeAttribute('_echarts_instance_')
     const myChart8 = echarts.init(chartDom8);
 
     const chartDom9 = document.getElementById("echarts9") as HTMLElement;
+    chartDom9.removeAttribute('_echarts_instance_')
     const myChart9 = echarts.init(chartDom9);
 
     const chartDom10 = document.getElementById("echarts10") as HTMLElement;
+    chartDom10.removeAttribute('_echarts_instance_')
     const myChart10 = echarts.init(chartDom10);
 
     const chartDom11 = document.getElementById("echarts11") as HTMLElement;
+    chartDom11.removeAttribute('_echarts_instance_')
     const myChart11 = echarts.init(chartDom11);
 
     const chartDom12 = document.getElementById("echarts12") as HTMLElement;
+    chartDom12.removeAttribute('_echarts_instance_')
     const myChart12 = echarts.init(chartDom12);
 
     const chartDom13 = document.getElementById("echarts13") as HTMLElement;
+    chartDom13.removeAttribute('_echarts_instance_')
     const myChart13 = echarts.init(chartDom13);
     let arr1 = state.itemIndexTrend?.map(i => i.visitors_count)
     let arr2 = state.itemIndexTrend?.map(i => i.gmv)
