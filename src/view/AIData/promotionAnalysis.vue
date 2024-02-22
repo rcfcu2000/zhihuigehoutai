@@ -14,7 +14,7 @@
                             </el-select>
                         </div>
                         <div class="search_line">
-                            本月货盘
+                            本期货盘
                             <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable
                                 multiple @change="getData2" class="select_width" placeholder="请选择">
                                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
@@ -22,7 +22,7 @@
                             </el-select>
                         </div>
                         <div class="search_line">
-                            货盘变化
+                            场景分类
                             <el-select v-model="searchData.scene_category" collapse-tags collapse-tags-tooltip clearable
                                 multiple @change="getData2" class="select_width" placeholder="请选择">
                                 <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
@@ -369,8 +369,8 @@ const searchData = reactive({
     current_inventory: [] as Array<any>, // string 当期货盘
     promotion_type: [], // string
     scene_category: [] as Array<any>, //string 计划类型
-    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    // date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
     ids: [] as Array<any>,
 
     // 明细表格

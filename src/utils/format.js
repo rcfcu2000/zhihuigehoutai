@@ -65,7 +65,7 @@ export function lueNum(num) {
           num = num.toLocaleString() + "万";
       }
   } else {
-      num = num.toFixed(2)
+      num = num.toFixed(0)
   }
   return num;
 }

@@ -14,7 +14,7 @@
               </el-select>
             </div>
             <div class="search_line">
-              本月货盘
+              本期货盘
               <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable multiple
                 @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
@@ -22,7 +22,7 @@
               </el-select>
             </div>
             <div class="search_line">
-              货盘变化
+              场景分类
               <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable multiple
                 @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
@@ -620,7 +620,7 @@ const searchData = reactive({
   inventory_change: [],
   all: 999 as any,
   // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-  date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
+  date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
 });
 
 // 调整价格区间data
@@ -762,7 +762,7 @@ const getUserPrice = async () => {
   }
 };
 
-const changeCheckGroup = (type: string) => {
+const changeCheckGroup = async (type: string) => {
   if (type === "999") {
     searchData.inventory_change = [];
   } else {
@@ -779,6 +779,10 @@ const clearSelect = async () => {
   await getData()
 };
 
+const findValueInObjects = (array, propertyName, value) => {
+  return array.some(obj => obj.hasOwnProperty(propertyName) && obj[propertyName] === value);
+}
+
 const getTree = async () => {
   let data = {
     end_date: searchData.date[1],
@@ -789,11 +793,17 @@ const getTree = async () => {
   };
   const resp3 = await getSubGmvList(data);
   if (resp3.code === 0) {
+    if (!findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory)) {
+      searchData.current_inventory = []
+    }
     state.monthPallet = resp3.data.records;
+    // console.log(findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory))
+
     let allValue = 0;
     resp3.data.records?.forEach((i) => {
       allValue += (i.payment_amount * 1);
     });
+    state.tree = []
     state.tree = [
       {
         name: "GMV",
@@ -872,6 +882,7 @@ const getData2 = async () => {
     current_inventory: searchData.current_inventory,
   };
   data.price_range_list = userPriceRange.priceRange
+  getTree()
   await getData2Copy(data)
 
 };
@@ -1163,7 +1174,9 @@ const GMVDismantling = () => {
   };
 
   option && myChart.setOption(option);
+  myChart.off('click');
   myChart.on("click", function (params: any) {
+    // console.log(123123)
     state.treeLevel = params.data.name
     let data = {
       end_date: searchData.date[1],
@@ -1176,7 +1189,9 @@ const GMVDismantling = () => {
       tertiary_category: "",
       leve: 0,
     };
+    console.log(params.data.lv === 0, params.data.name)
     if (params.data.lv === 0) {
+      // debugger;
       searchData.current_inventory = [params.data.name]
       data.leve = 0
       getSubGmvList(data).then((res) => {
@@ -1283,16 +1298,16 @@ const GMVDismantling = () => {
     getData2Copy(data)
 
   });
-  let listener1 = function () {
-    if (myChart) {
-      myChart.resize();
-    }
-  };
-  option && myChart.setOption(option);
-  EleResize.on(chartDom, listener1);
-  // window.addEventListener("resize", () => {
-  //   myChart.resize();
-  // });
+  // let listener1 = function () {
+  //   if (myChart) {
+  //     myChart.resize();
+  //   }
+  // };
+  // option && myChart.setOption(option);
+  // EleResize.on(chartDom, listener1);
+  window.addEventListener("resize", () => {
+    myChart.resize();
+  });
 };
 // 添加数据到树形结构的函数
 const addDataToTree = (root: any, targetId: any, newData: any) => {

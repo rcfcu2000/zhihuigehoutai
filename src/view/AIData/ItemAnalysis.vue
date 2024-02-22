@@ -5,22 +5,20 @@
                 <span class="titl1_h1">单品分析</span>
                 <div class="search">
                     <div class="search_left">
-
-                    </div>
-                    <div class="search_right">
                         <div class="search_line">
                             商品选择
                             <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择"
-                                @change="getData" size="small" filterable remote reserve-keyword remote-show-suffix
+                                @change="getData" filterable remote reserve-keyword remote-show-suffix
                                 :remote-method="remoteMethod" :loading="searchData.loading">
                                 <el-option v-for="item in state.shopList" :key="item.product_id" :label="item.product_name"
                                     :value="item.product_id" />
                             </el-select>
                         </div>
-
+                    </div>
+                    <div class="search_right">
                         <div class="search_line">
                             请选择起止时间
-                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" size="small"
+                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false"
                                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
                                 start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
@@ -32,7 +30,7 @@
         <div class="box">
             <div class="child" style="flex: 0.58;">
                 <div class="title">单品重点指标</div>
-                <div class="box_container">
+                <div class="box_container" style="display:flex; flex-direction:column;justify-content: space-between;">
                     <div class="roduct_num">
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts1"></div>
@@ -216,12 +214,20 @@ const searchData = reactive({
 
 onMounted(async () => {
     state.loading = true
-    await getSearchShopList()
-    setTimeout(async () => {
-        // console.log(state.shopList)
+    const res = await getProductlist(
+        { key: state.key }
+    )
+    if (res.code === 0) {
+        state.shopList = res.data.records
         searchData.product_id = state.shopList[0]?.product_id
         await getData()
-    }, 2000)
+        searchData.loading = false
+    }
+
+    // await getSearchShopList()
+    // setTimeout(async () => {
+    // await getData()
+    // }, 3000)
 })
 
 const getSearchShopList = useThrottle(async () => {
@@ -361,42 +367,55 @@ const getDayList = async (arr: any) => {
 
 const getHeaderChart = () => {
     const chartDom1 = document.getElementById("echarts1") as HTMLElement;
+    chartDom1.removeAttribute('_echarts_instance_')
     const myChart1 = echarts.init(chartDom1);
 
     const chartDom2 = document.getElementById("echarts2") as HTMLElement;
+    chartDom2.removeAttribute('_echarts_instance_')
     const myChart2 = echarts.init(chartDom2);
 
     const chartDom3 = document.getElementById("echarts3") as HTMLElement;
+    chartDom3.removeAttribute('_echarts_instance_')
     const myChart3 = echarts.init(chartDom3);
 
     const chartDom4 = document.getElementById("echarts4") as HTMLElement;
+    chartDom4.removeAttribute('_echarts_instance_')
     const myChart4 = echarts.init(chartDom4);
 
     const chartDom5 = document.getElementById("echarts5") as HTMLElement;
+    chartDom5.removeAttribute('_echarts_instance_')
     const myChart5 = echarts.init(chartDom5);
 
     const chartDom6 = document.getElementById("echarts6") as HTMLElement;
+    chartDom6.removeAttribute('_echarts_instance_')
     const myChart6 = echarts.init(chartDom6);
 
     const chartDom7 = document.getElementById("echarts7") as HTMLElement;
+    chartDom7.removeAttribute('_echarts_instance_')
     const myChart7 = echarts.init(chartDom7);
 
     const chartDom8 = document.getElementById("echarts8") as HTMLElement;
+    chartDom8.removeAttribute('_echarts_instance_')
     const myChart8 = echarts.init(chartDom8);
 
     const chartDom9 = document.getElementById("echarts9") as HTMLElement;
+    chartDom9.removeAttribute('_echarts_instance_')
     const myChart9 = echarts.init(chartDom9);
 
     const chartDom10 = document.getElementById("echarts10") as HTMLElement;
+    chartDom10.removeAttribute('_echarts_instance_')
     const myChart10 = echarts.init(chartDom10);
 
     const chartDom11 = document.getElementById("echarts11") as HTMLElement;
+    chartDom11.removeAttribute('_echarts_instance_')
     const myChart11 = echarts.init(chartDom11);
 
     const chartDom12 = document.getElementById("echarts12") as HTMLElement;
+    chartDom12.removeAttribute('_echarts_instance_')
     const myChart12 = echarts.init(chartDom12);
 
     const chartDom13 = document.getElementById("echarts13") as HTMLElement;
+    chartDom13.removeAttribute('_echarts_instance_')
     const myChart13 = echarts.init(chartDom13);
     let arr1 = state.itemIndexTrend?.map(i => i.visitors_count)
     let arr2 = state.itemIndexTrend?.map(i => i.gmv)
@@ -519,9 +538,11 @@ $echarts_bg_img: url("./images/_2.png");
 
             .search_left {
                 display: flex;
-                flex: 0.35;
+                flex: 0.4;
                 // justify-content: space-between;
-
+                .select_width {
+                    width: 60%;
+                }
             }
 
             .search_right {
@@ -531,14 +552,15 @@ $echarts_bg_img: url("./images/_2.png");
 
             .search_line {
                 margin: 0 10px;
+                width: 100%;
 
                 .line {
                     display: flex;
                 }
 
-                .select_width {
-                    width: 100px;
-                }
+                // .select_width {
+                //     width: 100px;
+                // }
 
             }
         }
@@ -557,17 +579,17 @@ $echarts_bg_img: url("./images/_2.png");
     .box {
         display: flex;
         justify-content: space-around;
+        height: 30%;
 
         .child {
             height: 100%;
             flex: 0.48;
 
             .box_container {
-                height: 300px;
-
+                height: calc(100% - 70px);
 
                 .roduct_num {
-                    height: 148px;
+                    height: 44%;
                     margin: 1px 0;
                     background-image: url("./images/image-3.png");
                     background-size: 100% 100%;
@@ -592,19 +614,24 @@ $echarts_bg_img: url("./images/_2.png");
 
                         .roduct_num_box_text {
                             position: relative;
-                            z-index: 1;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            justify-content: center;
+                            text-align: center;
+                            height: 100%;
+                            // z-index: 1;
+                            // display: flex;
+                            // flex-direction: column;
+                            // align-items: center;
+                            // justify-content: center;
 
                             .tit {
-                                font-size: 18px;
+                                font-size: 16px;
                             }
 
                             .num {
-                                line-height: 120px;
-                                font-size: 48px;
+                                font-size: 38px;
+                                position: absolute;
+                                inset: 0;
+                                height: 40px;
+                                margin: auto;
                             }
                         }
                     }
