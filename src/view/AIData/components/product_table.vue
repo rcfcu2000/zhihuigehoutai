@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-23 12:17:05
+ * @LastEditTime: 2024-02-23 14:09:45
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -157,17 +157,18 @@ const tableListRef = ref();
 const tableListRef_sum = ref();
 const nomore = ref(false)// 监听滚动事件并同步另一个表格的滚动位置
 
-let cleanupSyncScroll:any; // 用于清理滚动同步的函数
+let cleanupSyncScroll: any; // 用于清理滚动同步的函数
 
+const handleScroll = (source: any, target: any) => {
+    target.scrollLeft = source.scrollLeft;
+};
 const syncScroll = (source: any, target: any) => {
-    const handleScroll = () => {
-        target.scrollLeft = source.scrollLeft;
-    };
+    debugger
 
     console.log("1111111")
-    source.addEventListener('scroll', handleScroll);
+    source.addEventListener('scroll', handleScroll(source, target), { capture: true });
 
-    console.log("2222222")
+    console.log(target, "2222222")
     return () => {
         source.removeEventListener('scroll', handleScroll);
     };
@@ -176,7 +177,7 @@ const setupScrollSync = () => {
     const table1Wrapper = tableListRef.value?.$el.querySelector('.el-table__body-wrapper');
     const table2Wrapper = tableListRef_sum.value?.$el.querySelector('.el-table__body-wrapper');
 
-    console.log(table1Wrapper,table2Wrapper,"table1Wrappertable1Wrappertable1Wrapper")
+    console.log(table1Wrapper, table2Wrapper, "table1Wrappertable1Wrappertable1Wrapper")
 
     if (table1Wrapper && table2Wrapper) {
         // 如果之前已经设置过滚动同步，先清理
@@ -216,7 +217,7 @@ watch([propData.Commodity_detail], ([newD]) => {
     tableHead = newD.column
     tableData = tableData.concat(newD.data)
     tableDataSum = [newD.sumTrend]
-    
+
     if (tableData.length > 0 && tableDataSum.length > 0) {
         setupScrollSync();
     }

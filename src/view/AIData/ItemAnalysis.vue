@@ -267,29 +267,29 @@ const allData = reactive([{
         },
         {
             title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'add_to_cart_rate', key: 'add_to_cart_rate', unit: '%', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'conversion_rate', key: 'conversion_rate', unit: '%', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+                { title: '访客数', width: 80, align: 'center', dataKey: 'search_visitor_count', key: 'search_visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'search_add_to_cart_rate', key: 'search_add_to_cart_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'search_conversion_rate', key: 'search_conversion_rate', unit: '%', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'search_fans_paid_buyers_count', key: 'search_fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'search_direct_paid_buyers_count', key: 'search_direct_paid_buyers_count', unit: '', },
             ]
         },
         {
             title: '直通车', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+                { title: '访客数', width: 80, align: 'center', dataKey: 'ztc_visitor_count', key: 'ztc_visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'ztc_add_to_cart_rate', key: 'ztc_add_to_cart_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'ztc_conversion_rate', key: 'ztc_conversion_rate', unit: '%', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'ztc_fans_paid_buyers_count', key: 'ztc_fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'ztc_direct_paid_buyers_count', key: 'ztc_direct_paid_buyers_count', unit: '', },
             ]
         },
         {
             title: '总计', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+                { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
             ]
         },
     ]
@@ -344,6 +344,19 @@ const getWordsList = async (arr: any) => {
     const res = await getKeywordList(arr)
     if (res.code == 0 && res.data.records) {
         wordsCount.value = res.data.count
+        // 
+        // { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
+        //         { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
+        //         { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
+        //         { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
+        //         { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
+        res.data.records.map((item: any, index: any) => {
+            item.sum_visitor_count = item.search_visitor_count + item.ztc_visitor_count
+            item.sum_add_rate = item.search_add_to_cart_rate + item.ztc_add_to_cart_rate
+            item.sum_conversion_rate = item.search_conversion_rate + item.ztc_conversion_rate
+            item.sum_fans_paid_buyers_count = item.search_fans_paid_buyers_count + item.ztc_fans_paid_buyers_count
+            item.sum_direct_paid_buyers_count = item.search_direct_paid_buyers_count + item.ztc_direct_paid_buyers_count
+        })
         allData[0].data = res.data.records
     } else {
         ElMessage.error(res.msg)
@@ -539,6 +552,7 @@ $echarts_bg_img: url("./images/_2.png");
             .search_left {
                 display: flex;
                 flex: 0.4;
+
                 // justify-content: space-between;
                 .select_width {
                     width: 60%;

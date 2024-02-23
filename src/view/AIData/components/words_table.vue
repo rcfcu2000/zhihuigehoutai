@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-23 11:09:22
+ * @LastEditTime: 2024-02-23 14:57:21
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -29,9 +29,28 @@
                     :align="item.align" :width="item.width">
                     <template #default="scope">
                         <div
-                            v-if="scope.column.property == 'add_to_cart_rate' || scope.column.property == 'conversion_rate'">
-                            {{ persentNum(scope.row[scope.column.property]) }} {{ head.unit }}
+                            v-if="scope.column.property == 'search_conversion_rate' || scope.column.property == 'search_add_to_cart_rate' || scope.column.property == 'ztc_add_to_cart_rate' || scope.column.property == 'ztc_conversion_rate'">
+                            {{ persentNum(scope.row[scope.column.property]) }}%
                         </div>
+                        <div
+                            v-else-if="scope.column.property == 'search_visitor_count' || scope.column.property == 'ztc_visitor_count'">
+                            {{ lueNum(scope.row[scope.column.property]) }}
+                        </div>
+                        <!-- <div v-else-if="scope.column.property == 'sum_visitor_count'">
+                            {{ lueNum(scope.row['search_visitor_count'] + scope.row['ztc_visitor_count']) }}
+                        </div>
+                        <div v-else-if="scope.column.property == 'sum_add_rate'">
+                            {{ persentNum(scope.row['search_add_to_cart_rate'] + scope.row['ztc_add_to_cart_rate']) }}
+                        </div>
+                        <div v-else-if="scope.column.property == 'sum_conversion_rate'">
+                            {{ persentNum(scope.row['search_conversion_rate'] + scope.row['ztc_conversion_rate']) }}
+                        </div>
+                        <div v-else-if="scope.column.property == 'sum_fans_paid_buyers_count'">
+
+                        </div>
+                        <div v-else-if="scope.column.property == 'sum_direct_paid_buyers_count'">
+
+                        </div> -->
                         <div v-else>
                             {{ scope.row[scope.column.property] }}
                         </div>
@@ -57,6 +76,7 @@ import { persentNum, floatNum, lueNum } from "@/utils/format.js"
 import type { TableColumnCtx } from 'element-plus'
 
 import * as echarts from 'echarts';
+import { roundNum } from '../../../utils/format';
 
 const count = ref(0)
 const loadType = ref(false)
@@ -128,7 +148,7 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
 }, { deep: true })
 
 const loadMore_words = (res) => {
-    console.log(componentTitle.value,"componentTitle.value")
+    console.log(componentTitle.value, "componentTitle.value")
     if (componentTitle.value == "关键词分析") {
         console.log('关键词')
         if (!loadType.value && propData.tableCount > tableData.length) {
@@ -188,9 +208,12 @@ const getSummaries = (param: SummaryMethodProps) => {
         if (index == 2 || index == 3 || index == 7 || index == 8 || index == 13 || index == 12) {
             if (sum) {
                 return (sum * 100).toFixed(2) + '%'
-            }else{
+            } else {
                 return 'N/A'
             }
+        }
+        else if (index == 1 || index == 4 || index == 5 || index == 6 || index == 9 || index == 10 || index == 11 || index == 14 || index == 15) {
+            return roundNum(sum)
         } else {
             return sum
         }
