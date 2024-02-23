@@ -36,14 +36,14 @@
                             <div class="roduct_num_box_charts" id="echarts1"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">商品访客数</div>
-                                <div class="num"> {{ parseFloat((state.itemData.visitors_count).toFixed(0)) }}</div>
+                                <div class="num"> {{ lueNum(roundNum(state.itemData.visitors_count)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
                             <div class="roduct_num_box_charts" id="echarts2"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">GMV</div>
-                                <div class="num">{{ parseFloat((state.itemData.gmv).toFixed(2)) }}</div>
+                                <div class="num">{{ lueNum(roundNum(state.itemData.gmv)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
@@ -100,7 +100,7 @@
                             <div class="roduct_num_box_charts" id="echarts9"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">连带购买叶子类目宽度</div>
-                                <div class="num">{{ parseFloat((state.itemData.bundle_purchase * 100).toFixed(2)) }}</div>
+                                <div class="num">{{ roundNum((state.itemData.bundle_purchase * 100)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
@@ -151,6 +151,7 @@
 </template>
 <script setup lang="ts" name="palletLinkAnalysis">
 import goHome from "./components/goHome.vue";
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
 import {
     getProductDayList,
     getKeywordList,
