@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-31 16:15:30
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-23 12:27:42
+ * @LastEditTime: 2024-02-23 16:19:01
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\storeAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -22,7 +22,7 @@
                             <el-col :span="12">
                                 <div class="index_top">
                                     <div class="numS">
-                                        {{ numS.data.shop_index.turnover_rate }}
+                                        {{ persentNum(numS.data.shop_index.turnover_rate) }}%
                                     </div>
                                     <div class="describe">
                                         动销率
@@ -79,7 +79,7 @@
                                     <el-col :span="5">
                                         <div style="height: 140px;">
                                             <div class="numS">
-                                                {{ numS.data.shop_service_analysis.first_product_return_rate }}
+                                                {{ numS.data.shop_service_analysis.first_product_return_rate }}%
                                             </div>
                                             <div class="describe">
                                                 首次品退率
@@ -98,14 +98,15 @@
                                     <el-col :span="5">
                                         <div style="height: 140px;">
                                             <div class="numS">
-                                                {{ numS.data.shop_service_analysis.product_negative_review_rate }}
+                                                {{ persentNum(numS.data.shop_service_analysis.product_negative_review_rate)
+                                                }}%
                                             </div>
                                             <div class="describe">
                                                 商品差评率
                                             </div>
                                             <div class="describe" style="color: #01e5ff;">
                                                 超过{{
-                                                    numS.data.shop_service_analysis.product_negative_review_rate_above_peers
+                                                    persentNum(numS.data.shop_service_analysis.product_negative_review_rate_above_peers)
                                                 }}%同行
                                             </div>
                                         </div>
@@ -125,7 +126,7 @@
                                         </div>
                                         <div style="position: absolute;top:0;left: 50%;transform: translateX(-50%);">
                                             <div class="numS">
-                                                {{ numS.data.shop_service_analysis.refund_rate }}%
+                                                {{ persentNum(numS.data.shop_service_analysis.refund_rate) }}%
                                             </div>
                                             <div class="describe" style="padding-top: 10px;">
                                                 退款率
@@ -138,16 +139,16 @@
                                         </div>
                                         <div style="position: absolute;top:0;left: 50%;transform: translateX(-50%);">
                                             <div class="numS">
-                                                {{ numS.data.shop_service_analysis.refund_successful_amount }}
+                                                {{ lueNum(roundNum(numS.data.shop_service_analysis.refund_successful_amount)) }}
                                             </div>
                                             <div class="describe" style="padding-top: 10px;">
-                                                退款率
+                                                退款成功金额
                                             </div>
                                         </div>
                                     </el-col>
                                     <el-col :span="6">
                                         <div class="numS">
-                                            {{ numS.data.shop_service_analysis.violation_count }}
+                                            {{ roundNum(numS.data.shop_service_analysis.violation_count) }}
                                         </div>
                                         <div class="describe" style="padding-top: 10px;">
                                             违规数量
@@ -177,7 +178,7 @@
                                                 客服销售额
                                             </div>
                                             <div class="numS">
-                                                {{ numS.data.customer_service.customer_service_sales }}
+                                                {{ lueNum(roundNum(numS.data.customer_service.customer_service_sales)) }}
                                             </div>
                                         </div>
                                     </el-col>
@@ -189,7 +190,7 @@
                                                 客服销售额占比
                                             </div>
                                             <div class="numS">
-                                                {{ numS.data.customer_service.customer_service_sales_ratio }}
+                                                {{ persentNum(numS.data.customer_service.customer_service_sales_ratio) }}
                                             </div>
                                         </div>
                                     </el-col>
@@ -217,7 +218,7 @@
                                                 客户满意率
                                             </div>
                                             <div class="numS">
-                                                {{ numS.data.customer_service.customer_satisfaction_rate }}
+                                                {{ persentNum(numS.data.customer_service.customer_satisfaction_rate) }}%
                                             </div>
                                         </div>
                                     </el-col>
@@ -229,7 +230,7 @@
                                                 询单转化率
                                             </div>
                                             <div class="numS">
-                                                {{ numS.data.customer_service.inquiry_conversion_rate }}
+                                                {{ persentNum(numS.data.customer_service.inquiry_conversion_rate) }}%
                                             </div>
                                         </div>
                                     </el-col>
@@ -251,13 +252,13 @@
                                     <el-col :span="8">
                                         <div style="height: 140px;">
                                             <div class="numS">
-                                                {{ numS.data.customer_analysis.total_membership_count }}
+                                                {{ lueNum(numS.data.customer_analysis.total_membership_count) }}
                                             </div>
                                             <div class="describe">
                                                 会员人数
                                             </div>
                                             <div class="describe" style="color: #01e5ff;">
-                                                昨日招募会员数{{ numS.data.customer_analysis.members_recruited_yesterday
+                                                昨日招募会员数{{ lueNum(numS.data.customer_analysis.members_recruited_yesterday)
                                                 }}
                                             </div>
                                         </div>
@@ -275,7 +276,7 @@
                                     <el-col :span="8">
                                         <div style="height: 140px;">
                                             <div class="numS">
-                                                {{ numS.data.customer_analysis.member_average_order_value }}%
+                                                {{ numS.data.customer_analysis.member_average_order_value }}
                                             </div>
                                             <div class="describe">
                                                 会员客单价
@@ -319,7 +320,7 @@
                                     <el-col :span="8">
                                         <div style="height: 140px;">
                                             <div class="numS">
-                                                {{ numS.data.customer_lossAnalysis.amount_of_loss }}
+                                                {{ lueNum(roundNum(numS.data.customer_lossAnalysis.amount_of_loss)) }}
                                             </div>
                                             <div class="describe">
                                                 流失金额
@@ -374,6 +375,7 @@
         </el-row>
     </div>
 
+    <goHome />
     <!-- 头部的查询条件，追加进page_header组件 -->
     <Teleport to=".header_right">
         <div class="search">
@@ -387,6 +389,8 @@
     </Teleport>
 </template>
 <script setup lang="ts" name="storeAnalysis">
+import goHome from "./components/goHome.vue";
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
 import { reactive, onMounted, ref } from "vue";
 import {
     shopGetAlldata,
@@ -421,9 +425,9 @@ onMounted(async () => {
     await getTrendData(searchData)
 })
 
-const timeChange = (val:any) => {
+const timeChange = (val: any) => {
     searchData.date = val
-    console.log(searchData,"timeChangetimeChange")
+    console.log(searchData, "timeChangetimeChange")
     getAllData(searchData)
     getTrendData(searchData)
 }
@@ -850,7 +854,7 @@ const getTrendData = async (obj: any) => {
         };
         option15 && myChart15.setOption(option15);
         EleResize.on(chartDom15, listener15);
-        
+
         let chartDom16: any = document.getElementById('index16');
         let myChart16 = echarts.init(chartDom16);
         let option16 = lineFillOptionsNum(customer_analysis_trend.member_average_order_value, mergeArr(customer_analysis_trend.chatrsX));
@@ -872,7 +876,7 @@ const getTrendData = async (obj: any) => {
             customer_loss_trend.lost_members.push(item.lost_members)
             customer_loss_trend.stores_causing_loss.push(item.stores_causing_loss)
         })
-        
+
         let chartDom17: any = document.getElementById('index17');
         let myChart17 = echarts.init(chartDom17);
         let option17 = lineFillOptionsNum(customer_loss_trend.amount_of_loss, mergeArr(customer_loss_trend.chatrsX));
@@ -883,7 +887,7 @@ const getTrendData = async (obj: any) => {
         };
         option17 && myChart17.setOption(option17);
         EleResize.on(chartDom17, listener17);
-        
+
         let chartDom18: any = document.getElementById('index18');
         let myChart18 = echarts.init(chartDom18);
         let option18 = lineFillOptionsNum(customer_loss_trend.lost_members, mergeArr(customer_loss_trend.chatrsX));
@@ -894,7 +898,7 @@ const getTrendData = async (obj: any) => {
         };
         option18 && myChart18.setOption(option18);
         EleResize.on(chartDom18, listener18);
-        
+
         let chartDom19: any = document.getElementById('index19');
         let myChart19 = echarts.init(chartDom19);
         let option19 = lineFillOptionsNum(customer_loss_trend.stores_causing_loss, mergeArr(customer_loss_trend.chatrsX));
@@ -921,7 +925,7 @@ const lineData = () => {
 }
 </script>
 <style lang="scss" scoped>
-.storeAnalysis{
+.storeAnalysis {
     overflow-y: auto;
     overflow-x: hidden;
 }
