@@ -415,7 +415,7 @@ const current_inventory = reactive([])
 const allData = reactive([{
     componentTitle: '商品明细',
     data: [] as Array<any>,
-    sumTrend: {} as Object,
+    sumTrend: {} as any,
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
         { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
@@ -682,7 +682,7 @@ const getAll = async (arr: any) => {
 let clearDataPro = reactive([false])
 let clearDataPlan = reactive([false])
 const product_ids = [] as Array<any>;
-const count = ref()
+const count = ref(0)
 // 产品明细
 const getDetailPro = async (arr: any) => {
     pageNum_pro.value++
@@ -692,6 +692,8 @@ const getDetailPro = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0 && proRes.data.records) {
+        allData[0].sumTrend = proRes.data.sum[0]
+        allData[0].sumTrend.id = "pro"
         proCount.value = proRes.data.count
         proRes.data.records?.map((item: any) => {
             product_ids.push(item.product_id)
@@ -739,7 +741,10 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
             thendObj.cost_trend.push(item.spend_trend)
             thendObj.times.push(item.date)
         })
-        allData[0].sumTrend = thendObj
+        allData[0].sumTrend.gmv_trend = thendObj.gmv_trend
+        allData[0].sumTrend.roi_trend = thendObj.roi_trend
+        allData[0].sumTrend.cost_trend = thendObj.cost_trend
+        allData[0].sumTrend.times = thendObj.times
     }
     product_ids.splice(0, product_ids.length)
 }
@@ -763,6 +768,8 @@ const getDetailPlan = async (arr: any) => {
     const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0 && planRes.data.records) {
         planCount.value = planRes.data.count
+        allData[1].sumTrend = planRes.data.sum[0]
+        allData[1].sumTrend.id = "plan"
         planRes.data.records?.map((item: any) => {
             plan_ids.push(item.plan_id)
         })
@@ -809,7 +816,10 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
             thendObj.cost_trend.push(item.spend_trend)
             thendObj.times.push(item.date)
         })
-        allData[1].sumTrend = thendObj
+        allData[1].sumTrend.gmv_trend = thendObj.gmv_trend
+        allData[1].sumTrend.roi_trend = thendObj.roi_trend
+        allData[1].sumTrend.spend_trend = thendObj.cost_trend
+        allData[1].sumTrend.times = thendObj.times
     }
     plan_ids.splice(0, plan_ids.length)
 }
@@ -1076,26 +1086,6 @@ $echarts_bg_img2: url('./images/_2.png');
     }
 }
 
-/* 自定义滚动条样式 */
-::-webkit-scrollbar {
-    width: 6px;
-    /* 横向滚动条宽度 */
-}
-
-::-webkit-scrollbar-track {
-    background-color: #00053f;
-    /* 滚动条背景色 */
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: rgb(33, 90, 169);
-    /* 滑块颜色 */
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(33, 183, 206);
-    /* 滑块悬停状态颜色 */
-}
 
 .form-inline {
     padding: 18px 0 0 0;

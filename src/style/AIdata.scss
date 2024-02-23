@@ -1,3 +1,25 @@
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  /* 横向滚动条宽度 */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #00053f;
+  /* 滚动条背景色 */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(33, 90, 169);
+  /* 滑块颜色 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(33, 183, 206);
+  /* 滑块悬停状态颜色 */
+}
+
 .pageBG{
   background-image: $page_bg;
   background-size: 100% 100%;
@@ -87,7 +109,8 @@
   background-color: rgb(26, 46, 161) !important;
 }
 .el-table__footer-wrapper tbody td.el-table__cell{
-  color: #fff !important
+  color: #fff !important;
+  height: 23px !important;
 }
 
 

@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-18 18:26:51
+ * @LastEditTime: 2024-02-23 11:20:01
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——每日明细 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -16,8 +16,8 @@
         <!--  v-loading="loadType" -->
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 320px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange"
-            @header-click="headerClick">
+            v-el-table-infinite-scroll="loadMore_day" :infinite-scroll-distance="300"
+            @header-click="headerClick" show-summary :summary-method="getSummaries">
             <!-- <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">
 
@@ -26,14 +26,27 @@
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
                 :fixed="head.fixed" :align="head.align" :width="head.width">
                 <template #default="scope">
-                    <div>
+                    <div
+                        v-if="scope.column.property == 'payment_conversion_rate' || scope.column.property == 'refund_rate' || scope.column.property == 'free_search_click_through_rate' || scope.column.property == 'repeat_purchase_rate' || scope.column.property == 'search_gmv_ratio' || scope.column.property == 'returning_customer_ratio' || scope.column.property == 'search_visitor_ratio' || scope.column.property == 'promotion_roi'">
+                        {{ persentNum(scope.row[scope.column.property]) }} {{ head.unit }}
+                    </div>
+                    <div v-else-if="scope.column.property == 'gmv'">
+                        {{ lueNum(scope.row[scope.column.property]) }}
+                    </div>
+                    <div
+                        v-else-if="scope.column.property == 'promotion_cost' || scope.column.property == 'product_visitor_count'">
+                        {{ roundNum(scope.row[scope.column.property]) }}
+                    </div>
+                    <div v-else>
                         {{ scope.row[scope.column.property] }}
                     </div>
                 </template>
             </el-table-column>
             <template #append v-if="nomore">
                 <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
-                    <el-icon><MagicStick /></el-icon> <span>没有更多了</span>
+                    <el-icon>
+                        <MagicStick />
+                    </el-icon> <span>没有更多了</span>
                 </div>
             </template>
         </el-table>
@@ -42,7 +55,8 @@
 
 <script setup lang="ts" name="comTable">
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdated } from 'vue'
-import { persentNum, floatNum, lueNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
+import type { TableColumnCtx } from 'element-plus'
 
 
 const count = ref(0)
@@ -100,18 +114,83 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
     })
 }, { deep: true })
 
-const loadMore = (res) => {
+const loadMore_day = (res) => {
     if (componentTitle.value == "每日明细") {
         console.log('商品明细')
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'day')
-        }else{
+        } else {
             nomore.value = true
         }
     }
 }
 
+interface Product {
+    product_visitor_count: string
+    gmv: string
+    payment_conversion_rate: string
+    search_visitor_ratio: string
+    returning_customer_ratio: string
+    search_gmv_ratio: string
+    refund_rate: string
+    price_power_stars: string
+    price_power_extra_exposure: string
+    free_search_click_through_rate: string
+    associated_purchase_subcategory_width: string
+    repeat_purchase_rate: string
+    promotion_cost: string
+    promotion_roi: string
+    // average_order_value: number
+    // existing_customer_percentage: number
+    // favorite_add_to_cart_rate: number
+}
+interface SummaryMethodProps<T = Product> {
+    columns: TableColumnCtx<T>[]
+    data: T[]
+}
+
+const getSummaries = (param: SummaryMethodProps) => {
+    const { columns, data } = param
+
+    const sums: any[] = []
+    columns.forEach((column, index) => {
+        if (index === 0) {
+            sums[index] = '合计'
+            return
+        }
+        const values = data.map((item) => Number(item[column.property]))
+
+        if (!values.every((value) => Number.isNaN(value))) {
+            sums[index] = `${values.reduce((prev, curr) => {
+                const value = Number(curr)
+                if (!Number.isNaN(value)) {
+                    if (column.property == 'payment_conversion_rate' || column.property == 'refund_rate' || column.property == 'free_search_click_through_rate' || column.property == 'repeat_purchase_rate' || column.property == 'search_visitor_ratio' || column.property == 'returning_customer_ratio' || column.property == 'search_gmv_ratio') {
+                        return floatNum(Number(prev) + curr)
+                    }
+                    else {
+                        return floatNum(Number(prev) + curr)
+                    }
+                } else {
+                    return prev
+                }
+            }, 0)}`
+        } else {
+            sums[index] = 'N/A'
+        }
+    })
+    return sums.map((sum, index) => {
+        if (index == 3 || index == 4 || index == 5 || index == 6 || index == 7 || index == 10 || index == 12 || index == 14) {
+            return (Number(sum) * 100).toFixed(2) + '%'
+        }
+        else if (index == 0) {
+            return sum
+        }
+        else {
+            return lueNum(roundNum(Number(sum)))
+        }
+    })
+}
 
 // 不重复随机数
 /**

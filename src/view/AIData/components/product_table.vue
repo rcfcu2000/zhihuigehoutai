@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-20 20:45:41
+ * @LastEditTime: 2024-02-23 14:09:45
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,10 +14,10 @@
     </div> -->
     <div class="aiData_table table" :key="count">
         <!--  v-loading="loadType" -->
-        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType" show-summary
-            :summary-method="getSummaries" element-loading-background="rgba(122, 122, 122, 0.8)"
-            style="width: 100%;height: 280px;" v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300"
-            @filter-change="filterChange" @header-click="headerClick" @row-click="rowClick">
+        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
+            v-el-table-infinite-scroll="loadMore_pro" :infinite-scroll-distance="300" @filter-change="filterChange"
+            @header-click="headerClick" @row-click="rowClick">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center">
 
             </el-table-column>
@@ -58,7 +58,7 @@
 
                 </template>
             </el-table-column>
-            <template #append v-if="nomore">
+            <template #append v-if="nomore && tableData.length > 0">
                 <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
                     <el-icon>
                         <MagicStick />
@@ -66,11 +66,49 @@
                 </div>
             </template>
         </el-table>
+        <el-table ref="tableListRef_sum" :data="tableDataSum" :show-header="false" empty-text="--">
+            <el-table-column label="合计" fixed width="120" align="center" column-key="plan_pallet">
+                <template #default>
+                    <div>合计</div>
+                </template>
+            </el-table-column>
+            <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
+                :fixed="head.fixed" :align="head.align" :width="head.width">
+                <template #default="scope">
+                    <div
+                        v-if="scope.column.property == 'roi_trend' || scope.column.property == 'cost_trend' || scope.column.property == 'gmv_trend'">
+                        <div :id="scope.row.id + '_' + scope.column.property" style="width: 8dvw;height: 30px;">
+                        </div>
+                    </div>
+                    <div v-else-if="scope.column.property == 'product_alias'" :title="scope.row.product_name"
+                        class="text_hidden">
+                        {{ scope.row.product_alias }}
+                    </div>
+
+                    <div
+                        v-else-if="scope.column.property == 'cost' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
+                        {{ lueNum(roundNum(scope.row[scope.column.property])) }}
+                    </div>
+                    <div v-else-if="head.unit == '%'">
+                        <!-- {{ persentNum(scope.row) }} -->
+                        {{ persentNum(scope.row[scope.column.property]) * 100 }}{{ head.unit }}
+                    </div>
+
+                    <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
+                        {{ scope.row[scope.column.property] }}
+                    </div>
+
+                    <div v-else>
+                        {{ lueNum(scope.row[scope.column.property]) }}
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
     </div>
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUpdated } from 'vue'
+import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onBeforeUnmount, onUpdated } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
@@ -86,6 +124,7 @@ let tableHead = ref([
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
 let tableData = reactive([] as Array<any>)
+let tableDataSum = reactive([] as Array<any>)
 // mock趋势折线数据
 const lineData = () => {
     let arr = []
@@ -98,7 +137,7 @@ const lineData = () => {
     return arr
 }
 const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'tableCount'])
-const emit = defineEmits(['loadMore', 'changePallet','row_Click'])
+const emit = defineEmits(['loadMore', 'changePallet', 'row_Click'])
 const componentTitle = ref('商品明细')
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
@@ -115,11 +154,50 @@ const filterChange = (res) => {
 }
 let randomStrings = [] as Array<any>
 const tableListRef = ref();
-const nomore = ref(false)
+const tableListRef_sum = ref();
+const nomore = ref(false)// 监听滚动事件并同步另一个表格的滚动位置
 
-onMounted(() => {
+let cleanupSyncScroll: any; // 用于清理滚动同步的函数
 
+const handleScroll = (source: any, target: any) => {
+    target.scrollLeft = source.scrollLeft;
+};
+const syncScroll = (source: any, target: any) => {
+    debugger
+
+    console.log("1111111")
+    source.addEventListener('scroll', handleScroll(source, target), { capture: true });
+
+    console.log(target, "2222222")
+    return () => {
+        source.removeEventListener('scroll', handleScroll);
+    };
+};
+const setupScrollSync = () => {
+    const table1Wrapper = tableListRef.value?.$el.querySelector('.el-table__body-wrapper');
+    const table2Wrapper = tableListRef_sum.value?.$el.querySelector('.el-table__body-wrapper');
+
+    console.log(table1Wrapper, table2Wrapper, "table1Wrappertable1Wrappertable1Wrapper")
+
+    if (table1Wrapper && table2Wrapper) {
+        // 如果之前已经设置过滚动同步，先清理
+        if (cleanupSyncScroll) cleanupSyncScroll();
+
+        // 设置新的滚动同步
+        cleanupSyncScroll = syncScroll(table1Wrapper, table2Wrapper);
+    }
+};
+onBeforeUnmount(() => {
+    // 清理滚动同步
+    if (cleanupSyncScroll) cleanupSyncScroll();
+});
+
+onMounted(async () => {
 })
+function handleTableScroll(event: any) {
+    // 事件处理逻辑
+    console.log(event.target, 'event.target');
+}
 /**
      * 刷新table,防止滚动条跑到最上面
     */
@@ -138,6 +216,12 @@ watch([propData.Commodity_detail], ([newD]) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     tableData = tableData.concat(newD.data)
+    tableDataSum = [newD.sumTrend]
+
+    if (tableData.length > 0 && tableDataSum.length > 0) {
+        setupScrollSync();
+    }
+    console.log(tableDataSum, "tableDataSum")
     countModel.value = tableData.length
     refreshTable()
     nextTick(() => {
@@ -183,12 +267,54 @@ watch([propData.Commodity_detail], ([newD]) => {
             EleResize.on(chartDom3, listener);
         })
         refreshTable()
+        tableDataSum.forEach((item: any) => {
+            const domId_1 = item.id + '_' + 'gmv_trend'
+            const domId_2 = item.id + '_' + 'cost_trend'
+            const domId_3 = item.id + '_' + 'roi_trend'
+            let chartDom1: any = document.getElementById(domId_1);
+            let chartDom2: any = document.getElementById(domId_2);
+            let chartDom3: any = document.getElementById(domId_3);
+            let myChart1 = echarts.init(chartDom1);
+            if (chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
+                myChart1.clear()
+            }
+            let myChart2 = echarts.init(chartDom2);
+            if (chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
+                myChart2.clear()
+            }
+            let myChart3 = echarts.init(chartDom3);
+            if (chartDom3 != null && chartDom3 != "" && chartDom3 != undefined) {
+                myChart3.clear()
+            }
+            let option1 = table_lineOptions(item.gmv_trend, item.times);
+            let option2 = table_lineOptions(item.cost_trend, item.times);
+            let option3 = table_lineOptions(item.roi_trend, item.times);
+            let listener = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+                if (myChart2) {
+                    myChart2.resize();
+                }
+                if (myChart3) {
+                    myChart3.resize();
+                }
+            };
+            option1 && myChart1.setOption(option1);
+            option2 && myChart2.setOption(option2);
+            option3 && myChart3.setOption(option3);
+            EleResize.on(chartDom1, listener);
+            EleResize.on(chartDom2, listener);
+            EleResize.on(chartDom3, listener);
+        })
+        refreshTable()
     })
 }, { deep: true })
 
-const loadMore = (res) => {
+const loadMore_pro = (res: any) => {
+    console.log(componentTitle.value, "componentTitle.value")
     if (componentTitle.value == "商品明细") {
-        console.log('商品明细')
+        console.log(propData.tableCount, '商品明细')
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'product')
@@ -371,10 +497,10 @@ const headerClick = () => {
 }
 
 .table {
-    height: 280px;
+    height: 310px;
     padding: 10px;
     // width: 98%;
-    overflow: auto;
+    // overflow: auto;
     margin-bottom: 10px;
     margin-top: 4px;
     // border: 1px solid #fff;

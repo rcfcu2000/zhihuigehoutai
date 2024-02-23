@@ -267,29 +267,29 @@ const allData = reactive([{
         },
         {
             title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+                { title: '访客数', width: 80, align: 'center', dataKey: 'search_visitor_count', key: 'search_visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'search_add_to_cart_rate', key: 'search_add_to_cart_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'search_conversion_rate', key: 'search_conversion_rate', unit: '%', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'search_fans_paid_buyers_count', key: 'search_fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'search_direct_paid_buyers_count', key: 'search_direct_paid_buyers_count', unit: '', },
             ]
         },
         {
             title: '直通车', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+                { title: '访客数', width: 80, align: 'center', dataKey: 'ztc_visitor_count', key: 'ztc_visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'ztc_add_to_cart_rate', key: 'ztc_add_to_cart_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'ztc_conversion_rate', key: 'ztc_conversion_rate', unit: '%', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'ztc_fans_paid_buyers_count', key: 'ztc_fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'ztc_direct_paid_buyers_count', key: 'ztc_direct_paid_buyers_count', unit: '', },
             ]
         },
         {
             title: '总计', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'visitor_count', key: 'visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'plan_id', key: 'plan_id', unit: '', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'fans_paid_buyers_count', key: 'fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'direct_paid_buyers_count', key: 'direct_paid_buyers_count', unit: '', },
+                { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
+                { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
+                { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
+                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
+                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
             ]
         },
     ]
@@ -300,18 +300,18 @@ const allData = reactive([{
         { title: '日期', width: 120, align: 'center', dataKey: 'date', key: 'date', fixed: true, unit: '', },
         { title: '商品访客数', width: 100, align: 'center', dataKey: 'product_visitor_count', key: 'product_visitor_count', unit: '' },
         { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
-        { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '' },
+        { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '%' },
         { title: '搜索访客占比', width: 110, align: 'center', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', unit: '%' },
         { title: '老买家占比', width: 100, align: 'center', dataKey: 'returning_customer_ratio', key: 'returning_customer_ratio', unit: '' },
         { title: '搜索GMV占比', width: 115, align: 'center', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', unit: '' },
-        { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '' },
+        { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '%' },
         { title: '价格力星级', width: 100, align: 'center', dataKey: 'price_power_stars', key: 'price_power_stars', unit: '' },
         { title: '价格力额外曝光', width: 125, align: 'center', dataKey: 'price_power_extra_exposure', key: 'price_power_extra_exposure', unit: '' },
-        { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '' },
+        { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '%' },
         { title: '连带购买叶子类目宽度', width: 100, align: 'center', dataKey: 'associated_purchase_subcategory_width', key: 'associated_purchase_subcategory_width', unit: '' },
-        { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '' },
+        { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '%' },
         { title: '推广花费', width: 100, align: 'center', dataKey: 'promotion_cost', key: 'promotion_cost', unit: '' },
-        { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '' },
+        { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '%' },
     ]
 }])
 const count = ref()
@@ -344,6 +344,19 @@ const getWordsList = async (arr: any) => {
     const res = await getKeywordList(arr)
     if (res.code == 0 && res.data.records) {
         wordsCount.value = res.data.count
+        // 
+        // { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
+        //         { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
+        //         { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
+        //         { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
+        //         { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
+        res.data.records.map((item: any, index: any) => {
+            item.sum_visitor_count = item.search_visitor_count + item.ztc_visitor_count
+            item.sum_add_rate = item.search_add_to_cart_rate + item.ztc_add_to_cart_rate
+            item.sum_conversion_rate = item.search_conversion_rate + item.ztc_conversion_rate
+            item.sum_fans_paid_buyers_count = item.search_fans_paid_buyers_count + item.ztc_fans_paid_buyers_count
+            item.sum_direct_paid_buyers_count = item.search_direct_paid_buyers_count + item.ztc_direct_paid_buyers_count
+        })
         allData[0].data = res.data.records
     } else {
         ElMessage.error(res.msg)
@@ -539,6 +552,7 @@ $echarts_bg_img: url("./images/_2.png");
             .search_left {
                 display: flex;
                 flex: 0.4;
+
                 // justify-content: space-between;
                 .select_width {
                     width: 60%;

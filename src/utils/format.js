@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-19 09:45:49
+ * @LastEditTime: 2024-02-23 14:01:51
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -39,7 +39,7 @@ export const getDictFunc = async (type) => {
 // 百分比数字换算
 export const persentNum = (num) => {
   let n = Number(num) * 100
-  return Number(n.toFixed(2))
+  return n.toFixed(2)
 }
 
 // 小数后两位
