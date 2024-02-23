@@ -22,7 +22,7 @@
                             </el-select>
                         </div>
                         <div class="search_line">
-                            场景分类
+                            货盘变化
                             <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable
                                 multiple @change="getData2" class="select_width" placeholder="全部">
                                 <el-option v-for="(item, index) in cities" :key="index" :label="item.value"
@@ -754,7 +754,7 @@ $echarts_bg_img: url("./images/_2.png");
 
             .search_left {
                 display: flex;
-                flex: 0.35;
+                flex: 0.4;
                 // justify-content: space-between;
 
             }
@@ -766,7 +766,7 @@ $echarts_bg_img: url("./images/_2.png");
             }
 
             .search_line {
-                margin: 0 10px;
+                margin: 0 4px;
 
                 .line {
                     display: flex;
