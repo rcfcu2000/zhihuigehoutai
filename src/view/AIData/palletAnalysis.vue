@@ -14,7 +14,7 @@
               </el-select>
             </div>
             <div class="search_line">
-              本期货盘
+              本月货盘
               <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable multiple
                 @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
@@ -22,7 +22,7 @@
               </el-select>
             </div>
             <div class="search_line">
-              场景分类
+              货盘变化
               <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable multiple
                 @change="getData2" class="select_width" placeholder="全部">
                 <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
@@ -556,6 +556,7 @@ import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 import { XYlineOptionspalletAnalysis1, XYlineOptionspalletAnalysis2, barOptions, lineOptions1 } from "./echartsOptions";
+import { lueNum } from "@/utils/format.js"
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -643,7 +644,6 @@ const restore = () => {
 };
 
 const addDomain = () => {
-  console.log(userPriceRange.priceRange.length)
   const count = userPriceRange.priceRange.length - 1
   if (userPriceRange.priceRange.length === 5) {
     userPriceRange.priceRange.push({
@@ -807,7 +807,7 @@ const getTree = async () => {
     state.tree = [
       {
         name: "GMV",
-        value: parseFloat(allValue.toFixed(2)),
+        value: lueNum(allValue),
         lv: -1,
         key: 1,
         bfb: '100%',
@@ -815,7 +815,7 @@ const getTree = async () => {
           return {
             name: i.current_inventory,
             key: i.key,
-            value: parseFloat(i.payment_amount.toFixed(2)),
+            value: lueNum(i.payment_amount),
             bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
             children: [],
             lv: 0,
@@ -1034,7 +1034,6 @@ const newOldContrast = () => {
       },
     ];
     const option = lineOptions1(arr, date);
-    myChart.clear(option)
     option && myChart.setOption(option);
     window.addEventListener("resize", () => {
       myChart.resize();
@@ -1189,7 +1188,7 @@ const GMVDismantling = () => {
       tertiary_category: "",
       leve: 0,
     };
-    console.log(params.data.lv === 0, params.data.name)
+    // console.log(params.data.lv === 0, params.data.name)
     if (params.data.lv === 0) {
       // debugger;
       searchData.current_inventory = [params.data.name]
@@ -1199,7 +1198,7 @@ const GMVDismantling = () => {
           const childs = res.data.records?.map((i) => {
             return {
               name: i.primary_category,
-              value: i.payment_amount,
+              value: lueNum(i.payment_amount),
               key: i.key,
               bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
               children: [],
@@ -1222,7 +1221,7 @@ const GMVDismantling = () => {
               return {
                 name: i.secondary_category,
                 current: params.data.current,
-                value: i.payment_amount,
+                value: lueNum(i.payment_amount),
                 key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
                 children: [],
@@ -1248,7 +1247,7 @@ const GMVDismantling = () => {
             const childs = res.data.records?.map((i) => {
               return {
                 name: i.tertiary_category,
-                value: i.payment_amount,
+                value: lueNum(i.payment_amount),
                 current: params.data.current,
                 key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
@@ -1277,7 +1276,7 @@ const GMVDismantling = () => {
             const childs = res.data.records?.map((i) => {
               return {
                 name: i.tertiary_category,
-                value: i.payment_amount,
+                value: lueNum(i.payment_amount),
                 children: [],
                 key: i.key,
                 bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',

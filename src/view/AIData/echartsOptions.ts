@@ -25,6 +25,38 @@ function getRecentDates(monthsOffset: number): string[] {
     return resultArray;
 }
 
+const roundNum = (num) => {
+    num = Math.round(num)
+    return num
+}
+function lueNum(num) {
+    // 格式化为千分位输出 num.toLocaleString()
+    if (num > 9999) {
+        num = (num / 10000).toFixed(2); //保留小数点后两位
+        if (num > 9999) {
+            num = (num.toLocaleString() / 10000).toFixed(0) + "亿";
+        } else {
+            num = roundNum(num.toLocaleString()) + "万";
+        }
+    } else {
+        num = num.toFixed(0)
+    }
+    return num;
+}
+const orderMap = {
+    S: 1,
+    A: 2,
+    B: 3,
+    C: 4,
+    D: 5
+};
+
+// 自定义比较函数，根据对象的name属性和特定逻辑进行排序
+const compareByName = (a, b) => {
+    const positionA = orderMap[a.name] || Infinity; // 如果a的name不在映射中，则给予最大位置
+    const positionB = orderMap[b.name] || Infinity; // 如果b的name不在映射中，则给予最大位置
+    return positionA - positionB; // 根据位置进行排序
+};
 
 const by = function (name) {
     return function (o, p) {
@@ -413,7 +445,6 @@ export const barOptionsX = (arr: any) => {
     return {
         tooltip: {
             trigger: 'axis',
-
             axisPointer: {
                 type: 'shadow'
             },
@@ -835,9 +866,12 @@ export const XYlineOptionspalletAnalysis1 = (date: any, shop: any, industry: any
                     color: "#fff"
                 },
                 axisLabel: {
-                    show: true,
                     textStyle: {
                         color: "#fff"
+                    },
+                    show: true,
+                    formatter: (params) => {
+                        return lueNum(params)
                     }
                 },
                 axisLine: {
@@ -860,8 +894,7 @@ export const XYlineOptionspalletAnalysis1 = (date: any, shop: any, industry: any
                     show: false
                 },
                 axisTick: { show: false },
-                // min: 0,
-                // max: 200,
+                minInterval: 1,
                 axisLabel: {
                     textStyle: {
                         color: "#fff"
@@ -937,7 +970,8 @@ export const XYlineOptionspalletAnalysis2 = (date: any, shop: any, industry: any
                 show: false,
                 lineStyle: {
                     color: '#fff',
-                }
+                },
+
             },
             axisLabel: {
                 show: true,
@@ -965,6 +999,9 @@ export const XYlineOptionspalletAnalysis2 = (date: any, shop: any, industry: any
                     show: true,
                     textStyle: {
                         color: "#fff"
+                    },
+                    formatter: (params) => {
+                        return lueNum(params)
                     }
                 },
                 axisLine: {
@@ -981,6 +1018,7 @@ export const XYlineOptionspalletAnalysis2 = (date: any, shop: any, industry: any
                     color: "#fff"
                 },
                 type: "value",
+                minInterval: 1,
                 name: "行业访问人数",
                 position: "right",
                 axisLine: {
@@ -1467,14 +1505,13 @@ export const pieItemOptions1 = (arr: any) => {
     }
 }
 
-export const pieOptionsHome = (arr: any) => {
+export const pieOptionsHome = (arr: any, title: string) => {
     const data = genData(20);
     return {
         grid: {
-            left: '3%',
+            left: '0%',
             right: '4%',
             bottom: '4%',
-            containLabel: true
         },
         tooltip: {
             trigger: 'item',
@@ -1498,12 +1535,24 @@ export const pieOptionsHome = (arr: any) => {
                 color: "#fff",
             },
         },
+        graphic: {
+            type: "text",
+            left: "27%",
+            top: "center",
+            style: {
+                text: title,
+                textAlign: "center",
+                fill: "#fff",
+                fontSize: 12,
+                fontWeight: 700
+            }
+        },
         series: [
             {
                 name: '姓名',
                 type: 'pie',
-                radius: ['40%', '60%'],
-                center: ['40%', '50%'],
+                radius: ['30%', '50%'],
+                center: ['30%', '50%'],
                 data: data.seriesData,
                 label: {
                     show: true,
@@ -1512,6 +1561,7 @@ export const pieOptionsHome = (arr: any) => {
                         fontSize: 14,
                         fontWeight: 'bolder'
                     },
+
                 },
                 emphasis: {
                     itemStyle: {
@@ -1585,6 +1635,486 @@ export const lineFillOptionsNum = (arr: any, times: any) => {
                     }
                 },
                 color: 'rgba(3,171,217, 1)', //线条颜色
+            }
+        ]
+    }
+}
+
+// 
+export const flowLineOption = () => {
+    return {
+
+    }
+}
+
+// 假数据线图2
+export const lineOptions2 = (arr: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: 20,
+            icon: "circle",
+            pageIconSize: [15, 15], // 设置上一页、下一页的尺寸 
+            pageTextStyle: {  // 设置上一页、下一页文字样式 
+                color: '#fff'
+            },
+            pageIconColor: '#fff',
+            top: "20%",
+            textStyle: {
+                color: '#FFF'
+            },
+            formatter: function (name) {
+                var maxLength = 15; // 最大长度限制
+                if (name.length > maxLength) {
+                    name = name.slice(0, maxLength) + '...';
+                }
+                return name
+            },
+        },
+        grid: {
+            left: '3%',
+            right: '10%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: getRecentDates(1),
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        yAxis: {
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
+            return {
+                name: i.name,
+                stack: 'Total',
+                symbolSize: 1, // 设置数据点的大小为8像素
+                type: 'line',
+                data: i.data,
+                itemStyle: {
+                    color: backColor[index],
+                }
+            }
+        }),
+    }
+}
+
+// 横轴货盘柱状图
+export const XbarOptions = (arr: any) => {
+    // arr = arr.sort(compareByName)
+    // console.log(arr.sort(compareByName))
+    return {
+        grid: {
+            top: '5%',
+            left: '15%',
+            right: '4%',
+            bottom: '5%'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            },
+        },
+        xAxis: {
+            type: 'value',  // X轴为数值类型,
+            boundaryGap: false,
+            axisLabel: {
+                show: false
+            },
+            splitLine: {
+                show: false,
+            },
+        },
+        yAxis: {
+            type: 'category',  // Y轴为类别类型
+            // inverse: true,
+            axisLabel: {
+                color: '#fff',
+            },
+            axisTick: {
+                show: false // 不显示坐标轴刻度线
+            },
+            axisLine: {
+                show: false, // 不显示坐标轴线
+            },
+            splitLine: {
+                show: false // 不显示网格线
+            },
+            data: arr.map(i => i.name)  // Y轴上的类别数据
+        },
+        series: [{
+            type: 'bar',
+            // barCategoryGap: "100%",
+            data: arr.map(i => i.data),
+            // barWidth: '60%',
+            label: {
+                show: true,
+                position: 'right',
+                color: '#fff'
+            },
+            itemStyle: {
+                color: '#01E5FF',
+            }
+        }]
+    }
+}
+
+
+export const XYlineFlowOptions = (arr) => {
+    return {
+        tooltip: {
+            trigger: "axis"
+        },
+        legend: {
+            top: "2%",
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: "2%",
+            right: "2%",
+            // top: '2%',
+            bottom: "0%",
+            containLabel: true
+        },
+        xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: ['1月1日', '1月2日', '1月3日', '1月4日', '1月5日', '1月6日', '1月7日'],
+            axisPointer: {
+                type: 'shadow'
+            },
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+        },
+        yAxis: [
+            {
+                type: "value",
+                // nameLocation:'center',
+                nameTextStyle: {
+                    color: "#fff"
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: "#fff"
+                    }
+                },
+                axisLine: {
+                    show: false
+                },
+                splitLine: {
+                    show: false,
+                },
+                axisTick: { show: false },
+
+            },
+            {
+                nameTextStyle: {
+                    color: "#fff"
+                },
+                type: "value",
+                // name: "行业交易金额",
+                position: "right",
+                axisLine: {
+                    show: false
+                },
+                axisTick: { show: false },
+                // min: 0,
+                // max: 200,
+                axisLabel: {
+                    textStyle: {
+                        color: "#fff"
+                    },
+                    formatter: '{value}%'
+                },
+                splitLine: {
+                    show: false,
+                },
+                // show: true
+            }
+        ],
+        series: [
+            {
+                name: "客户新访",
+                type: "bar",
+                stack: "客户新访",
+                barGap: fontSize(0.1), //柱子之间间距
+                barWidth: fontSize(0.1),
+                itemStyle: {
+                    normal: {
+                        color: "#a8f5a1",
+                        lineStyle: {
+                            color: "#a8f5a1"
+                        }
+                    }
+                },
+                data: [88, 99, 100, 655, 235, 452, 77],
+            },
+            {
+                name: "客户新访占比",
+                yAxisIndex: 1,
+                type: "line",
+                stack: "客户新访占比1",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [10, 20, 54, 20, 30, 45, 78]
+            },
+            {
+                name: "未购客户回访占比",
+                yAxisIndex: 1,
+                type: "line",
+                stack: "客户新访占比2",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [5, 77, 20, 7, 72, 30, 22]
+            },
+            {
+                name: "已购客户回访占比",
+                yAxisIndex: 1,
+                type: "line",
+                stack: "客户新访占比3",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [40, 55, 44, 33, 22, 29, 30]
+            }
+        ]
+    }
+}
+
+export const XlineFlowOptions = (arr) => {
+    return {
+        tooltip: {
+            trigger: "axis"
+        },
+        legend: {
+            top: "2%",
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: "2%",
+            right: "2%",
+            // top: '2%',
+            bottom: "0%",
+            containLabel: true
+        },
+        xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: ['1月1日', '1月2日', '1月3日', '1月4日', '1月5日', '1月6日', '1月7日'],
+            axisPointer: {
+                type: 'shadow'
+            },
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+        },
+        yAxis: {
+            nameTextStyle: {
+                color: "#fff"
+            },
+            type: "value",
+            // name: "行业交易金额",
+            // position: "left",
+            axisLine: {
+                show: false
+            },
+            axisTick: { show: false },
+            // min: 0,
+            // max: 200,
+            axisLabel: {
+                textStyle: {
+                    color: "#fff"
+                },
+                formatter: '{value}%'
+            },
+            splitLine: {
+                show: false,
+            },
+            // show: true
+        },
+        series: [
+            {
+                name: "店铺转化率",
+                type: "line",
+
+                itemStyle: {
+                    normal: {
+                        color: "red",
+                        lineStyle: {
+                            color: "red",
+                            type: 'dashed' // 设置线条为虚线
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [20, 25, 22, 11, 11, 15, 38],
+            },
+            {
+                name: "客户新访转化率",
+                type: "line",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [10, 20, 54, 20, 30, 45, 78]
+            },
+            {
+                name: "未购客户回访转化率",
+                type: "line",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [5, 77, 20, 7, 72, 30, 22]
+            },
+            {
+                name: "已购客户回访转化率",
+                type: "line",
+                symbolSize: 0, // 设置数据点的大小为8像素
+                itemStyle: {
+                    normal: {
+                        color: "#b78ffc",
+                        lineStyle: {
+                            color: "#b78ffc"
+                        }
+                    }
+                },
+                tooltip: {
+                    valueFormatter: function (value) {
+                        return value + '%';
+                    }
+                },
+                data: [40, 55, 44, 33, 22, 29, 30]
             }
         ]
     }
