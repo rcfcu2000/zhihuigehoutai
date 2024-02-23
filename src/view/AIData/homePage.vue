@@ -319,8 +319,8 @@ const pieCharts = async () => {
     const chartDom2 = document.getElementById("pie2") as HTMLElement;
     const myChart2 = echarts.init(chartDom2);
 
-    const option1 = pieOptionsHome([]);
-    const option2 = pieOptionsHome([]);
+    const option1 = pieOptionsHome([], '');
+    const option2 = pieOptionsHome([], '');
 
     option1 && myChart1.setOption(option1);
     option2 && myChart2.setOption(option2);
