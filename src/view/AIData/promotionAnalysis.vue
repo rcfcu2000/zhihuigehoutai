@@ -1086,26 +1086,6 @@ $echarts_bg_img2: url('./images/_2.png');
     }
 }
 
-/* 自定义滚动条样式 */
-::-webkit-scrollbar {
-    width: 6px;
-    /* 横向滚动条宽度 */
-}
-
-::-webkit-scrollbar-track {
-    background-color: #00053f;
-    /* 滚动条背景色 */
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: rgb(33, 90, 169);
-    /* 滑块颜色 */
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(33, 183, 206);
-    /* 滑块悬停状态颜色 */
-}
 
 .form-inline {
     padding: 18px 0 0 0;

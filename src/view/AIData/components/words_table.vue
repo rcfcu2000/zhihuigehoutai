@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-22 19:11:30
+ * @LastEditTime: 2024-02-23 11:09:22
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,9 +14,9 @@
     </div> -->
     <div class="aiData_table table" :key="count">
         <!--  v-loading="loadType" -->
-        <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
+        <el-table ref="tableListRefs" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 320px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange"
+            v-el-table-infinite-scroll="loadMore_words" :infinite-scroll-distance="300" @filter-change="filterChange"
             @header-click="headerClick" show-summary :summary-method="getSummaries">
             <!-- <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">
@@ -97,7 +97,7 @@ const filterChange = (res) => {
     emit('changePallet', checkValue)
 }
 let randomStrings = [] as Array<any>
-const tableListRef = ref();
+const tableListRefs = ref();
 const nomore = ref(false)
 
 onMounted(() => {
@@ -107,7 +107,7 @@ onMounted(() => {
      * 刷新table,防止滚动条跑到最上面
     */
 const refreshTable = () => {
-    let table = tableListRef.value;
+    let table = tableListRefs.value;
     //强制刷新组件
     table.doLayout()
 }
@@ -127,9 +127,10 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
     })
 }, { deep: true })
 
-const loadMore = (res) => {
-    if (componentTitle.value == "商品明细") {
-        console.log('商品明细')
+const loadMore_words = (res) => {
+    console.log(componentTitle.value,"componentTitle.value")
+    if (componentTitle.value == "关键词分析") {
+        console.log('关键词')
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'product')

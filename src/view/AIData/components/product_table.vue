@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-22 19:36:21
+ * @LastEditTime: 2024-02-23 12:17:05
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -16,7 +16,7 @@
         <!--  v-loading="loadType" -->
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @filter-change="filterChange"
+            v-el-table-infinite-scroll="loadMore_pro" :infinite-scroll-distance="300" @filter-change="filterChange"
             @header-click="headerClick" @row-click="rowClick">
             <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center">
 
@@ -91,7 +91,7 @@
                     </div>
                     <div v-else-if="head.unit == '%'">
                         <!-- {{ persentNum(scope.row) }} -->
-                        {{ persentNum(scope.row[scope.column.property])*100 }}{{ head.unit }}
+                        {{ persentNum(scope.row[scope.column.property]) * 100 }}{{ head.unit }}
                     </div>
 
                     <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts" name="comTable">
-import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onUnmounted, onUpdated } from 'vue'
+import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onBeforeUnmount, onUpdated } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
@@ -157,44 +157,42 @@ const tableListRef = ref();
 const tableListRef_sum = ref();
 const nomore = ref(false)// 监听滚动事件并同步另一个表格的滚动位置
 
-const syncScroll = (event:any) => {
-      const source = event.target;
-      const target = source === tableListRef.value.$el.querySelector('.el-table__body-wrapper') 
-        ? tableListRef_sum.value.$el.querySelector('.el-table__body-wrapper') 
-        : tableListRef.value.$el.querySelector('.el-table__body-wrapper');
-      if (target) {
-        target.scrollTop = source.scrollTop;
-      }
+let cleanupSyncScroll:any; // 用于清理滚动同步的函数
+
+const syncScroll = (source: any, target: any) => {
+    const handleScroll = () => {
+        target.scrollLeft = source.scrollLeft;
     };
 
-onMounted(() => {
-    nextTick(() => {
-        console.log(tableListRef.value.$refs.tableWrapper, "table1.value.$refs")
-        // 表格1滚动时，同步表格2的滚动位置
-        const table1Body = tableListRef.value.$el.querySelector('.el-table__body-wrapper');
-        if (table1Body) {
-            console.log(table1Body,"table1Body")
-            table1Body.addEventListener('scroll', () => syncScroll);
-        }
+    console.log("1111111")
+    source.addEventListener('scroll', handleScroll);
 
-        // 表格2滚动时，同步表格1的滚动位置
-        const table2Body = tableListRef_sum.value.$el.querySelector('.el-table__body-wrapper');
-        if (table2Body) {
-            table2Body.addEventListener('scroll', () => syncScroll);
-        }
-    })
-})
-onUnmounted(() => {
-    // 移除事件监听器，防止内存泄露
-    const table1Body = tableListRef.value.querySelector('.el-table__body-wrapper');
-    const table2Body = tableListRef_sum.value.querySelector('.el-table__body-wrapper');
-    if (table1Body) {
-        table1Body.removeEventListener('scroll', () => syncScroll);
+    console.log("2222222")
+    return () => {
+        source.removeEventListener('scroll', handleScroll);
+    };
+};
+const setupScrollSync = () => {
+    const table1Wrapper = tableListRef.value?.$el.querySelector('.el-table__body-wrapper');
+    const table2Wrapper = tableListRef_sum.value?.$el.querySelector('.el-table__body-wrapper');
+
+    console.log(table1Wrapper,table2Wrapper,"table1Wrappertable1Wrappertable1Wrapper")
+
+    if (table1Wrapper && table2Wrapper) {
+        // 如果之前已经设置过滚动同步，先清理
+        if (cleanupSyncScroll) cleanupSyncScroll();
+
+        // 设置新的滚动同步
+        cleanupSyncScroll = syncScroll(table1Wrapper, table2Wrapper);
     }
-    if (table2Body) {
-        table2Body.removeEventListener('scroll', () => syncScroll);
-    }
+};
+onBeforeUnmount(() => {
+    // 清理滚动同步
+    if (cleanupSyncScroll) cleanupSyncScroll();
 });
+
+onMounted(async () => {
+})
 function handleTableScroll(event: any) {
     // 事件处理逻辑
     console.log(event.target, 'event.target');
@@ -218,6 +216,10 @@ watch([propData.Commodity_detail], ([newD]) => {
     tableHead = newD.column
     tableData = tableData.concat(newD.data)
     tableDataSum = [newD.sumTrend]
+    
+    if (tableData.length > 0 && tableDataSum.length > 0) {
+        setupScrollSync();
+    }
     console.log(tableDataSum, "tableDataSum")
     countModel.value = tableData.length
     refreshTable()
@@ -308,7 +310,8 @@ watch([propData.Commodity_detail], ([newD]) => {
     })
 }, { deep: true })
 
-const loadMore = (res) => {
+const loadMore_pro = (res: any) => {
+    console.log(componentTitle.value, "componentTitle.value")
     if (componentTitle.value == "商品明细") {
         console.log(propData.tableCount, '商品明细')
         if (!loadType.value && propData.tableCount > tableData.length) {

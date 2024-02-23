@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-22 17:21:38
+ * @LastEditTime: 2024-02-23 11:25:17
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,7 +14,7 @@
         <!--  v-loading="loadType" -->
         <el-table ref="planTableListRef" :id="'table' + comKey" :data="tableData" border v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="height: 280px;"
-            v-el-table-infinite-scroll="loadMore" :infinite-scroll-distance="300" @current-change="currentChange">
+            v-el-table-infinite-scroll="loadMore_plan" :infinite-scroll-distance="300" @current-change="currentChange">
             <!-- <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="plan_pallet"> -->
             <el-table-column prop="promotion_type" label="计划类型" fixed width="120" align="center" column-key="plan_pallet">
@@ -172,16 +172,6 @@ const syncScroll = (source: any) => {
 const currentChange = (currentRow: any, oldCurrentRow: any) => {
     console.log(currentRow, oldCurrentRow, "currentRow, oldCurrentRow")
 }
-onMounted(() => {
-    const tableWrapper = planTableListRef.value?.$el.querySelector('.el-table__body-wrapper');
-    if (tableWrapper) {
-        tableWrapper.addEventListener('scroll', handleTableScroll);
-    }
-    nextTick(() => {
-        planTableListRefs.value.isSyncing = false;
-        planTableListRef_sum.value.isSyncing = false;
-    })
-})
 
 function handleTableScroll(event:any) {
     // 事件处理逻辑
@@ -190,10 +180,10 @@ function handleTableScroll(event:any) {
 
 onBeforeUnmount(() => {
     if (planTableListRefs.value) {
-        planTableListRefs.value.removeEventListener('scroll', syncScroll);
+        planTableListRefs.value?.$el.removeEventListener('scroll', syncScroll);
     }
     if (planTableListRef_sum.value) {
-        planTableListRef_sum.value.removeEventListener('scroll', syncScroll);
+        planTableListRef_sum.value?.$el.removeEventListener('scroll', syncScroll);
     }
 });
 /**
@@ -305,7 +295,8 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newD2]) => {
     // count.value++
 })
 
-const loadMore = (res) => {
+const loadMore_plan = (res) => {
+    console.log(componentTitle.value,"componentTitle.value")
     if (componentTitle.value == "计划明细") {
         console.log(propData.tableCount, '计划明细')
         if (!loadType.value && propData.tableCount > tableData.length) {
