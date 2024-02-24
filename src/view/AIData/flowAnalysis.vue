@@ -214,7 +214,7 @@
 
 
         <div class="table_title"><span>流量分析</span> </div>
-        <!-- <div class="aiData_table table">
+        <div class="aiData_table table">
             <el-table :data="state.tableData" max-height="400">
                 <el-table-column label="三级来源(组)" width="150">
                     <template #default="scope">
@@ -339,7 +339,7 @@
                     </div>
                 </template>
             </el-table>
-        </div> -->
+        </div>
 
         <div class="trend_comparison">
             <div class="trend_comparison_left flex_size">
@@ -354,7 +354,7 @@
             </div>
         </div>
         <div class="table_title"><span>新老客分析</span> </div>
-        <!-- <div class="aiData_table table">
+        <div class="aiData_table table">
             <el-table :data="state.tableData" max-height="400">
                 <el-table-column label="日期" width="120">
                     <template #default="scope">
@@ -445,7 +445,7 @@
                     </div>
                 </template>
             </el-table>
-        </div> -->
+        </div>
 
         <goHome />
     </div>
@@ -531,7 +531,7 @@ const getData = async () => {
         state.responsibleList = resp1.data.records;
         // console.log([resp1.data.records[0].responsible])
         searchData.product_manager = resp1.data.records[0].responsible;
-        // getAllEcharts()
+        getAllEcharts()
         state.loading = false
     }
 };
@@ -551,9 +551,9 @@ const getData2 = async () => {
 
 const getAllEcharts = () => {
     getPieEcharts()
-    getLineEcharts()
-    palletEcharts()
-    customerAnalysisEcharts()
+    // getLineEcharts()
+    // palletEcharts()
+    // customerAnalysisEcharts()
 }
 
 
