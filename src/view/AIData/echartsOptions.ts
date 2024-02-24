@@ -52,11 +52,6 @@ const orderMap = {
 };
 
 // 自定义比较函数，根据对象的name属性和特定逻辑进行排序
-const compareByName = (a, b) => {
-    const positionA = orderMap[a.name] || Infinity; // 如果a的name不在映射中，则给予最大位置
-    const positionB = orderMap[b.name] || Infinity; // 如果b的name不在映射中，则给予最大位置
-    return positionA - positionB; // 根据位置进行排序
-};
 
 const by = function (name) {
     return function (o, p) {
@@ -439,9 +434,9 @@ export const pieOptions = (arr: any) => {
 }
 //横轴柱状图
 export const barOptionsX = (arr: any) => {
+    // arr = arr.sort(by("value"))
+    // arr = arr.sort((a, b) => a.value - b.value).reverse();
     // console.log(arr)
-    arr = arr.sort(by("value"))
-    // console.log(arr.sort(by("value")))
     return {
         tooltip: {
             trigger: 'axis',
@@ -465,6 +460,7 @@ export const barOptionsX = (arr: any) => {
         xAxis: {
             type: 'value',
             boundaryGap: false,
+            inverse: true,
             axisLabel: {
                 color: '#fff'
             },
@@ -1341,6 +1337,8 @@ export const barOptionsY = (arr: any) => {
 
 // 饼图
 export const pieItemOptions = (arr: any) => {
+    arr = arr.sort(by("value"))
+    console.log(arr)
     // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
@@ -1774,7 +1772,7 @@ export const XbarOptions = (arr: any) => {
         },
         yAxis: {
             type: 'category',  // Y轴为类别类型
-            // inverse: true,
+            inverse: true,
             axisLabel: {
                 color: '#fff',
             },
@@ -2033,8 +2031,6 @@ export const XlineFlowOptions = (arr) => {
                 color: "#fff"
             },
             type: "value",
-            // name: "行业交易金额",
-            // position: "left",
             axisLine: {
                 show: false
             },

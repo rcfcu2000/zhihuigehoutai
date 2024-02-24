@@ -1389,7 +1389,7 @@ $echarts_bg_img: url("./images/_2.png");
       }
 
       .search_line {
-        margin: 0 10px;
+        margin: 0 4px;
 
         .line {
           display: flex;
