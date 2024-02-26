@@ -35,7 +35,7 @@
                             请选择起止时间
                             <el-date-picker @change="getData2()" :clearable="false" v-model="searchData.date"
                                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                                start-placeholder="开始时间" end-placeholder="结束时间" />
+                                :default-time="defaultTime" start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
                     </div>
                 </div>
@@ -287,15 +287,15 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词：" v-if="state.tableSearchLv === 3">
-                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple filterable
-                        @change="selectChange" style="width: 240px">
+                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
+                        filterable @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="人群：" v-if="state.tableSearchLv === 4">
-                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple filterable
-                        @change="selectChange" style="width: 240px">
+                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
+                        filterable @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
                             :value="item.crowd" />
                     </el-select>
@@ -303,10 +303,12 @@
             </el-form>
         </div>
 
-        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length" @load-more="loadMore" :tableCount="proCount" @row_Click="pro_row_click">
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length" @load-more="loadMore"
+            :tableCount="proCount" @row_Click="pro_row_click">
         </product_table>
 
-        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length" @load-more="loadMore" :tableCount="planCount">
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length" @load-more="loadMore"
+            :tableCount="planCount">
         </plan_table>
         <goHome />
         <!-- 明细表格 -->
@@ -368,7 +370,8 @@ const searchData = reactive({
     current_inventory: [] as Array<any>, // string 当期货盘
     promotion_type: [], // string
     scene_category: [] as Array<any>, //string 计划类型
-    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    date: ['2024-01-01', '2024-01-25'],
+    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     // date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
     ids: [] as Array<any>,
 
@@ -653,6 +656,7 @@ const echarts4 = async () => {
     });
 }
 
+const defaultTime = ref(['2024-01-01', '2024-01-25'])
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
