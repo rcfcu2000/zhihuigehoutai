@@ -91,7 +91,7 @@
                             <div class="roduct_num_box_charts" id="echarts8"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">免费搜索点击率</div>
-                                <div class="num">{{ parseFloat((state.itemData.free_search_click_rate * 100).toFixed(2)) }}%
+                                <div class="num">{{ persentNum((state.itemData.free_search_click_rate).toFixed(2)) }}%
 
                                 </div>
                             </div>
@@ -100,7 +100,7 @@
                             <div class="roduct_num_box_charts" id="echarts9"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">连带购买叶子类目宽度</div>
-                                <div class="num">{{ roundNum((state.itemData.bundle_purchase * 100)) }}</div>
+                                <div class="num">{{ roundNum((state.itemData.bundle_purchase)) }}</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
