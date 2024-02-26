@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-24 11:08:23
+ * @LastEditTime: 2024-02-26 14:45:29
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -162,11 +162,11 @@ const nomore = ref(false)// 监听滚动事件并同步另一个表格的滚动�
 const addScrollListener = () => {
     const table1 = tableListRef.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     const table2 = tableListRef_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
-    tableListRef.value.scrollBarRef.wrapRef.onscroll = (event:any) => {
+    tableListRef.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
         // console.log(event,table1.scrollLeft,table2.scrollLeft,"event.target.scrollLeft")
         table2.scrollLeft = event.target.scrollLeft
     }
-    tableListRef_sum.value.scrollBarRef.wrapRef.onscroll = (event:any) => {
+    tableListRef_sum.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
         table1.scrollLeft = event.target.scrollLeft
         // console.log(event.target.scrollLeft,"event.target.scrollLeft")
     }
@@ -179,16 +179,21 @@ onMounted(async () => {
     */
 const refreshTable = () => {
     let table = tableListRef.value;
+    let tables = tableListRef_sum.value;
     //强制刷新组件
     table.doLayout()
+    tables.doLayout()
 }
 watch([propData.clearData], ([newD]) => {
-    if (newD[0]) {
+    console.log(newD, "clearDataclearDataclearData")
+}, { deep: true, immediate: true })
+
+watch([propData.Commodity_detail], ([newD]) => {
+    if (newD.clearData[0]) {
         tableData = []
+        refreshTable()
         loadType.value = true
     }
-})
-watch([propData.Commodity_detail], ([newD]) => {
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     tableData = tableData.concat(newD.data)

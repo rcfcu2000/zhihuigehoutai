@@ -287,14 +287,14 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词：" v-if="state.tableSearchLv === 3">
-                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple filterable
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="人群：" v-if="state.tableSearchLv === 4">
-                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple filterable
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
                             :value="item.crowd" />
@@ -303,12 +303,10 @@
             </el-form>
         </div>
 
-        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length"
-            :clearData="clearDataPro" @load-more="loadMore" :tableCount="proCount" @row_Click="pro_row_click">
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length" @load-more="loadMore" :tableCount="proCount" @row_Click="pro_row_click">
         </product_table>
 
-        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length"
-            :clearData="clearDataPlan" @load-more="loadMore" :tableCount="planCount">
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length" @load-more="loadMore" :tableCount="planCount">
         </plan_table>
         <goHome />
         <!-- 明细表格 -->
@@ -341,6 +339,7 @@ import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
 import { lueNum, lueNumInteger } from "@/utils/format.js"
+
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
 const pageSize = ref(20)
@@ -416,6 +415,7 @@ const allData = reactive([{
     componentTitle: '商品明细',
     data: [] as Array<any>,
     sumTrend: { id: '' } as any,
+    clearData: ref([false]),
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
         { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
@@ -446,6 +446,7 @@ const allData = reactive([{
     componentTitle: '计划明细',
     data: [] as Array<any>,
     sumTrend: { id: '' } as any,
+    clearData: ref([false]),
     column: [
         // { title: '计划类型', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '',},
         { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
@@ -527,8 +528,8 @@ const getData2 = async () => {
     searchData.audience_filter = [] // 人群
     searchData.pallet = [] // 货盘
     searchData.bid_type = [];
-    clearDataPro[0] = true
-    clearDataPlan[0] = true
+    allData[0].clearData[0] = true
+    allData[1].clearData[0] = true
     // await getEchartsData()
     await getAll(searchData)
     await getDetailPro(searchData)
@@ -581,7 +582,7 @@ const echarts2 = async () => {
     const option = pieOptions(arr);
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
-        allData[0].data = []
+        allData[0].clearData[0] = true
         searchData.keyword_filter = [], // 关键词
             searchData.audience_filter = [], // 人群
             searchData.bid_type = [], // 出价方式
@@ -679,8 +680,6 @@ const getAll = async (arr: any) => {
     count.value++
 }
 
-let clearDataPro = reactive([false])
-let clearDataPlan = reactive([false])
 const product_ids = [] as Array<any>;
 const count = ref(0)
 // 产品明细
@@ -755,7 +754,7 @@ const pro_row_click = (res) => {
     searchData.ids = []
     searchData.ids.push(res)
     pageNum_plan.value = 0
-    clearDataPlan[0] = true
+    allData[1].clearData[0] = true
     getDetailPlan(searchData)
 }
 
@@ -830,11 +829,11 @@ const planThend = async (arr: Array<any>, records: Array<any>) => {
 
 const loadMore = (at: string) => {
     if (at == 'product') {
-        clearDataPro[0] = false
+        allData[0].clearData[0] = false
         getDetailPro(searchData)
     }
     if (at == 'plan') {
-        clearDataPlan[0] = false
+        allData[1].clearData[0] = false
         getDetailPlan(searchData)
     }
 }
@@ -853,8 +852,8 @@ const changePlan_Pallet = (value: Array<any>) => {
 
 // 筛选条件改变时
 const selectChange = () => {
-    clearDataPro[0] = true
-    clearDataPlan[0] = true
+    allData[0].clearData[0] = true
+    allData[1].clearData[0] = true
     pageNum_pro.value = 0
     pageNum_plan.value = 0
     getDetailPlan(searchData)
