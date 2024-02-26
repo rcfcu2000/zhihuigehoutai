@@ -1578,11 +1578,25 @@ export const pieOptionsHome = (arr: any, title: string) => {
     }
 }
 
-export const lineFillOptionsNum = (arr: any, times: any) => {
+// 百分比数字换算
+function persentNum(num) {
+    let n = Number(num) * 100
+    return n.toFixed(2)
+}
+export const lineFillOptionsNum = (arr: any, times: any, type: any) => {
     return {
         tooltip: {
             show: true,
             trigger: "axis",
+            // formatter: '{b0}<br />{c0}'
+            formatter: (params: any) => {
+                if(type == '%'){
+                    return `${params[0].axisValue}<br />${persentNum(params[0].value)}${type}`
+                }else{
+                    return `${params[0].axisValue}<br />${params[0].value}`
+                }
+                console.log(params, "lineFillOptionsNum")
+            }
         },
         grid: {
             top: "2%",

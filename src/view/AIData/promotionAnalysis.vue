@@ -415,7 +415,7 @@ const current_inventory = reactive([])
 const allData = reactive([{
     componentTitle: '商品明细',
     data: [] as Array<any>,
-    sumTrend: {} as any,
+    sumTrend: { id: '' } as any,
     column: [
         // { title: '本月货盘', width: 120, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '',},
         { title: '商品名称', width: 100, align: 'center', dataKey: 'product_alias', key: 'product_alias', unit: '', },
@@ -445,7 +445,7 @@ const allData = reactive([{
 }, {
     componentTitle: '计划明细',
     data: [] as Array<any>,
-    sumTrend: {} as Object,
+    sumTrend: { id: '' } as any,
     column: [
         // { title: '计划类型', width: 120, align: 'center', dataKey: 'plan_id', key: 'plan_id', fixed: true, unit: '',},
         { title: '计划名称', width: 100, align: 'center', dataKey: 'campaign_name', key: 'campaign_name', unit: '' },
@@ -694,8 +694,10 @@ const getDetailPro = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0 && proRes.data.records) {
-        allData[0].sumTrend = proRes.data.sum[0]
-        allData[0].sumTrend.id = "pro"
+        if (proRes.data.sum.length > 0) {
+            allData[0].sumTrend = proRes.data.sum[0]
+            allData[0].sumTrend.id = "pro"
+        }
         proCount.value = proRes.data.count
         proRes.data.records?.map((item: any) => {
             product_ids.push(item.product_id)
@@ -769,9 +771,11 @@ const getDetailPlan = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [planRes] = [await getPlanGetAlldata(arr)]
     if (planRes.code === 0 && planRes.data.records) {
-        planCount.value = planRes.data.count
-        allData[1].sumTrend = planRes.data.sum[0]
-        allData[1].sumTrend.id = "plan"
+        planCount.value = planRes.data.proCount
+        if (planRes.data.sum.length > 0) {
+            allData[1].sumTrend = planRes.data.sum[0]
+            allData[1].sumTrend.id = "plan"
+        }
         planRes.data.records?.map((item: any) => {
             plan_ids.push(item.plan_id)
         })

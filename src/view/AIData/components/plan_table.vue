@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-23 11:25:17
+ * @LastEditTime: 2024-02-24 11:10:17
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -152,20 +152,18 @@ const planTableListRef = ref();
 const planTableListRefs = ref();
 const planTableListRef_sum = ref();
 const nomore = ref(false)
-const syncScroll = (source: any) => {
-    console.log(planTableListRefs.value.scrollLeft, "planTableListRef.value.scrollLeft")
-    // 当主表格滚动时，更新合计表格的滚动位置
-    planTableListRefs.value.scrollLeft = planTableListRef_sum.value.scrollLeft;
 
-    // 设置一个标记，防止循环引用
-    if (source === 'table1' && planTableListRef_sum.value && !planTableListRef_sum.value.isSyncing) {
-        planTableListRefs.value.isSyncing = true; // 设置正在同步的标记
-        planTableListRef_sum.value.scrollLeft = planTableListRefs.value.scrollLeft;
-        planTableListRefs.value.isSyncing = false; // 同步完成，清除标记
-    } else if (source === 'table2' && planTableListRefs.value && !planTableListRefs.value.isSyncing) {
-        planTableListRef_sum.value.isSyncing = true; // 设置正在同步的标记
-        planTableListRefs.value.scrollLeft = planTableListRef_sum.value.scrollLeft;
-        planTableListRef_sum.value.isSyncing = false; // 同步完成，清除标记
+// 添加滚动监听函数
+const addScrollListener = () => {
+    const table1 = planTableListRef.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    const table2 = planTableListRef_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    planTableListRef.value.scrollBarRef.wrapRef.onscroll = (event:any) => {
+        // console.log(event,table1.scrollLeft,table2.scrollLeft,"event.target.scrollLeft")
+        table2.scrollLeft = event.target.scrollLeft
+    }
+    planTableListRef_sum.value.scrollBarRef.wrapRef.onscroll = (event:any) => {
+        table1.scrollLeft = event.target.scrollLeft
+        // console.log(event.target.scrollLeft,"event.target.scrollLeft")
     }
 };
 
@@ -173,19 +171,6 @@ const currentChange = (currentRow: any, oldCurrentRow: any) => {
     console.log(currentRow, oldCurrentRow, "currentRow, oldCurrentRow")
 }
 
-function handleTableScroll(event:any) {
-    // 事件处理逻辑
-    console.log(event.target,'event.target');
-}
-
-onBeforeUnmount(() => {
-    if (planTableListRefs.value) {
-        planTableListRefs.value?.$el.removeEventListener('scroll', syncScroll);
-    }
-    if (planTableListRef_sum.value) {
-        planTableListRef_sum.value?.$el.removeEventListener('scroll', syncScroll);
-    }
-});
 /**
      * 刷新table,防止滚动条跑到最上面
     */
@@ -290,6 +275,12 @@ watch([propData.Commodity_detail, propData.clearData], ([newD, newD2]) => {
             EleResize.on(chartDom2, listener);
             EleResize.on(chartDom3, listener);
         })
+        if (tableData.length > 0 && tableDataSum.length > 0) {
+            // 确保 DOM 更新后再添加滚动事件监听
+            nextTick(() => {
+                addScrollListener();
+            });
+        }
         refreshTable()
     })
     // count.value++
@@ -490,7 +481,7 @@ const generateRandomString = () => {
 }
 
 .table {
-    height: 310px;
+    height: 330px;
     padding: 10px;
     // width: 98%;
     // overflow: auto;

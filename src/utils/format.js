@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-23 14:01:51
+ * @LastEditTime: 2024-02-26 12:07:16
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -39,7 +39,24 @@ export const getDictFunc = async (type) => {
 // 百分比数字换算
 export const persentNum = (num) => {
   let n = Number(num) * 100
-  return n.toFixed(2)
+  // 将数字转换为字符串
+  let numStr = n.toString();
+
+  // 检查是否为整数
+  if (Number.isInteger(n)) {
+    return numStr + '.00'; // 直接在整数后面添加 '.00'
+  }
+  // 找到小数点后第一个非零数字的位置
+  let index = numStr.indexOf('.') + 2; // 跳过小数点及其后的第一个数字（即0）
+
+  // 寻找第一个非零数字
+  while (numStr[index] === '0') {
+    index++;
+  }
+
+  // 保留从第一个非零数字起的两位小数
+  // 注意：这里假设一定存在两位以上的小数，如果不是这样，还需要更多的错误检查
+  return numStr.substring(0, index + 2);
 }
 
 // 小数后两位
@@ -58,14 +75,14 @@ export const roundNum = (num) => {
 export function lueNum(num) {
   // 格式化为千分位输出 num.toLocaleString()
   if (num > 9999) {
-      num = (num / 10000).toFixed(2); //保留小数点后两位
-      if (num > 9999) {
-          num = (num.toLocaleString() / 10000).toFixed(4) + "亿";
-      } else {
-          num = num.toLocaleString() + "万";
-      }
+    num = (num / 10000).toFixed(2); //保留小数点后两位
+    if (num > 9999) {
+      num = (num.toLocaleString() / 10000).toFixed(4) + "亿";
+    } else {
+      num = num.toLocaleString() + "万";
+    }
   } else {
-      num = num.toFixed(0)
+    num = num.toFixed(0)
   }
   return num;
 }
@@ -73,9 +90,9 @@ export function lueNum(num) {
 export function mergeArr(array) { //数组去重
   var temp = []; //一个新的临时数组
   for (var i = 0; i < array.length; i++) {
-      if (temp.indexOf(array[i]) == -1) {
-          temp.push(array[i]);
-      }
+    if (temp.indexOf(array[i]) == -1) {
+      temp.push(array[i]);
+    }
   }
   return temp
 }
