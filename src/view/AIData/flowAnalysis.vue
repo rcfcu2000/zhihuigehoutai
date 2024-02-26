@@ -552,7 +552,7 @@ const getData2 = async () => {
 const getAllEcharts = () => {
     getPieEcharts()
     getLineEcharts()
-    // palletEcharts()
+    palletEcharts()
     // customerAnalysisEcharts()
 }
 
