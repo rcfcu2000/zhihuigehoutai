@@ -268,7 +268,8 @@
           <template #default="scope">
             <div v-if="scope.row.stockpile_change === 1" style="width: 100%; background-color: #01E5FF;">上升</div>
             <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降</div>
-            <div v-else>持平</div>
+            <div v-else-if="scope.row.stockpile_change === 0">持平</div>
+            <div v-else>其他</div>
           </template>
         </el-table-column>
         <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')" width="100"
@@ -470,7 +471,8 @@
               <template #default="scope">
                 <div v-if="scope.row.stockpile_change === 1" style="width: 100%; background-color: #01E5FF;">上升</div>
                 <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降</div>
-                <div v-else>持平</div>
+                <div v-else-if="scope.row.stockpile_change === 0">持平</div>
+                <div v-else>其他</div>
               </template>
             </el-table-column>
             <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')" width="100"
@@ -565,7 +567,7 @@ var option: EChartsOption;
 const formRef = ref<FormInstance>();
 const cities = [
   {
-    label: -1,
+    label: 1,
     value: "上升",
   },
   {
@@ -573,7 +575,7 @@ const cities = [
     value: "持平",
   },
   {
-    label: 1,
+    label: -1,
     value: "下降",
   },
   {
