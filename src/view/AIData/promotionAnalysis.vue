@@ -669,7 +669,9 @@ const getAll = async (arr: any) => {
         state.titleData = allRes.data.promotionIndex1
         state.extendList = allRes.data.promotionIndex2.records
 
-        state.tableData = allRes.data.bidTypeAnalysis.records
+        state.tableData = allRes.data.bidTypeAnalysis.records?.sort((a, b) => {
+            return b.spend - a.spend
+        })
         state.echartsData2 = allRes.data.palletCost.records
         state.echartsData3 = allRes.data.keywordCost.records
         state.echartsData4 = allRes.data.crowdSpend.records

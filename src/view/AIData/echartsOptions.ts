@@ -349,6 +349,7 @@ export const lineOptions = (arr: any) => {
 }
 // 饼图
 export const pieOptions = (arr: any) => {
+    arr = arr.sort(by("cost"))
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
@@ -391,6 +392,8 @@ export const pieOptions = (arr: any) => {
                 radius: ['60%', '80%'],
                 // center: ['40%', '60%'],
                 // adjust the start angle
+                minAngle: 15,//最小角度
+                startAngle: 90, //起始角度
                 label: {
                     show: true,
                     textStyle: {
@@ -434,7 +437,7 @@ export const pieOptions = (arr: any) => {
 }
 //横轴柱状图
 export const barOptionsX = (arr: any) => {
-    // arr = arr.sort(by("value"))
+    arr = arr.sort(by("value"))
     // arr = arr.sort((a, b) => a.value - b.value).reverse();
     // console.log(arr)
     return {
@@ -460,9 +463,10 @@ export const barOptionsX = (arr: any) => {
         xAxis: {
             type: 'value',
             boundaryGap: false,
-            inverse: true,
+            // inverse: true,
             axisLabel: {
-                color: '#fff'
+                color: '#fff',
+                show: false,
             },
             splitLine: {
                 show: false,
@@ -1338,7 +1342,6 @@ export const barOptionsY = (arr: any) => {
 // 饼图
 export const pieItemOptions = (arr: any) => {
     arr = arr.sort(by("value"))
-    console.log(arr)
     // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
@@ -1394,6 +1397,8 @@ export const pieItemOptions = (arr: any) => {
             {
                 type: 'pie',
                 radius: ['60%', '80%'],
+                // minAngle: 15,//最小角度
+                // startAngle: 90, //起始角度
                 // adjust the start angle
                 label: {
                     show: true,

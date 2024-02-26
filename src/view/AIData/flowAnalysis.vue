@@ -553,7 +553,7 @@ const getAllEcharts = () => {
     getPieEcharts()
     getLineEcharts()
     palletEcharts()
-    customerAnalysisEcharts()
+    // customerAnalysisEcharts()
 }
 
 
