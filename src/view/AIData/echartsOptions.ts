@@ -285,6 +285,94 @@ export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false, t
         }),
     }
 }
+export const lineOptions1_y_100 = (arr: any, date: any, linetype: boolean = false, type: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${(value)}${type}`
+                } else {
+                    return `${value}`
+                }
+            }
+        },
+        legend: {
+            top: "5%",
+            // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+            data: arr?.map((i: { name: any; }) => i.name),
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: '10%',
+            right: '8%',
+            bottom: '10%',
+            containLabel: true
+        },
+        dataZoom: [
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1]
+            }
+        ],
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        yAxis: {
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
+            // console.log(index, 'index')
+            return {
+                name: i.name,
+                symbolSize: 1, // 设置数据点的大小为8像素
+                smooth: linetype,
+                type: 'line',
+                data: i.data,
+                itemStyle: {
+                    color: backColor[index],
+                },
+                lineStype: {
+                    type: (linetype && index > 0) ? 'dashed' : 'solid'
+                }
+            }
+        }),
+    }
+}
 // 假数据线图
 export const lineOptions = (arr: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
@@ -1598,6 +1686,79 @@ export const lineFillOptionsNum = (arr: any, times: any, type: any) => {
             formatter: (params: any) => {
                 if (type == '%') {
                     return `${params[0].axisValue}<br />${persentNum(params[0].value)}${type}`
+                } else {
+                    return `${params[0].axisValue}<br />${params[0].value}`
+                }
+            }
+        },
+        grid: {
+            top: "2%",
+            left: "5%",
+            right: "5%",
+            bottom: "10%",
+            // containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            show: false,
+            data: times
+        },
+        yAxis: {
+            type: 'value',
+            show: false,
+        },
+        series: [
+            {
+                symbol: "none",
+                data: arr,
+                type: 'line',
+                lineStyle: {
+                    width: 4
+                },
+                areaStyle: {
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 0% 处的颜色
+                            },
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 0% 处的颜色
+                            },
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 0% 处的颜色
+                            },
+                            {
+                                offset: 0.1,
+                                color: 'rgba(2,111,141, 1)' // 100% 处的颜色
+                            }
+                        ],
+                        global: false // 缺省为 false
+                    }
+                },
+                color: 'rgba(3,171,217, 1)', //线条颜色
+            }
+        ]
+    }
+}
+
+export const lineFillOptionsNum_100 = (arr: any, times: any, type: any) => {
+    return {
+        tooltip: {
+            show: true,
+            trigger: "axis",
+            // formatter: '{b0}<br />{c0}'
+            formatter: (params: any) => {
+                if (type == '%') {
+                    return `${params[0].axisValue}<br />${params[0].value+type}`
                 } else {
                     return `${params[0].axisValue}<br />${params[0].value}`
                 }

@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-31 16:15:30
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-27 09:56:11
+ * @LastEditTime: 2024-02-28 10:33:21
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\storeAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -401,7 +401,7 @@ import {
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { mergeArr } from "@/utils/format";
 import page_header from './components/page_header.vue'
-import { lineFillOptionsNum, lineOptions1_y, pieItemOptions1, lineOptionsNum } from "./echartsOptions"
+import { lineFillOptionsNum,lineFillOptionsNum_100, lineOptions1_y,lineOptions1_y_100, pieItemOptions1, lineOptionsNum } from "./echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import * as echarts from 'echarts';
 
@@ -728,7 +728,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom7: any = document.getElementById('index7');
         let myChart7 = echarts.init(chartDom7);
-        let option7 = lineFillOptionsNum(shop_service_analysis_trend.refund_rate, mergeArr(shop_service_analysis_trend.chatrsX), '%');
+        let option7 = lineFillOptionsNum_100(shop_service_analysis_trend.refund_rate, mergeArr(shop_service_analysis_trend.chatrsX), '%');
         let listener7 = function () {
             if (myChart7) {
                 myChart7.resize();
@@ -739,7 +739,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom8: any = document.getElementById('index8');
         let myChart8 = echarts.init(chartDom8);
-        let option8 = lineFillOptionsNum(shop_service_analysis_trend.refund_successful_amount, mergeArr(shop_service_analysis_trend.chatrsX), '%');
+        let option8 = lineFillOptionsNum(shop_service_analysis_trend.refund_successful_amount, mergeArr(shop_service_analysis_trend.chatrsX), '');
         let listener8 = function () {
             if (myChart8) {
                 myChart8.resize();
@@ -848,7 +848,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom15: any = document.getElementById('index15');
         let myChart15 = echarts.init(chartDom15);
-        let option15 = lineOptions1_y(customer_analysis_trend.lineData, mergeArr(customer_analysis_trend.chatrsX), true);
+        let option15 = lineOptions1_y_100(customer_analysis_trend.lineData, mergeArr(customer_analysis_trend.chatrsX), true, '%');
         let listener15 = function () {
             if (myChart15) {
                 myChart15.resize();
