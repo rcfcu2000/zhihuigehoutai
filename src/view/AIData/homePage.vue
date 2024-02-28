@@ -24,26 +24,25 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.attachment_rate).toFixed(2)) }}
+                            {{ lueNum(state.titleData.search_visitor_count) }}
                         </span>
                         <span class="ctn_name"> 访客数 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.add_to_cart_rate * 100).toFixed(2)) }}
-                            %
+                            {{ lueNum(state.titleData.overall_gmv) }}
                         </span>
                         <span class="ctn_name"> GMV </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.favorite_rate * 100).toFixed(2)) }}
-                            % </span>
+                            {{ lueNum(state.titleData.customer_unit_price) }}
+                        </span>
                         <span class="ctn_name"> 客单价 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.refund_rate * 100).toFixed(2)) }}
+                            {{ parseFloat((state.titleData.zfzhl * 100).toFixed(2)) }}
                             % </span>
                         <span class="ctn_name"> 支付转化率 </span>
                     </li>
@@ -53,25 +52,25 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.refund_rate * 100).toFixed(2)) }}
+                            {{ lueNum(state.titleData.promotion_cost) }}
                             % </span>
                         <span class="ctn_name"> 推广花费 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.refund_rate * 100).toFixed(2)) }}
+                            {{ parseFloat((state.titleData.cost_percentage * 100).toFixed(2)) }}%
                             % </span>
                         <span class="ctn_name"> 推广占比 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.refund_rate * 100).toFixed(2)) }}
+                            {{ parseFloat((state.titleData.jlrl * 100).toFixed(2)) }}
                             % </span>
                         <span class="ctn_name"> 净利润率 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.refund_rate * 100).toFixed(2)) }}
+                            {{ parseFloat((state.titleData.lrv * 100).toFixed(2)) }}
                             % </span>
                         <span class="ctn_name"> 净利润 </span>
                     </li>
@@ -176,7 +175,61 @@
             </div>
             <div class="box3_right">
                 <div class="title">推广分析</div>
-                <div class="echarts_bg"></div>
+                <div class="echarts_bg">
+                    <div class="roduct_right_list" v-for="(ikun, index) in state.extendList" :key="index">
+                        <div class="roduct_right_title"> {{ ikun.scene_category }}</div>
+                        <ul class="roduct_right_ctn">
+                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.spend.toFixed(2))">
+                                <span class="ctn_num"> {{ lueNum(ikun.spend) }} </span>
+                                <span class="ctn_tit">推广花费</span>
+                            </li>
+                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.transaction_cost.toFixed(2))">
+                                <span class="ctn_num">{{ lueNum(ikun.transaction_cost) }}</span>
+                                <span class="ctn_tit">成交成本</span>
+                            </li>
+                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.gmv.toFixed(2))">
+                                <span class="ctn_num">{{ lueNum(ikun.gmv) }}</span>
+                                <span class="ctn_tit">GMV</span>
+                            </li>
+                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.gmv.toFixed(2))">
+                                <span class="ctn_num">{{ lueNum(0) }}</span>
+                                <span class="ctn_tit">GMV占比</span>
+                            </li>
+                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.promotion_roi.toFixed(2))">
+                                <span class="ctn_num">{{ lueNum(ikun.promotion_roi) }}</span>
+                                <span class="ctn_tit">推广ROI</span>
+                            </li>
+                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.clicks.toFixed(2))">
+                                <span class="ctn_num">{{ lueNum(ikun.clicks) }}</span>
+                                <span class="ctn_tit">点击量</span>
+                            </li>
+                            <li class="roduct_right_ctn_data">
+                                <span class="ctn_num"> {{ parseFloat((ikun.click_through_rate * 100).toFixed(2)) }} %</span>
+                                <span class="ctn_tit">点击率</span>
+                            </li>
+                            <li class="roduct_right_ctn_data">
+                                <span class="ctn_num">{{ parseFloat((ikun.cpc).toFixed(2)) }}</span>
+                                <span class="ctn_tit">CPC</span>
+                            </li>
+                            <!-- <li class="roduct_right_ctn_data">
+                                <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
+                                <span class="ctn_tit">渠道占比</span>
+                            </li> -->
+                            <li class="roduct_right_ctn_data">
+                                <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
+                                <span class="ctn_tit">加购率</span>
+                            </li>
+                            <li class="roduct_right_ctn_data">
+                                <span class="ctn_num">{{ parseFloat((ikun.add_to_cart_cost).toFixed(2)) }}</span>
+                                <span class="ctn_tit">加购成本</span>
+                            </li>
+                            <li class="roduct_right_ctn_data">
+                                <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
+                                <span class="ctn_tit">旺旺咨询量</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -198,6 +251,8 @@
 import goHome from "./components/goHome.vue";
 import {
     getSubGmvList,
+    getAlldata,
+    getPromotionGetAlldata
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
@@ -205,6 +260,7 @@ import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { pieOptionsHome, wordsCloud, lineOptions } from "./echartsOptions";
+import { lueNum, lueNumInteger } from "@/utils/format.js"
 // import dayListTbale from './components/dayList_table.vue'
 // import wordsTbale from './components/words_table.vue'
 import * as echarts from "echarts";
@@ -213,18 +269,15 @@ type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const state = reactive({
     titleData: {
-        attachment_rate: 0,
-        add_to_cart_rate: 0,
-        favorite_rate: 0,
-        refund_rate: 0,
-        returning_buyer_percentage: 0,
-        returning_buyer_gmv_percentage: 0,
-        returning_buyer_average_order_value: 0,
-        customer_unit_price: 0,
         search_visitor_count: 0,
-        search_gmv_percentage: 0,
-        paid_traffic_percentage: 0,
-        paid_gmv_percentage: 0,
+        overall_gmv: 0,
+        customer_unit_price: 0,
+        zfzhl: 0,
+
+        promotion_cost: 0,
+        cost_percentage: 0,
+        jlrl: 0,
+        lrv: 0,
     } as any,
     tableData: [
         {
@@ -252,6 +305,7 @@ const state = reactive({
             D: 1,
         },
     ],
+    extendList: [] as any,
     tree: [] as any,
 
 });
@@ -268,6 +322,7 @@ const searchData = reactive({
 
 onMounted(async () => {
     await gettreeData()
+    await getAll()
     await pieCharts()
     await getBox4()
     await cloudEcharts()
@@ -311,6 +366,31 @@ const gettreeData = async () => {
         GMVDismantling()
     }
 };
+
+const getAll = async () => {
+    let data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        // product_manager: searchData.product_manager,
+        // inventory_change: searchData.inventory_change,
+        // current_inventory: searchData.current_inventory,
+    }
+    const [res1, res2] = [await getAlldata(data), await getPromotionGetAlldata(data)];
+    if (res1.code === 0 && res2.code === 0) {
+        state.titleData.search_visitor_count = res1.data.index.search_visitor_count;
+        state.titleData.overall_gmv = res2.data.promotionIndex1.overall_gmv;
+        state.titleData.customer_unit_price = res1.data.index.customer_unit_price;
+        state.titleData.zfzhl = 0;
+        state.titleData.promotion_cost = res2.data.promotionIndex1.promotion_cost;
+        state.titleData.cost_percentage = res2.data.promotionIndex1.cost_percentage;
+        state.titleData.jlrl = 0;
+        state.titleData.lrv = 0;
+
+
+        state.extendList = res2.data.promotionIndex2?.records
+        state.loading = false;
+    }
+}
 
 const pieCharts = async () => {
     const chartDom1 = document.getElementById("pie1") as HTMLElement;
@@ -418,6 +498,7 @@ const GMVDismantling = () => {
     };
 
     option && myChart.setOption(option);
+    myChart.off("click")
     myChart.on("click", function (params: any) {
         // state.treeLevel = params.data.name
         let data = {
@@ -1193,6 +1274,7 @@ $echarts_bg_img: url("./images/_2.png");
                 display: flex;
                 flex-direction: column;
 
+
                 >div {
                     flex: 0.5;
                 }
@@ -1328,6 +1410,35 @@ $echarts_bg_img: url("./images/_2.png");
                 flex: 1;
                 background-image: $echarts_bg_img;
                 background-size: 100% 100%;
+
+                .roduct_right_list {
+                    display: flex;
+                    flex-direction: column;
+                    padding: 10px 10px;
+                }
+
+                .roduct_right_title {
+                    text-align: center;
+                    color: rgba(255, 120, 2, 1);
+                    font-size: 18px;
+                }
+
+                .roduct_right_ctn {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .roduct_right_ctn_data {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+
+                        .ctn_num {
+                            font-size: 24px;
+                            color: rgba(1, 217, 255, 1);
+                        }
+                    }
+                }
+
             }
         }
     }
