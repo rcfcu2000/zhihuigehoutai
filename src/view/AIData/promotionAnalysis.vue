@@ -89,6 +89,14 @@
                                 推广GMV占比
                             </span>
                         </li>
+                        <li :title="parseFloat((state.titleData.promotion_traffic_percentage * 100).toFixed(2))">
+                            <span class="ctn_num">
+                                {{ parseFloat((state.titleData.promotion_traffic_percentage * 100).toFixed(2)) }}%
+                            </span>
+                            <span class="ctn_name">
+                                推广流量占比
+                            </span>
+                        </li>
                     </ul>
                 </div>
                 <div class="roduct_num_box">
@@ -131,6 +139,14 @@
                             </span>
                             <span class="ctn_name">
                                 推广ROI
+                            </span>
+                        </li>
+                        <li>
+                            <span class="ctn_num">
+                                {{ parseFloat((state.titleData.overall_roi)) }}
+                            </span>
+                            <span class="ctn_name">
+                                全店ROI
                             </span>
                         </li>
                     </ul>
