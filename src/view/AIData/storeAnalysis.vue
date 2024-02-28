@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-31 16:15:30
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-26 11:35:54
+ * @LastEditTime: 2024-02-27 09:56:11
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\storeAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -139,7 +139,9 @@
                                         </div>
                                         <div style="position: absolute;top:0;left: 50%;transform: translateX(-50%);">
                                             <div class="numS">
-                                                {{ lueNum(roundNum(numS.data.shop_service_analysis.refund_successful_amount)) }}
+                                                {{
+                                                    lueNum(roundNum(numS.data.shop_service_analysis.refund_successful_amount))
+                                                }}
                                             </div>
                                             <div class="describe" style="padding-top: 10px;">
                                                 退款成功金额
@@ -671,7 +673,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom4: any = document.getElementById('index4');
         let myChart4 = echarts.init(chartDom4);
-        let option4 = lineOptions1_y(content_trend.lineData, mergeArr(content_trend.chatrsX));
+        let option4 = lineOptions1_y(content_trend.lineData, mergeArr(content_trend.chatrsX), false, '');
         let listener4 = function () {
             if (myChart4) {
                 myChart4.resize();
@@ -704,7 +706,7 @@ const getTrendData = async (obj: any) => {
         })
         let chartDom5: any = document.getElementById('index5');
         let myChart5 = echarts.init(chartDom5);
-        let option5 = lineOptions1_y(shop_service_analysis_trend.firstR_line, mergeArr(shop_service_analysis_trend.chatrsX), true);
+        let option5 = lineOptions1_y(shop_service_analysis_trend.firstR_line, mergeArr(shop_service_analysis_trend.chatrsX), true, '%');
         let listener5 = function () {
             if (myChart5) {
                 myChart5.resize();
@@ -715,7 +717,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom6: any = document.getElementById('index6');
         let myChart6 = echarts.init(chartDom6);
-        let option6 = lineOptions1_y(shop_service_analysis_trend.negative_line, mergeArr(shop_service_analysis_trend.chatrsX), true);
+        let option6 = lineOptions1_y(shop_service_analysis_trend.negative_line, mergeArr(shop_service_analysis_trend.chatrsX), true, '%');
         let listener6 = function () {
             if (myChart6) {
                 myChart6.resize();
@@ -726,7 +728,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom7: any = document.getElementById('index7');
         let myChart7 = echarts.init(chartDom7);
-        let option7 = lineFillOptionsNum(shop_service_analysis_trend.refund_rate, mergeArr(shop_service_analysis_trend.chatrsX));
+        let option7 = lineFillOptionsNum(shop_service_analysis_trend.refund_rate, mergeArr(shop_service_analysis_trend.chatrsX), '%');
         let listener7 = function () {
             if (myChart7) {
                 myChart7.resize();
@@ -737,7 +739,7 @@ const getTrendData = async (obj: any) => {
 
         let chartDom8: any = document.getElementById('index8');
         let myChart8 = echarts.init(chartDom8);
-        let option8 = lineFillOptionsNum(shop_service_analysis_trend.refund_successful_amount, mergeArr(shop_service_analysis_trend.chatrsX));
+        let option8 = lineFillOptionsNum(shop_service_analysis_trend.refund_successful_amount, mergeArr(shop_service_analysis_trend.chatrsX), '%');
         let listener8 = function () {
             if (myChart8) {
                 myChart8.resize();

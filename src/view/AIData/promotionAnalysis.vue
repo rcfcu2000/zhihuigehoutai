@@ -273,28 +273,28 @@
         <div class="detailSearch">
             <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
                 <el-form-item label="出价方式：" v-if="state.tableSearchLv === 1">
-                    <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.bidTypeAnalysis.records" :key="index"
                             :label="item.bid_type" :value="item.bid_type" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="货盘：" v-if="state.tableSearchLv === 1">
-                    <el-select v-model="searchData.current_inventory" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.current_inventory" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
                             :value="item.pallet" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词：" v-if="state.tableSearchLv === 3">
-                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
                         filterable @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="人群：" v-if="state.tableSearchLv === 4">
-                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
+                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
                         filterable @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
                             :value="item.crowd" />
@@ -585,12 +585,14 @@ const echarts2 = async () => {
     const option = pieOptions(arr);
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
+        console.log(params,"PromtionEcharts2")
         allData[0].clearData[0] = true
         searchData.keyword_filter = [], // 关键词
             searchData.audience_filter = [], // 人群
             searchData.bid_type = [], // 出价方式
             state.tableSearchLv = 1;
         searchData.pallet = [params.name]
+        searchData.current_inventory = [params.name]
         selectChange()
     })
     window.addEventListener("resize", () => {

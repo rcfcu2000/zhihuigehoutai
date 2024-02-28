@@ -197,12 +197,18 @@ export const lineOptions1 = (arr: any, date: any) => {
     }
 }
 // 多线图
-export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) => {
+export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false, type: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
-    console.log(linetype, "linetype")
     return {
         tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${persentNum(value)}${type}`
+                } else {
+                    return `${value}`
+                }
+            }
         },
         legend: {
             top: "5%",
@@ -262,7 +268,7 @@ export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false) =
             },
         },
         series: arr?.map((i: { name: any; data: any; }, index: number) => {
-            console.log(index, 'index')
+            // console.log(index, 'index')
             return {
                 name: i.name,
                 symbolSize: 1, // 设置数据点的大小为8像素
@@ -1590,12 +1596,11 @@ export const lineFillOptionsNum = (arr: any, times: any, type: any) => {
             trigger: "axis",
             // formatter: '{b0}<br />{c0}'
             formatter: (params: any) => {
-                if(type == '%'){
+                if (type == '%') {
                     return `${params[0].axisValue}<br />${persentNum(params[0].value)}${type}`
-                }else{
+                } else {
                     return `${params[0].axisValue}<br />${params[0].value}`
                 }
-                console.log(params, "lineFillOptionsNum")
             }
         },
         grid: {
