@@ -197,6 +197,7 @@ export const lineOptions1 = (arr: any, date: any) => {
     }
 }
 // 多线图
+// arr 数据  date x数据  linetype线条样式  type数据单位
 export const lineOptions1_y = (arr: any, date: any, linetype: boolean = false, type: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
@@ -374,11 +375,18 @@ export const lineOptions1_y_100 = (arr: any, date: any, linetype: boolean = fals
     }
 }
 // 假数据线图
-export const lineOptions = (arr: any) => {
+export const lineOptions = (arr: any, date: any, linetype: boolean = false, type: any) => {
     const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${lueNum(value)}${type}`
+                } else {
+                    return `${lueNum(value)}`
+                }
+            }
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
@@ -388,7 +396,7 @@ export const lineOptions = (arr: any) => {
             }
         },
         grid: {
-            left: '3%',
+            left: '6%',
             right: '4%',
             bottom: '3%',
             containLabel: true
@@ -396,7 +404,7 @@ export const lineOptions = (arr: any) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: getRecentDates(1),
+            data: date,
             axisLine: {
                 show: false,
                 lineStyle: {

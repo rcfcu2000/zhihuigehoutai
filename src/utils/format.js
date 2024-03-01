@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-28 12:06:28
+ * @LastEditTime: 2024-03-01 16:48:21
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -73,6 +73,7 @@ export const roundNum = (num) => {
 
 // 数位换算
 export function lueNum(num) {
+  num = Number(num)
   // 格式化为千分位输出 num.toLocaleString()
   if (num > 9999) {
     num = (num / 10000).toFixed(2); //保留小数点后两位

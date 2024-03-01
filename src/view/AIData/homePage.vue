@@ -12,7 +12,7 @@
                             请选择起止时间
                             <el-date-picker v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
                                 value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                                start-placeholder="开始时间" end-placeholder="结束时间" />
+                                start-placeholder="开始时间" end-placeholder="结束时间" @change="getData" />
                         </div>
                     </div>
                 </div>
@@ -93,11 +93,11 @@
                         <div class="box2_center_top_left_center">
                             <div class="box2_center_top_left_center_left">
                                 <div>
-                                    <p class="num">3144451</p>
+                                    <p class="num">{{ lueNum(state.sumGMV.gmv) }}</p>
                                     <p class="name">累计GMV</p>
                                 </div>
                                 <div>
-                                    <p class="num">3144451</p>
+                                    <p class="num">{{ lueNum(state.sumGMV.target_gmv) }}</p>
                                     <p class="name">GMV目标</p>
                                 </div>
                             </div>
@@ -107,8 +107,10 @@
 
                                 </div>
                                 <div class="wenzi">
-                                    <div class="num">98.89%</div>
-                                    <div class="percentage">目标: 100.00%(-1.11%)</div>
+                                    <div class="num">{{ persentNum(state.sumGMV.target_day_rate) }}</div>
+                                    <div class="percentage">目标: {{ persentNum(state.sumGMV.target_gmv_rate) }}({{
+                                        floatNum((state.sumGMV.target_day_rate - state.sumGMV.target_gmv_rate) * 100) }}%)
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -122,29 +124,29 @@
                                         <span>{{ scope.row.name }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="S">
+                                <el-table-column label="S" width="100" align="center">
                                     <template #default="scope">
-                                        <span>{{ scope.row.S }}</span>
+                                        <span>{{ (scope.row.S) }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="A">
+                                <el-table-column label="A" width="100" align="center">
                                     <template #default="scope">
-                                        <span>{{ scope.row.A }}</span>
+                                        <span>{{ (scope.row.A) }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="B">
+                                <el-table-column label="B" width="100" align="center">
                                     <template #default="scope">
-                                        <span>{{ scope.row.B }}</span>
+                                        <span>{{ (scope.row.B) }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="C">
+                                <el-table-column label="C" width="100" align="center">
                                     <template #default="scope">
-                                        <span>{{ scope.row.C }}</span>
+                                        <span>{{ (scope.row.C) }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="D">
+                                <el-table-column label="D" width="100" align="center">
                                     <template #default="scope">
-                                        <span>{{ scope.row.D }}</span>
+                                        <span>{{ (scope.row.D) }}</span>
                                     </template>
                                 </el-table-column>
                                 <template #empty>
@@ -252,15 +254,20 @@ import goHome from "./components/goHome.vue";
 import {
     getSubGmvList,
     getAlldata,
-    getPromotionGetAlldata
+    getPromotionGetAlldata,
+    getExperiencedata,
+    getKeyworddata,
+    getTrenddata,
+    getGmvVistordata,
+    getTrafficdata,
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { pieOptionsHome, wordsCloud, lineOptions } from "./echartsOptions";
-import { lueNum, lueNumInteger } from "@/utils/format.js"
+import { pieOptionsHome, wordsCloud, lineOptions, lineOptions1_y } from "./echartsOptions";
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
 // import dayListTbale from './components/dayList_table.vue'
 // import wordsTbale from './components/words_table.vue'
 import * as echarts from "echarts";
@@ -305,6 +312,13 @@ const state = reactive({
             D: 1,
         },
     ],
+    sumGMV: {
+        gmv: 6987830.3100000005,
+        pallet: "",
+        target_day_rate: 0.8065,
+        target_gmv: 60000000,
+        target_gmv_rate: 0.11646383850000001
+    },
     extendList: [] as any,
     tree: [] as any,
 
@@ -314,20 +328,26 @@ const disabledDate = (time: Date) => {
 }
 const searchData = reactive({
     shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
+    date: ['2024-01-01', '2024-01-25'],
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: '',
     end_date: '',
+    shop_name: '蜡笔派家居旗舰店', //店铺名称
 });
 
 onMounted(async () => {
+    await getData()
+})
+
+const getData = async () => {
     await gettreeData()
     await getAll()
     await pieCharts()
     await getBox4()
     await cloudEcharts()
     await getbox2Echarts()
-})
+}
 
 const gettreeData = async () => {
     let data = {
@@ -1039,55 +1059,106 @@ const clouddata = [
     }
 ]
 
-const cloudEcharts = () => {
-    const chartDom1 = document.getElementById("cloudWord1") as HTMLElement;
-    const myChart1 = echarts.init(chartDom1);
+const cloudEcharts = async () => {
+    let data = searchData
+    data.start_date = data.date[0]
+    data.end_date = data.date[1]
+    const [res] = [await getKeyworddata(data)]
+    if (res.code == 0) {
 
-    const chartDom2 = document.getElementById("cloudWord2") as HTMLElement;
-    const myChart2 = echarts.init(chartDom2);
+        const chartDom1 = document.getElementById("cloudWord1") as HTMLElement;
+        const myChart1 = echarts.init(chartDom1);
+
+        const chartDom2 = document.getElementById("cloudWord2") as HTMLElement;
+        const myChart2 = echarts.init(chartDom2);
 
 
-    let arr1 = clouddata
-    let arr2 = clouddata
+        let arr1 = res.data ? res.data.search_records : []
+        let arr2 = res.data ? res.data.ztc_records : []
 
-    const option1 = wordsCloud(arr1, '手淘搜索Top30');
-    option1 && myChart1.setOption(option1);
+        const option1 = wordsCloud(arr1, '手淘搜索Top30');
+        option1 && myChart1.setOption(option1);
 
-    const option2 = wordsCloud(arr2, '直通车Top30');
-    option2 && myChart2.setOption(option2);
+        const option2 = wordsCloud(arr2, '直通车Top30');
+        option2 && myChart2.setOption(option2);
 
-    window.addEventListener("resize", () => {
-        myChart1.resize();
-        myChart2.resize();
-    });
-}
-
-const getbox2Echarts = () => {
-    const chartDom1 = document.getElementById("box2center") as HTMLElement;
-    const myChart1 = echarts.init(chartDom1);
-
-    let arr1 = [
-        {
-            name: "访客数",
-            data: data,
-        },
-        {
-            name: "GMV",
-            data: data,
-        },
-    ];
-    const option1 = lineOptions(arr1);
-    option1 && myChart1.setOption(option1);
-
-    let listener1 = function () {
-        if (myChart1) {
+        window.addEventListener("resize", () => {
             myChart1.resize();
-        }
-    };
-    EleResize.on(chartDom1, listener1);
+            myChart2.resize();
+        });
+    }
 }
 
-const getBox4 = () => {
+const getbox2Echarts = async () => {
+    let data = searchData
+    data.start_date = data.date[0]
+    data.end_date = data.date[1]
+    const [res, res1] = [await getGmvVistordata(data), await getTrenddata(data)]
+    if (res.code == 0) {
+        let arr = [{ name: '累计GMV', }, { name: 'GMV目标', }, { name: 'GMV达成率', }] as any;
+        res.data.records?.map((item: any, index: any) => {
+            if (item.pallet == "S") {
+                arr[0].S = lueNum(item.gmv)
+                arr[1].S = lueNum(item.target_gmv)
+                arr[2].S = persentNum(item.target_gmv_rate) + '%'
+            }
+            if (item.pallet == "A") {
+                arr[0].A = lueNum(item.gmv)
+                arr[1].A = lueNum(item.target_gmv)
+                arr[2].A = persentNum(item.target_gmv_rate) + '%'
+            }
+            if (item.pallet == "B") {
+                arr[0].B = lueNum(item.gmv)
+                arr[1].B = lueNum(item.target_gmv)
+                arr[2].B = persentNum(item.target_gmv_rate) + '%'
+            }
+            if (item.pallet == "C") {
+                arr[0].C = lueNum(item.gmv)
+                arr[1].C = lueNum(item.target_gmv)
+                arr[2].C = persentNum(item.target_gmv_rate) + '%'
+            }
+            if (item.pallet == "D") {
+                arr[0].D = lueNum(item.gmv)
+                arr[1].D = lueNum(item.target_gmv)
+                arr[2].D = persentNum(item.target_gmv_rate) + '%'
+            }
+        })
+        state.sumGMV = res.data.sum ? res.data.sum : ''
+        state.tableData = arr
+    }
+    console.log(res1, "getTrenddatagetTrenddatagetTrenddata")
+    if (res1.code == 0) {
+        let gmv_date = [] as any
+        let gmv_data = [{ name: '访客数', data: [] }, { name: 'GMV', data: [] }] as any
+        res1.data.records?.map((item: any, index: any) => {
+            gmv_date.push(item.date)
+            gmv_data[0].data.push(item.visitors)
+            gmv_data[1].data.push(item.gmv)
+        })
+        const chartDom1 = document.getElementById("box2center") as HTMLElement;
+        const myChart1 = echarts.init(chartDom1);
+        const option1 = lineOptions(gmv_data, gmv_date, false, '');
+        option1 && myChart1.setOption(option1);
+
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        EleResize.on(chartDom1, listener1);
+    }
+}
+
+
+const getBox4 = async () => {
+    let data = searchData
+    data.start_date = data.date[0]
+    data.end_date = data.date[1]
+    const [res] = [await getExperiencedata(data)]
+    console.log(res, "getExperiencedata")
+
+    return
+
     const chartDom1 = document.getElementById("box4Left") as HTMLElement;
     const myChart1 = echarts.init(chartDom1);
 
@@ -1288,7 +1359,7 @@ $echarts_bg_img: url("./images/_2.png");
             justify-content: space-between;
 
             .box2_center_top {
-                height: 50%;
+                height: 40%;
                 width: 100%;
                 display: flex;
                 justify-content: space-between;
@@ -1300,7 +1371,8 @@ $echarts_bg_img: url("./images/_2.png");
                     .box2_center_top_left_center {
                         display: flex;
                         justify-content: space-between;
-                        height: calc(100% - 50px);
+                        height: calc(100% - 60px);
+                        margin: 5px 10px;
 
                         .box2_center_top_left_center_left {
                             flex: 0.3;
@@ -1369,7 +1441,7 @@ $echarts_bg_img: url("./images/_2.png");
             }
 
             .box2_center_btn {
-                height: 50%;
+                height: 60%;
                 width: 100%;
                 background-image: $echarts_bg_img;
                 background-size: 100% 100%;
@@ -1431,6 +1503,7 @@ $echarts_bg_img: url("./images/_2.png");
                         display: flex;
                         flex-direction: column;
                         align-items: center;
+                        width: 120px;
 
                         .ctn_num {
                             font-size: 24px;

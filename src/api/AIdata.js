@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-05 10:27:31
+ * @LastEditTime: 2024-03-01 14:12:27
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -210,6 +210,56 @@ export const shopGetAlldata = (data) => {
 export const getAllTrenddata = (data) => {
     return service({
         url: '/shop/getAllTrenddata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 首页-体验分数据
+export const getExperiencedata = (data) => {
+    return service({
+        url: '/shophome/getExperiencedata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 首页-关键词数据
+export const getKeyworddata = (data) => {
+    return service({
+        url: '/shophome/getKeyworddata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 首页-gmv访客汇总趋势
+export const getTrenddata = (data) => {
+    return service({
+        url: '/shophome/getTrenddata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 首页-gmv访客对比数据
+export const getGmvVistordata = (data) => {
+    return service({
+        url: '/shophome/getGmvVistordata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 首页-流量数据
+export const getTrafficdata = (data) => {
+    return service({
+        url: '/shophome/getTrafficdata',
         method: 'post',
         data
     })
