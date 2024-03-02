@@ -4,10 +4,8 @@
             <div class="header">
                 <span class="titl1_h1">首页</span>
                 <div class="search">
-                    <div class="search_left">
-                    </div>
+                    <div class="search_left"></div>
                     <div class="search_right">
-
                         <div class="search_line">
                             请选择起止时间
                             <el-date-picker v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
@@ -43,7 +41,8 @@
                     <li>
                         <span class="ctn_num">
                             {{ parseFloat((state.titleData.zfzhl * 100).toFixed(2)) }}
-                            % </span>
+                            %
+                        </span>
                         <span class="ctn_name"> 支付转化率 </span>
                     </li>
                 </ul>
@@ -53,25 +52,30 @@
                     <li>
                         <span class="ctn_num">
                             {{ lueNum(state.titleData.promotion_cost) }}
-                            % </span>
+                            %
+                        </span>
                         <span class="ctn_name"> 推广花费 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.cost_percentage * 100).toFixed(2)) }}%
-                            % </span>
+                            {{
+            parseFloat((state.titleData.cost_percentage * 100).toFixed(2))
+        }}% %
+                        </span>
                         <span class="ctn_name"> 推广占比 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
                             {{ parseFloat((state.titleData.jlrl * 100).toFixed(2)) }}
-                            % </span>
+                            %
+                        </span>
                         <span class="ctn_name"> 净利润率 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
                             {{ parseFloat((state.titleData.lrv * 100).toFixed(2)) }}
-                            % </span>
+                            %
+                        </span>
                         <span class="ctn_name"> 净利润 </span>
                     </li>
                 </ul>
@@ -103,13 +107,19 @@
                             </div>
 
                             <div class="box2_center_top_left_center_right">
-                                <div class="absu">
-
-                                </div>
+                                <div class="absu"></div>
                                 <div class="wenzi">
-                                    <div class="num">{{ persentNum(state.sumGMV.target_day_rate) }}</div>
-                                    <div class="percentage">目标: {{ persentNum(state.sumGMV.target_gmv_rate) }}({{
-                                        floatNum((state.sumGMV.target_day_rate - state.sumGMV.target_gmv_rate) * 100) }}%)
+                                    <div class="num">
+                                        {{ persentNum(state.sumGMV.target_day_rate) }}
+                                    </div>
+                                    <div class="percentage">
+                                        目标: {{ persentNum(state.sumGMV.target_gmv_rate) }}({{
+            floatNum(
+                (state.sumGMV.target_day_rate -
+                    state.sumGMV.target_gmv_rate) *
+                100
+            )
+        }}%)
                                     </div>
                                 </div>
                             </div>
@@ -125,30 +135,36 @@
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="S" width="100" align="center">
+
                                     <template #default="scope">
-                                        <span>{{ (scope.row.S) }}</span>
+                                        <span>{{ scope.row.S }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="A" width="100" align="center">
+
                                     <template #default="scope">
-                                        <span>{{ (scope.row.A) }}</span>
+                                        <span>{{ scope.row.A }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="B" width="100" align="center">
+
                                     <template #default="scope">
-                                        <span>{{ (scope.row.B) }}</span>
+                                        <span>{{ scope.row.B }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="C" width="100" align="center">
+
                                     <template #default="scope">
-                                        <span>{{ (scope.row.C) }}</span>
+                                        <span>{{ scope.row.C }}</span>
                                     </template>
                                 </el-table-column>
                                 <el-table-column label="D" width="100" align="center">
+
                                     <template #default="scope">
-                                        <span>{{ (scope.row.D) }}</span>
+                                        <span>{{ scope.row.D }}</span>
                                     </template>
                                 </el-table-column>
+
                                 <template #empty>
                                     <div class="flex items-center justify-center h-100%">
                                         <el-empty />
@@ -158,9 +174,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="box2_center_btn" id="box2center">
-
-                </div>
+                <div class="box2_center_btn" id="box2center"></div>
             </div>
             <div class="box2_right">
                 <div class="title">关键词</div>
@@ -179,7 +193,7 @@
                 <div class="title">推广分析</div>
                 <div class="echarts_bg">
                     <div class="roduct_right_list" v-for="(ikun, index) in state.extendList" :key="index">
-                        <div class="roduct_right_title"> {{ ikun.scene_category }}</div>
+                        <div class="roduct_right_title">{{ ikun.scene_category }}</div>
                         <ul class="roduct_right_ctn">
                             <li class="roduct_right_ctn_data" :title="parseFloat(ikun.spend.toFixed(2))">
                                 <span class="ctn_num"> {{ lueNum(ikun.spend) }} </span>
@@ -206,11 +220,17 @@
                                 <span class="ctn_tit">点击量</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num"> {{ parseFloat((ikun.click_through_rate * 100).toFixed(2)) }} %</span>
+                                <span class="ctn_num">
+                                    {{
+            parseFloat((ikun.click_through_rate * 100).toFixed(2))
+        }}
+                                    %</span>
                                 <span class="ctn_tit">点击率</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{ parseFloat((ikun.cpc).toFixed(2)) }}</span>
+                                <span class="ctn_num">{{
+                parseFloat(ikun.cpc.toFixed(2))
+            }}</span>
                                 <span class="ctn_tit">CPC</span>
                             </li>
                             <!-- <li class="roduct_right_ctn_data">
@@ -218,15 +238,21 @@
                                 <span class="ctn_tit">渠道占比</span>
                             </li> -->
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
+                                <span class="ctn_num">{{
+                parseFloat((ikun.channel_percentage * 100).toFixed(2))
+                                    }}%</span>
                                 <span class="ctn_tit">加购率</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{ parseFloat((ikun.add_to_cart_cost).toFixed(2)) }}</span>
+                                <span class="ctn_num">{{
+                                    parseFloat(ikun.add_to_cart_cost.toFixed(2))
+                                    }}</span>
                                 <span class="ctn_tit">加购成本</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{ parseFloat((ikun.channel_percentage * 100).toFixed(2)) }}%</span>
+                                <span class="ctn_num">{{
+                                    parseFloat((ikun.channel_percentage * 100).toFixed(2))
+                                    }}%</span>
                                 <span class="ctn_tit">旺旺咨询量</span>
                             </li>
                         </ul>
@@ -249,6 +275,7 @@
         <goHome />
     </div>
 </template>
+
 <script setup lang="ts" name="palletLinkAnalysis">
 import goHome from "./components/goHome.vue";
 import {
@@ -264,10 +291,15 @@ import {
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import 'echarts-wordcloud'
+import "echarts-wordcloud";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { pieOptionsHome, wordsCloud, lineOptions, lineOptions1_y } from "./echartsOptions";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
+import {
+    pieOptionsHome,
+    wordsCloud,
+    lineOptions,
+    lineOptions1_y,
+} from "./echartsOptions";
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 // import dayListTbale from './components/dayList_table.vue'
 // import wordsTbale from './components/words_table.vue'
 import * as echarts from "echarts";
@@ -288,7 +320,7 @@ const state = reactive({
     } as any,
     tableData: [
         {
-            name: '累计达成率',
+            name: "累计达成率",
             S: 1,
             A: 1,
             B: 1,
@@ -296,7 +328,7 @@ const state = reactive({
             D: 1,
         },
         {
-            name: 'GMV目标',
+            name: "GMV目标",
             S: 1,
             A: 1,
             B: 1,
@@ -304,7 +336,7 @@ const state = reactive({
             D: 1,
         },
         {
-            name: 'GMV达成率',
+            name: "GMV达成率",
             S: 1,
             A: 1,
             B: 1,
@@ -317,44 +349,43 @@ const state = reactive({
         pallet: "",
         target_day_rate: 0.8065,
         target_gmv: 60000000,
-        target_gmv_rate: 0.11646383850000001
+        target_gmv_rate: 0.11646383850000001,
     },
     extendList: [] as any,
     tree: [] as any,
-
 });
 const disabledDate = (time: Date) => {
-    return time.getTime() > Date.now()
-}
+    return time.getTime() > Date.now();
+};
 const searchData = reactive({
     shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
-    date: ['2024-01-01', '2024-01-25'],
+    date: ["2024-01-01", "2024-01-25"],
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    start_date: '',
-    end_date: '',
-    shop_name: '蜡笔派家居旗舰店', //店铺名称
+    start_date: "",
+    end_date: "",
+    shop_name: "蜡笔派家居旗舰店", //店铺名称
 });
 
 onMounted(async () => {
-    await getData()
-})
+    await getData();
+});
 
 const getData = async () => {
-    await gettreeData()
-    await getAll()
-    await pieCharts()
-    await getBox4()
-    await cloudEcharts()
-    await getbox2Echarts()
-}
+    await gettreeData();
+    await getAll();
+    await pieCharts();
+    await getBox4();
+    await cloudEcharts();
+    await getbox2Echarts();
+};
 
 const gettreeData = async () => {
     let data = {
         end_date: searchData.date[1],
         start_date: searchData.date[0],
         current_inventory: [],
-        product_manager: '',
+        product_manager: "",
         inventory_change: [],
     };
     const resp3 = await getSubGmvList(data);
@@ -362,7 +393,7 @@ const gettreeData = async () => {
         //   state.monthPallet = resp3.data.records;
         let allValue = 0;
         resp3.data.records?.forEach((i) => {
-            allValue += (i.payment_amount * 1);
+            allValue += i.payment_amount * 1;
         });
         state.tree = [
             {
@@ -370,20 +401,21 @@ const gettreeData = async () => {
                 value: parseFloat(allValue.toFixed(2)),
                 lv: -1,
                 key: 1,
-                bfb: '100%',
+                bfb: "100%",
                 children: resp3.data.records?.map((i) => {
                     return {
                         name: i.current_inventory,
                         key: i.key,
                         value: parseFloat(i.payment_amount.toFixed(2)),
-                        bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                        bfb:
+                            parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + " %",
                         children: [],
                         lv: 0,
                     };
                 }),
             },
         ];
-        GMVDismantling()
+        GMVDismantling();
     }
 };
 
@@ -394,8 +426,11 @@ const getAll = async () => {
         // product_manager: searchData.product_manager,
         // inventory_change: searchData.inventory_change,
         // current_inventory: searchData.current_inventory,
-    }
-    const [res1, res2] = [await getAlldata(data), await getPromotionGetAlldata(data)];
+    };
+    const [res1, res2] = [
+        await getAlldata(data),
+        await getPromotionGetAlldata(data),
+    ];
     if (res1.code === 0 && res2.code === 0) {
         state.titleData.search_visitor_count = res1.data.index.search_visitor_count;
         state.titleData.overall_gmv = res2.data.promotionIndex1.overall_gmv;
@@ -406,37 +441,66 @@ const getAll = async () => {
         state.titleData.jlrl = 0;
         state.titleData.lrv = 0;
 
-
-        state.extendList = res2.data.promotionIndex2?.records
+        state.extendList = res2.data.promotionIndex2?.records;
         state.loading = false;
     }
-}
+};
 
 const pieCharts = async () => {
-    const chartDom1 = document.getElementById("pie1") as HTMLElement;
-    const myChart1 = echarts.init(chartDom1);
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getTrafficdata(data)];
+    if (res.code == 0) {
+        let pie1Data = {
+            data: [],
+            legendData: []
+        } as any;
+        let pie2Data = {
+            data: [],
+            legendData: []
+        } as any;
+        let legendData = [] as any;
+        res.data.records?.map((item: any, index: any) => {
+            let p1 = {
+                name: item.l3,
+                value: item.visitors
+            };
+            let p2 = {
+                name: item.l3,
+                value: item.gmv
+            };
+            legendData.push(item.l3)
+            pie1Data.data.push(p1)
+            pie2Data.data.push(p2)
+        });
+        pie1Data.legendData = legendData
+        pie2Data.legendData = legendData
+        const chartDom1 = document.getElementById("pie1") as HTMLElement;
+        const myChart1 = echarts.init(chartDom1);
 
-    const chartDom2 = document.getElementById("pie2") as HTMLElement;
-    const myChart2 = echarts.init(chartDom2);
+        const chartDom2 = document.getElementById("pie2") as HTMLElement;
+        const myChart2 = echarts.init(chartDom2);
 
-    const option1 = pieOptionsHome([], '');
-    const option2 = pieOptionsHome([], '');
+        const option1 = pieOptionsHome(pie1Data, "访客数");
+        const option2 = pieOptionsHome(pie2Data, "GMV");
 
-    option1 && myChart1.setOption(option1);
-    option2 && myChart2.setOption(option2);
-    let listener1 = function () {
-        if (myChart1) {
-            myChart1.resize();
-        }
-    };
-    let listener2 = function () {
-        if (myChart2) {
-            myChart2.resize();
-        }
-    };
-    EleResize.on(chartDom1, listener1);
-    EleResize.on(chartDom2, listener2);
-}
+        option1 && myChart1.setOption(option1);
+        option2 && myChart2.setOption(option2);
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        let listener2 = function () {
+            if (myChart2) {
+                myChart2.resize();
+            }
+        };
+        EleResize.on(chartDom1, listener1);
+        EleResize.on(chartDom2, listener2);
+    }
+};
 
 const GMVDismantling = () => {
     const chartDom = document.getElementById("PalletAnalysis") as HTMLElement;
@@ -501,7 +565,6 @@ const GMVDismantling = () => {
                             `{a|${param.name} }` +
                             `{b|${param.value} }` +
                             `{c|${param.data.bfb}}`,
-
                         ].join("\n");
                     },
                 },
@@ -518,13 +581,13 @@ const GMVDismantling = () => {
     };
 
     option && myChart.setOption(option);
-    myChart.off("click")
+    myChart.off("click");
     myChart.on("click", function (params: any) {
         // state.treeLevel = params.data.name
         let data = {
             end_date: searchData.date[1],
             start_date: searchData.date[0],
-            product_manager: '',
+            product_manager: "",
             inventory_change: [],
             current_inventory: [params.data.name],
             primary_category: "",
@@ -533,7 +596,7 @@ const GMVDismantling = () => {
             leve: 0,
         };
         if (params.data.lv === 0) {
-            data.leve = 0
+            data.leve = 0;
             getSubGmvList(data).then((res) => {
                 if (res.code === 0) {
                     const childs = res.data.records?.map((i) => {
@@ -541,7 +604,9 @@ const GMVDismantling = () => {
                             name: i.primary_category,
                             value: i.payment_amount,
                             key: i.key,
-                            bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                            bfb:
+                                parseFloat((i.payment_amount_percentage * 100).toFixed(0)) +
+                                " %",
                             children: [],
                             current: params.data.name,
                             lv: 1,
@@ -554,7 +619,7 @@ const GMVDismantling = () => {
         } else if (params.data.lv === 1) {
             data.current_inventory = [params.data.current];
             data.primary_category = params.data.name;
-            data.leve = 1
+            data.leve = 1;
             getSubGmvList(data).then((res) => {
                 if (res.code === 0) {
                     if (res.data.records) {
@@ -564,7 +629,9 @@ const GMVDismantling = () => {
                                 current: params.data.current,
                                 value: i.payment_amount,
                                 key: i.key,
-                                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                                bfb:
+                                    parseFloat((i.payment_amount_percentage * 100).toFixed(0)) +
+                                    " %",
                                 children: [],
                                 primary: params.data.name,
                                 lv: 2,
@@ -581,7 +648,7 @@ const GMVDismantling = () => {
             data.current_inventory = [params.data.current];
             data.primary_category = params.data.primary;
             data.secondary_category = params.data.name;
-            data.leve = 2
+            data.leve = 2;
             getSubGmvList(data).then((res) => {
                 if (res.code === 0) {
                     if (res.data.records) {
@@ -591,7 +658,9 @@ const GMVDismantling = () => {
                                 value: i.payment_amount,
                                 current: params.data.current,
                                 key: i.key,
-                                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                                bfb:
+                                    parseFloat((i.payment_amount_percentage * 100).toFixed(0)) +
+                                    " %",
                                 children: [],
                                 primary: params.data.primary,
                                 secondary: params.data.name,
@@ -610,7 +679,7 @@ const GMVDismantling = () => {
             data.primary_category = params.data.primary;
             data.secondary_category = params.data.secondary;
             data.tertiary_category = params.data.name;
-            data.leve = 3
+            data.leve = 3;
             getSubGmvList(data).then((res) => {
                 if (res.code === 0) {
                     if (res.data.records) {
@@ -620,7 +689,9 @@ const GMVDismantling = () => {
                                 value: i.payment_amount,
                                 children: [],
                                 key: i.key,
-                                bfb: parseFloat((i.payment_amount_percentage * 100).toFixed(0)) + ' %',
+                                bfb:
+                                    parseFloat((i.payment_amount_percentage * 100).toFixed(0)) +
+                                    " %",
                                 primary: params.data.primary,
                                 secondary: params.data.secondary,
                                 tertiary: params.data.name,
@@ -660,426 +731,26 @@ let data = Array.from(new Array(30), (x, i) =>
     Math.floor(Math.random() * (1 - 100) + 100)
 );
 
-const clouddata = [
-    {
-        name: '花鸟市场',
-        value: 1446,
-    },
-    {
-        name: '汽车',
-        value: 928,
-    },
-    {
-        name: '视频',
-        value: 906,
-    },
-    {
-        name: '电视',
-        value: 825,
-    },
-    {
-        name: 'Lover Boy 88',
-        value: 514,
-    },
-    {
-        name: '动漫',
-        value: 486,
-    },
-    {
-        name: '音乐',
-        value: 53,
-    },
-    {
-        name: '直播',
-        value: 163,
-    },
-    {
-        name: '广播电台',
-        value: 86,
-    },
-    {
-        name: '戏曲曲艺',
-        value: 17,
-    },
-    {
-        name: '演出票务',
-        value: 6,
-    },
-    {
-        name: '给陌生的你听',
-        value: 1,
-    },
-    {
-        name: '资讯',
-        value: 1437,
-    },
-    {
-        name: '商业财经',
-        value: 422,
-    },
-    {
-        name: '娱乐八卦',
-        value: 353,
-    },
-    {
-        name: '军事',
-        value: 331,
-    },
-    {
-        name: '科技资讯',
-        value: 313,
-    },
-    {
-        name: '社会时政',
-        value: 307,
-    },
-    {
-        name: '时尚',
-        value: 43,
-    },
-    {
-        name: '网络奇闻',
-        value: 15,
-    },
-    {
-        name: '旅游出行',
-        value: 438,
-    },
-    {
-        name: '景点类型',
-        value: 957,
-    },
-    {
-        name: '国内游',
-        value: 927,
-    },
-    {
-        name: '远途出行方式',
-        value: 908,
-    },
-    {
-        name: '酒店',
-        value: 693,
-    },
-    {
-        name: '关注景点',
-        value: 611,
-    },
-    {
-        name: '旅游网站偏好',
-        value: 512,
-    },
-    {
-        name: '出国游',
-        value: 382,
-    },
-    {
-        name: '交通票务',
-        value: 312,
-    },
-    {
-        name: '旅游方式',
-        value: 187,
-    },
-    {
-        name: '旅游主题',
-        value: 163,
-    },
-    {
-        name: '港澳台',
-        value: 104,
-    },
-    {
-        name: '本地周边游',
-        value: 3,
-    },
-    {
-        name: '小卖家',
-        value: 1331,
-    },
-    {
-        name: '全日制学校',
-        value: 941,
-    },
-    {
-        name: '基础教育科目',
-        value: 585,
-    },
-    {
-        name: '考试培训',
-        value: 473,
-    },
-    {
-        name: '语言学习',
-        value: 358,
-    },
-    {
-        name: '留学',
-        value: 246,
-    },
-    {
-        name: 'K12课程培训',
-        value: 207,
-    },
-    {
-        name: '艺术培训',
-        value: 194,
-    },
-    {
-        name: '技能培训',
-        value: 104,
-    },
-    {
-        name: 'IT培训',
-        value: 87,
-    },
-    {
-        name: '高等教育专业',
-        value: 63,
-    },
-    {
-        name: '家教',
-        value: 48,
-    },
-    {
-        name: '体育培训',
-        value: 23,
-    },
-    {
-        name: '职场培训',
-        value: 5,
-    },
-    {
-        name: '金融财经',
-        value: 1328,
-    },
-    {
-        name: '银行',
-        value: 765,
-    },
-    {
-        name: '股票',
-        value: 452,
-    },
-    {
-        name: '保险',
-        value: 415,
-    },
-    {
-        name: '贷款',
-        value: 253,
-    },
-    {
-        name: '基金',
-        value: 211,
-    },
-    {
-        name: '信用卡',
-        value: 180,
-    },
-    {
-        name: '外汇',
-        value: 138,
-    },
-    {
-        name: 'P2P',
-        value: 116,
-    },
-    {
-        name: '贵金属',
-        value: 98,
-    },
-    {
-        name: '债券',
-        value: 93,
-    },
-    {
-        name: '网络理财',
-        value: 92,
-    },
-    {
-        name: '信托',
-        value: 90,
-    },
-    {
-        name: '征信',
-        value: 76,
-    },
-    {
-        name: '期货',
-        value: 76,
-    },
-    {
-        name: '公积金',
-        value: 40,
-    },
-    {
-        name: '银行理财',
-        value: 36,
-    },
-    {
-        name: '银行业务',
-        value: 30,
-    },
-    {
-        name: '典当',
-        value: 7,
-    },
-    {
-        name: '海外置业',
-        value: 1,
-    },
-    {
-        name: '汽车',
-        value: 1309,
-    },
-    {
-        name: '汽车档次',
-        value: 965,
-    },
-    {
-        name: '汽车品牌',
-        value: 900,
-    },
-    {
-        name: '汽车车型',
-        value: 727,
-    },
-    {
-        name: '购车阶段',
-        value: 461,
-    },
-    {
-        name: '二手车',
-        value: 309,
-    },
-    {
-        name: '汽车美容',
-        value: 260,
-    },
-    {
-        name: '新能源汽车',
-        value: 173,
-    },
-    {
-        name: '汽车维修',
-        value: 155,
-    },
-    {
-        name: '租车服务',
-        value: 136,
-    },
-    {
-        name: '车展',
-        value: 121,
-    },
-    {
-        name: '违章查询',
-        value: 76,
-    },
-    {
-        name: '汽车改装',
-        value: 62,
-    },
-    {
-        name: '汽车用品',
-        value: 37,
-    },
-    {
-        name: '路况查询',
-        value: 32,
-    },
-    {
-        name: '汽车保险',
-        value: 28,
-    },
-    {
-        name: '陪驾代驾',
-        value: 4,
-    },
-    {
-        name: '网络购物',
-        value: 1275,
-    },
-    {
-        name: '做我的猫',
-        value: 1088,
-    },
-    {
-        name: '只想要你知道',
-        value: 907,
-    },
-    {
-        name: '团购',
-        value: 837,
-    },
-    {
-        name: '比价',
-        value: 201,
-    },
-    {
-        name: '海淘',
-        value: 195,
-    },
-    {
-        name: '移动APP购物',
-        value: 179,
-    },
-    {
-        name: '支付方式',
-        value: 119,
-    },
-    {
-        name: '代购',
-        value: 43,
-    },
-    {
-        name: '体育健身',
-        value: 1234,
-    },
-    {
-        name: '体育赛事项目',
-        value: 802,
-    },
-    {
-        name: '运动项目',
-        value: 405,
-    },
-    {
-        name: '体育类赛事',
-        value: 337,
-    },
-    {
-        name: '健身项目',
-        value: 199,
-    },
-    {
-        name: '健身房健身',
-        value: 78,
-    }
-]
 
 const cloudEcharts = async () => {
-    let data = searchData
-    data.start_date = data.date[0]
-    data.end_date = data.date[1]
-    const [res] = [await getKeyworddata(data)]
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getKeyworddata(data)];
     if (res.code == 0) {
-
         const chartDom1 = document.getElementById("cloudWord1") as HTMLElement;
         const myChart1 = echarts.init(chartDom1);
 
         const chartDom2 = document.getElementById("cloudWord2") as HTMLElement;
         const myChart2 = echarts.init(chartDom2);
 
+        let arr1 = res.data ? res.data.search_records : [];
+        let arr2 = res.data ? res.data.ztc_records : [];
 
-        let arr1 = res.data ? res.data.search_records : []
-        let arr2 = res.data ? res.data.ztc_records : []
-
-        const option1 = wordsCloud(arr1, '手淘搜索Top30');
+        const option1 = wordsCloud(arr1, "手淘搜索Top30");
         option1 && myChart1.setOption(option1);
 
-        const option2 = wordsCloud(arr2, '直通车Top30');
+        const option2 = wordsCloud(arr2, "直通车Top30");
         option2 && myChart2.setOption(option2);
 
         window.addEventListener("resize", () => {
@@ -1087,57 +758,63 @@ const cloudEcharts = async () => {
             myChart2.resize();
         });
     }
-}
+};
 
 const getbox2Echarts = async () => {
-    let data = searchData
-    data.start_date = data.date[0]
-    data.end_date = data.date[1]
-    const [res, res1] = [await getGmvVistordata(data), await getTrenddata(data)]
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res, res1] = [await getGmvVistordata(data), await getTrenddata(data)];
     if (res.code == 0) {
-        let arr = [{ name: '累计GMV', }, { name: 'GMV目标', }, { name: 'GMV达成率', }] as any;
+        let arr = [
+            { name: "累计GMV" },
+            { name: "GMV目标" },
+            { name: "GMV达成率" },
+        ] as any;
         res.data.records?.map((item: any, index: any) => {
             if (item.pallet == "S") {
-                arr[0].S = lueNum(item.gmv)
-                arr[1].S = lueNum(item.target_gmv)
-                arr[2].S = persentNum(item.target_gmv_rate) + '%'
+                arr[0].S = lueNum(item.gmv);
+                arr[1].S = lueNum(item.target_gmv);
+                arr[2].S = persentNum(item.target_gmv_rate) + "%";
             }
             if (item.pallet == "A") {
-                arr[0].A = lueNum(item.gmv)
-                arr[1].A = lueNum(item.target_gmv)
-                arr[2].A = persentNum(item.target_gmv_rate) + '%'
+                arr[0].A = lueNum(item.gmv);
+                arr[1].A = lueNum(item.target_gmv);
+                arr[2].A = persentNum(item.target_gmv_rate) + "%";
             }
             if (item.pallet == "B") {
-                arr[0].B = lueNum(item.gmv)
-                arr[1].B = lueNum(item.target_gmv)
-                arr[2].B = persentNum(item.target_gmv_rate) + '%'
+                arr[0].B = lueNum(item.gmv);
+                arr[1].B = lueNum(item.target_gmv);
+                arr[2].B = persentNum(item.target_gmv_rate) + "%";
             }
             if (item.pallet == "C") {
-                arr[0].C = lueNum(item.gmv)
-                arr[1].C = lueNum(item.target_gmv)
-                arr[2].C = persentNum(item.target_gmv_rate) + '%'
+                arr[0].C = lueNum(item.gmv);
+                arr[1].C = lueNum(item.target_gmv);
+                arr[2].C = persentNum(item.target_gmv_rate) + "%";
             }
             if (item.pallet == "D") {
-                arr[0].D = lueNum(item.gmv)
-                arr[1].D = lueNum(item.target_gmv)
-                arr[2].D = persentNum(item.target_gmv_rate) + '%'
+                arr[0].D = lueNum(item.gmv);
+                arr[1].D = lueNum(item.target_gmv);
+                arr[2].D = persentNum(item.target_gmv_rate) + "%";
             }
-        })
-        state.sumGMV = res.data.sum ? res.data.sum : ''
-        state.tableData = arr
+        });
+        state.sumGMV = res.data.sum ? res.data.sum : "";
+        state.tableData = arr;
     }
-    console.log(res1, "getTrenddatagetTrenddatagetTrenddata")
     if (res1.code == 0) {
-        let gmv_date = [] as any
-        let gmv_data = [{ name: '访客数', data: [] }, { name: 'GMV', data: [] }] as any
+        let gmv_date = [] as any;
+        let gmv_data = [
+            { name: "访客数", data: [] },
+            { name: "GMV", data: [] },
+        ] as any;
         res1.data.records?.map((item: any, index: any) => {
-            gmv_date.push(item.date)
-            gmv_data[0].data.push(item.visitors)
-            gmv_data[1].data.push(item.gmv)
-        })
+            gmv_date.push(item.date);
+            gmv_data[0].data.push(item.visitors);
+            gmv_data[1].data.push(item.gmv);
+        });
         const chartDom1 = document.getElementById("box2center") as HTMLElement;
         const myChart1 = echarts.init(chartDom1);
-        const option1 = lineOptions(gmv_data, gmv_date, false, '');
+        const option1 = lineOptions(gmv_data, gmv_date, false, "");
         option1 && myChart1.setOption(option1);
 
         let listener1 = function () {
@@ -1147,67 +824,72 @@ const getbox2Echarts = async () => {
         };
         EleResize.on(chartDom1, listener1);
     }
-}
-
+};
 
 const getBox4 = async () => {
-    let data = searchData
-    data.start_date = data.date[0]
-    data.end_date = data.date[1]
-    const [res] = [await getExperiencedata(data)]
-    console.log(res, "getExperiencedata")
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getExperiencedata(data)];
+    if (res.code == 0) {
+        console.log(res,"getExperiencedata")
+        let arr1 = [
+            {
+                name: "综合体验分",
+                data: [] as any,
+            },
+        ];
+        let arr2 = [
+            {
+                name: "物流体验",
+                data: [] as any,
+            },
+            {
+                name: "商品体验",
+                data: [] as any,
+            },
+            {
+                name: "服务体验",
+                data: [] as any,
+            },
+        ];
+        let timeX = [] as any
+        res.data.records?.map((item: any, index: any) => {
+            arr1[0].data.push(item.overall_experience_score)
+            arr2[0].data.push(item.logistics_experience_score)
+            arr2[1].data.push(item.product_experience_score)
+            arr2[2].data.push(item.service_experience_score)
+            timeX.push(item.date)
+        })
+        const chartDom1 = document.getElementById("box4Left") as HTMLElement;
+        const myChart1 = echarts.init(chartDom1);
 
-    return
-
-    const chartDom1 = document.getElementById("box4Left") as HTMLElement;
-    const myChart1 = echarts.init(chartDom1);
-
-    const chartDom2 = document.getElementById("box4Right") as HTMLElement;
-    const myChart2 = echarts.init(chartDom2);
+        const chartDom2 = document.getElementById("box4Right") as HTMLElement;
+        const myChart2 = echarts.init(chartDom2);
 
 
-    let arr1 = [
-        {
-            name: "店铺GMV",
-            data: data,
-        },
-    ];
-    let arr2 = [
-        {
-            name: "商品体验",
-            data: data,
-        },
-        {
-            name: "物流体验",
-            data: data,
-        },
-        {
-            name: "服务体验",
-            data: data,
-        },
-    ];
+        const option1 = lineOptions(arr1, timeX, false, '');
+        option1 && myChart1.setOption(option1);
 
-    const option1 = lineOptions(arr1);
-    option1 && myChart1.setOption(option1);
+        const option2 = lineOptions(arr2, timeX, false, '');
+        option2 && myChart2.setOption(option2);
 
-    const option2 = lineOptions(arr2);
-    option2 && myChart2.setOption(option2);
-
-    let listener1 = function () {
-        if (myChart1) {
-            myChart1.resize();
-        }
-    };
-    let listener2 = function () {
-        if (myChart2) {
-            myChart2.resize();
-        }
-    };
-    EleResize.on(chartDom1, listener1);
-    EleResize.on(chartDom2, listener2);
-}
-
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        let listener2 = function () {
+            if (myChart2) {
+                myChart2.resize();
+            }
+        };
+        EleResize.on(chartDom1, listener1);
+        EleResize.on(chartDom2, listener2);
+    }
+};
 </script>
+
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
@@ -1237,7 +919,6 @@ $echarts_bg_img: url("./images/_2.png");
                 display: flex;
                 flex: 0.35;
                 // justify-content: space-between;
-
             }
 
             .search_right {
@@ -1255,7 +936,6 @@ $echarts_bg_img: url("./images/_2.png");
                 .select_width {
                     width: 100px;
                 }
-
             }
         }
 
@@ -1345,7 +1025,6 @@ $echarts_bg_img: url("./images/_2.png");
                 display: flex;
                 flex-direction: column;
 
-
                 >div {
                     flex: 0.5;
                 }
@@ -1413,7 +1092,7 @@ $echarts_bg_img: url("./images/_2.png");
                                 height: 100%;
                                 top: 0;
                                 left: 0;
-                                background-image: url('./images/nnnn.png');
+                                background-image: url("./images/nnnn.png");
                                 background-size: 100% 100%;
                             }
 
@@ -1434,7 +1113,6 @@ $echarts_bg_img: url("./images/_2.png");
                                     color: rgba(255, 255, 255, 1);
                                 }
                             }
-
                         }
                     }
                 }
@@ -1464,7 +1142,6 @@ $echarts_bg_img: url("./images/_2.png");
                     flex: 0.48;
                 }
             }
-
         }
     }
 
@@ -1511,7 +1188,6 @@ $echarts_bg_img: url("./images/_2.png");
                         }
                     }
                 }
-
             }
         }
     }
@@ -1600,4 +1276,3 @@ $echarts_bg_img: url("./images/_2.png");
     }
 }
 </style>
-  

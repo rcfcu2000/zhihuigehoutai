@@ -30,6 +30,7 @@ const roundNum = (num) => {
     return num
 }
 function lueNum(num) {
+    num = Number(num)
     // 格式化为千分位输出 num.toLocaleString()
     if (num > 9999) {
         num = (num / 10000).toFixed(2); //保留小数点后两位
@@ -1611,7 +1612,7 @@ export const pieItemOptions1 = (arr: any) => {
 }
 
 export const pieOptionsHome = (arr: any, title: string) => {
-    const data = genData(20);
+    // const data = genData(20);
     return {
         grid: {
             left: '0%',
@@ -1635,7 +1636,7 @@ export const pieOptionsHome = (arr: any, title: string) => {
             right: 10,
             top: 50,
             bottom: 20,
-            data: data.legendData,
+            data: arr.legendData,
             textStyle: {
                 color: "#fff",
             },
@@ -1658,7 +1659,7 @@ export const pieOptionsHome = (arr: any, title: string) => {
                 type: 'pie',
                 radius: ['30%', '50%'],
                 center: ['30%', '50%'],
-                data: data.seriesData,
+                data: arr.data,
                 label: {
                     show: true,
                     textStyle: {
