@@ -744,8 +744,16 @@ const cloudEcharts = async () => {
         const chartDom2 = document.getElementById("cloudWord2") as HTMLElement;
         const myChart2 = echarts.init(chartDom2);
 
-        let arr1 = res.data ? res.data.search_records : [];
-        let arr2 = res.data ? res.data.ztc_records : [];
+        let arr1 = res.data.search_records ? res.data.search_records.map((item:any,index:any)=>{
+            item.name = item.keyword
+            item.value = item.visitors
+            return item
+        }) : [];
+        let arr2 = res.data.ztc_records ? res.data.ztc_records.map((item:any,index:any)=>{
+            item.name = item.keyword
+            item.value = item.visitors
+            return item
+        }) : [];
 
         const option1 = wordsCloud(arr1, "手淘搜索Top30");
         option1 && myChart1.setOption(option1);
