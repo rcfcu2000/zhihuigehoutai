@@ -37,10 +37,10 @@ function lueNum(num) {
         if (num > 9999) {
             num = (num.toLocaleString() / 10000).toFixed(0) + "亿";
         } else {
-            num = roundNum(num.toLocaleString()) + "万";
+            num = num.toLocaleString() + "万";
         }
     } else {
-        num = num.toFixed(0)
+        num = num.toFixed(2)
     }
     return num;
 }

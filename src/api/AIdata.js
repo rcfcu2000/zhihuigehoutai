@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-01 14:12:27
+ * @LastEditTime: 2024-03-05 12:05:29
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -260,6 +260,76 @@ export const getGmvVistordata = (data) => {
 export const getTrafficdata = (data) => {
     return service({
         url: '/shophome/getTrafficdata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-指数信息
+export const GetGmvTargetdata = (data) => {
+    return service({
+        url: '/target/getGmvTargetdata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-Gmv趋势
+export const GetGmvTrenddata = (data) => {
+    return service({
+        url: '/target/getGmvTrenddata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-分类分析
+export const getCategoryAlysisdata = (data) => {
+    return service({
+        url: '/target/getCategoryAlysisdata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-指数信息
+export const getIndexdata_target = (data) => {
+    return service({
+        url: '/target/getIndexdata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-负责人分析
+export const getManagerAlysisdata = (data) => {
+    return service({
+        url: '/target/getManagerAlysisdata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-货盘详情
+export const getPalletListdata = (data) => {
+    return service({
+        url: '/target/getPalletListdata',
+        method: 'post',
+        data
+    })
+}
+
+
+// 目标达成-商品详情
+export const getProductListdata = (data) => {
+    return service({
+        url: '/target/getProductListdata',
         method: 'post',
         data
     })

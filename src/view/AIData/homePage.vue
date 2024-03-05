@@ -744,12 +744,12 @@ const cloudEcharts = async () => {
         const chartDom2 = document.getElementById("cloudWord2") as HTMLElement;
         const myChart2 = echarts.init(chartDom2);
 
-        let arr1 = res.data.search_records ? res.data.search_records.map((item:any,index:any)=>{
+        let arr1 = res.data.search_records ? res.data.search_records.map((item: any, index: any) => {
             item.name = item.keyword
             item.value = item.visitors
             return item
         }) : [];
-        let arr2 = res.data.ztc_records ? res.data.ztc_records.map((item:any,index:any)=>{
+        let arr2 = res.data.ztc_records ? res.data.ztc_records.map((item: any, index: any) => {
             item.name = item.keyword
             item.value = item.visitors
             return item
@@ -806,8 +806,8 @@ const getbox2Echarts = async () => {
                 arr[2].D = persentNum(item.target_gmv_rate) + "%";
             }
         });
-        state.sumGMV = res.data.sum ? res.data.sum : "";
         state.tableData = arr;
+        state.sumGMV = res.data.sum ? res.data.sum : "";
     }
     if (res1.code == 0) {
         let gmv_date = [] as any;
@@ -840,7 +840,7 @@ const getBox4 = async () => {
     data.end_date = data.date[1];
     const [res] = [await getExperiencedata(data)];
     if (res.code == 0) {
-        console.log(res,"getExperiencedata")
+        console.log(res, "getExperiencedata")
         let arr1 = [
             {
                 name: "综合体验分",
@@ -863,10 +863,10 @@ const getBox4 = async () => {
         ];
         let timeX = [] as any
         res.data.records?.map((item: any, index: any) => {
-            arr1[0].data.push(item.overall_experience_score)
-            arr2[0].data.push(item.logistics_experience_score)
-            arr2[1].data.push(item.product_experience_score)
-            arr2[2].data.push(item.service_experience_score)
+            arr1[0].data.push(floatNum(item.overall_experience_score))
+            arr2[0].data.push(floatNum(item.logistics_experience_score))
+            arr2[1].data.push(floatNum(item.product_experience_score))
+            arr2[2].data.push(floatNum(item.service_experience_score))
             timeX.push(item.date)
         })
         const chartDom1 = document.getElementById("box4Left") as HTMLElement;
