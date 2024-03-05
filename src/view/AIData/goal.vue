@@ -206,14 +206,16 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now();
 };
 
-const getData = async (params: any) => { };
-
-const remoteMethod = async (params: any) => { };
-
-onMounted(async () => {
+const getData = async () => {
     await getIndexData();
     await getGmvTarget();
     await getGmvTrend();
+ };
+
+const remoteMethod = async () => { };
+
+onMounted(async () => {
+    await getData()
 });
 
 // 指数信息
