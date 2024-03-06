@@ -130,6 +130,7 @@
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
                             </el-table-column>
+
                             <template #append v-if="nomore_category">
                                 <div
                                     style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
@@ -153,6 +154,7 @@
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
                             </el-table-column>
+
                             <template #append v-if="nomore_pallet">
                                 <div
                                     style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
@@ -175,12 +177,15 @@
                             <el-table-column v-for="item, index in productData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
+
                                 <template #default="scope">
-                                    <div v-if="scope.column.property == 'product_name'" :title="scope.row.product_name" class="text_hidden">
+                                    <div v-if="scope.column.property == 'product_name'" :title="scope.row.product_name"
+                                        class="text_hidden">
                                         {{ scope.row.product_name }}
                                     </div>
                                 </template>
                             </el-table-column>
+
                             <template #append v-if="nomore_product">
                                 <div
                                     style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
@@ -760,11 +765,11 @@ const getPallet = async () => {
             item.spend = lueNum(item.spend)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.profit = lueNum(item.profit)
-            item.time_schedule = lueNum(item.time_schedule*100)+"%"
+            item.time_schedule = lueNum(item.time_schedule * 100) + "%"
             item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
-            item.promotion_percentage = lueNum(item.promotion_percentage * 100)+"%"
-            item.promotion_target_percentage = lueNum(item.promotion_target_percentage*100)+"%"
+            item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%"
+            item.promotion_target_percentage = lueNum(item.promotion_target_percentage * 100) + "%"
             return item
         }) : []
         nomore_pallet.value = (resd.length > 0) ? false : true
@@ -947,11 +952,11 @@ const getProduct = async () => {
             item.spend = lueNum(item.spend)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.profit = lueNum(item.profit)
-            item.time_schedule = lueNum(item.time_schedule*100)+"%"
+            item.time_schedule = lueNum(item.time_schedule * 100) + "%"
             item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
-            item.promotion_percentage = lueNum(item.promotion_percentage * 100)+"%"
-            item.promotion_target_percentage = lueNum(item.promotion_target_percentage*100)+"%"
+            item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%"
+            item.promotion_target_percentage = lueNum(item.promotion_target_percentage * 100) + "%"
             return item
         }) : []
         nomore_product.value = (resd.length > 0) ? false : true
@@ -1077,6 +1082,7 @@ $echarts_bg_img: url("./images/_2.png");
     position: absolute;
     right: 7.5vw;
     top: 2.5vh;
+    z-index: 100;
 }
 
 ::v-deep(.el-form-item__label) {
@@ -1202,6 +1208,6 @@ $echarts_bg_img: url("./images/_2.png");
 }
 
 ::v-deep(.el-table-fixed-column--left) {
-    background-color: rgba(0, 0, 0, 0.5) !important;
+    background-color: rgba(1, 16, 37, 1) !important;
 }
 </style>

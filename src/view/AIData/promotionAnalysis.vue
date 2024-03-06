@@ -296,7 +296,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="货盘：" v-if="state.tableSearchLv === 1">
-                    <el-select v-model="searchData.current_inventory" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
+                    <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
                         @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
                             :value="item.pallet" />
@@ -383,7 +383,7 @@ const affixChange = () => {
 
 const searchData = reactive({
     product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
-    current_inventory: [] as Array<any>, // string 当期货盘
+    current_inventory: [] as Array<any>, // 当期货盘
     promotion_type: [], // string
     scene_category: [] as Array<any>, //string 计划类型
     date: ['2024-01-01', '2024-01-25'],
@@ -397,7 +397,7 @@ const searchData = reactive({
     keyword_filter: [] as any, // 关键词
     audience_filter: [] as any, // 人群
     bid_type: [] as any, // 出价方式
-    pallet: [] as any, // 货盘
+    pallet: [] as any, // 局部货盘
     pageNum: 1,
     pageSize: pageSize,
 })
@@ -608,7 +608,7 @@ const echarts2 = async () => {
             searchData.bid_type = [], // 出价方式
             state.tableSearchLv = 1;
         searchData.pallet = [params.name]
-        searchData.current_inventory = [params.name]
+        // searchData.current_inventory = [params.name]
         selectChange()
     })
     window.addEventListener("resize", () => {
