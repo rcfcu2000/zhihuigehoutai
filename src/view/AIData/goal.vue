@@ -102,7 +102,8 @@
                     <div class="managerA">
                         <el-table :data="managerData.tableData" border v-loading="managerLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
-                            v-el-table-infinite-scroll="loadMore_manager" :infinite-scroll-distance="200">
+                            v-el-table-infinite-scroll="loadMore_manager" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" lazy
+                            :load="load_manager" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" >
                             <el-table-column v-for="item, index in managerData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
@@ -125,7 +126,8 @@
                     <div class="managerA">
                         <el-table :data="categoryData.tableData" border v-loading="categoryLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
-                            v-el-table-infinite-scroll="loadMore_category" :infinite-scroll-distance="200">
+                            v-el-table-infinite-scroll="loadMore_category" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" lazy
+                            :load="load_category" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" >
                             <el-table-column v-for="item, index in categoryData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
@@ -149,7 +151,8 @@
                     <div class="managerA">
                         <el-table :data="palletData.tableData" border v-loading="palletLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-                            v-el-table-infinite-scroll="loadMore_pallet" :infinite-scroll-distance="200">
+                            v-el-table-infinite-scroll="loadMore_pallet" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" lazy
+                            :load="load_pallet" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                             <el-table-column v-for="item, index in palletData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
@@ -173,7 +176,8 @@
                     <div class="managerA">
                         <el-table :data="productData.tableData" border v-loading="productLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-                            v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="200">
+                            v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" lazy
+                            :load="load_product" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                             <el-table-column v-for="item, index in productData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
                                 :fixed="item.fixed">
@@ -245,9 +249,6 @@ const disabledDate = (time: Date) => {
 };
 
 const getData = async () => {
-    await getIndexData();
-    await getGmvTarget();
-    await getGmvTrend();
     await getManager()
     await getCategory()
     await getPallet()
@@ -257,7 +258,10 @@ const getData = async () => {
 const remoteMethod = async () => { };
 
 onMounted(async () => {
-    await getData()
+    // await getData()
+    await getIndexData();
+    await getGmvTarget();
+    await getGmvTrend();
 });
 
 // 指数信息
@@ -496,6 +500,7 @@ let manager_pageNum = 1
 const manager_pageSize = ref(20)
 let nomore_manager = ref(false)
 let managerLoad = ref(true)
+let load_manager = ref(false)
 const getManager = async () => {
     managerLoad.value = true
     let data = searchData as any;
@@ -513,6 +518,7 @@ const getManager = async () => {
             item.profit = lueNum(item.profit)
             item.profit_rate = lueNum(item.profit_rate * 100) + '%'
             item.profit_target_rate = lueNum(item.profit_target_rate * 100) + '%'
+            item.children = []
             return item
         }) : []
         nomore_manager.value = (resd.length > 0) ? false : true
@@ -521,6 +527,7 @@ const getManager = async () => {
     }
 }
 const loadMore_manager = async () => {
+    console.log("loadMore_managerloadMore_manager")
     debounce(getManager(), 300)
 }
 
@@ -588,6 +595,7 @@ let category_pageNum = 1
 const category_pageSize = ref(20)
 let nomore_category = ref(false)
 let categoryLoad = ref(true)
+let load_category = ref(false)
 const getCategory = async () => {
     categoryLoad.value = true
     let data = searchData as any;
@@ -602,6 +610,7 @@ const getCategory = async () => {
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
             item.target_gmv = lueNum(item.target_gmv)
             item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
+            item.children = []
             return item
         }) : []
         nomore_category.value = (resd.length > 0) ? false : true
@@ -749,6 +758,7 @@ let pallet_pageNum = 1
 const pallet_pageSize = ref(20)
 let nomore_pallet = ref(false)
 let palletLoad = ref(true)
+let load_pallet = ref(false)
 const getPallet = async () => {
     palletLoad.value = true
     let data = searchData as any;
@@ -770,6 +780,7 @@ const getPallet = async () => {
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
             item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%"
             item.promotion_target_percentage = lueNum(item.promotion_target_percentage * 100) + "%"
+            item.children = [{}]
             return item
         }) : []
         nomore_pallet.value = (resd.length > 0) ? false : true
@@ -858,7 +869,7 @@ const productData = reactive({
         },
         {
             title: "推广目标占比",
-            width: '',
+            width: '120',
             align: "center",
             dataKey: "promotion_target_percentage",
             key: "promotion_target_percentage",
@@ -935,6 +946,7 @@ let product_pageNum = 1
 const product_pageSize = ref(20)
 let nomore_product = ref(false)
 let productLoad = ref(true)
+let load_product = ref(false)
 const getProduct = async () => {
     productLoad.value = true
     let data = searchData as any;
@@ -943,7 +955,6 @@ const getProduct = async () => {
     data.pageNum = product_pageNum
     data.pageSize = product_pageSize.value
     const [res] = [await getProductListdata(data)];
-    console.log(res, "getProductListdata");
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
             item.month_gmv = lueNum(item.month_gmv)
@@ -957,6 +968,7 @@ const getProduct = async () => {
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
             item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%"
             item.promotion_target_percentage = lueNum(item.promotion_target_percentage * 100) + "%"
+            item.children = []
             return item
         }) : []
         nomore_product.value = (resd.length > 0) ? false : true
@@ -971,7 +983,7 @@ const loadMore_product = async () => {
 
 // 节流
 const debounce = async (func: any, delay: any) => {
-    let inThrottle: any;
+    let inThrottle = true;
     return function () {
         const args = arguments;
         const context = this;

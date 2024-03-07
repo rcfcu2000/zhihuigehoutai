@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-23 16:00:15
+ * @LastEditTime: 2024-03-07 18:03:57
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——关键词分析 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,7 +30,7 @@
                     <template #default="scope">
                         <div
                             v-if="scope.column.property == 'search_conversion_rate' || scope.column.property == 'search_add_to_cart_rate' || scope.column.property == 'ztc_add_to_cart_rate' || scope.column.property == 'ztc_conversion_rate'|| scope.column.property == 'sum_add_rate'|| scope.column.property == 'sum_conversion_rate'">
-                            {{ persentNum(scope.row[scope.column.property]) }}%
+                            {{ lueNum(scope.row[scope.column.property]*100) }}%
                         </div>
                         <div
                             v-else-if="scope.column.property == 'search_visitor_count' || scope.column.property == 'ztc_visitor_count'">

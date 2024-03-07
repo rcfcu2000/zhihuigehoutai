@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-05 12:05:29
+ * @LastEditTime: 2024-03-07 14:32:49
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -334,5 +334,61 @@ export const getProductListdata = (data) => {
         data
     })
 }
+
+// 流量分析-渠道分布信息
+export const getChanneldata = (data) => {
+    return service({
+        url: '/traffic/getChanneldata',
+        method: 'post',
+        data
+    })
+}
+
+// 流量分析-渠道访客趋势
+export const getGmvVistorTrenddata = (data) => {
+    return service({
+        url: '/traffic/getGmvVistorTrenddata',
+        method: 'post',
+        data
+    })
+}
+
+// 流量分析-新老客户分析
+export const getNewOldCustomerListdata = (data) => {
+    return service({
+        url: '/traffic/getNewOldCustomerListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 流量分析-货盘数据
+export const getPalletCountdata = (data) => {
+    return service({
+        url: '/traffic/getPalletCountdata',
+        method: 'post',
+        data
+    })
+}
+
+// 流量分析-商品数据
+export const getProductListdata_traffic = (data) => {
+    return service({
+        url: '/traffic/getProductListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 流量分析-流量分析
+export const getTrafficListdata = (data) => {
+    return service({
+        url: '/traffic/getTrafficListdata',
+        method: 'post',
+        data
+    })
+}
+
+
 
 

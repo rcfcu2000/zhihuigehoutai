@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-29 16:56:17
+ * @LastEditTime: 2024-03-07 18:03:13
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 单品分析——每日明细 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -16,7 +16,7 @@
         <!--  v-loading="loadType" -->
         <el-table ref="tableListRef" :id="'table' + comKey" :data="tableData" v-loading="loadType"
             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%;height: 320px;"
-            v-el-table-infinite-scroll="loadMore_day" :infinite-scroll-distance="300"
+            v-el-table-infinite-scroll="loadMore_day" :infinite-scroll-distance="200" :infinite-scroll-disabled="false"
             @header-click="headerClick" show-summary :summary-method="getSummaries">
             <!-- <el-table-column prop="pallet" label="本月货盘" fixed width="120" align="center" :filters="current_inventory.data"
                 :filter-method="filterTag" column-key="pallet">

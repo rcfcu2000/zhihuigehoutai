@@ -10,8 +10,8 @@
                             <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择"
                                 @change="getData" filterable remote reserve-keyword remote-show-suffix
                                 :remote-method="remoteMethod" :loading="searchData.loading">
-                                <el-option v-for="item in state.shopList" :key="item.product_id" :label="item.product_name"
-                                    :value="item.product_id" />
+                                <el-option v-for="item in state.shopList" :key="item.product_id"
+                                    :label="item.product_name" :value="item.product_id" />
                             </el-select>
                         </div>
                     </div>
@@ -19,8 +19,8 @@
                         <div class="search_line">
                             请选择起止时间
                             <el-date-picker v-model="searchData.date" @change="getData" :clearable="false"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                                start-placeholder="开始时间" end-placeholder="结束时间" />
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
+                                type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
                     </div>
                 </div>
@@ -50,8 +50,9 @@
                             <div class="roduct_num_box_charts" id="echarts3"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">支付转化率</div>
-                                <div class="num">{{ parseFloat((state.itemData.payment_conversion_rate * 100).toFixed(2))
-                                }}%
+                                <div class="num">{{ parseFloat((state.itemData.payment_conversion_rate *
+        100).toFixed(2))
+                                    }}%
                                 </div>
                             </div>
                         </div>
@@ -59,7 +60,8 @@
                             <div class="roduct_num_box_charts" id="echarts4"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">搜索访客占比</div>
-                                <div class="num">{{ parseFloat((state.itemData.search_visitor_ratio * 100).toFixed(2)) }}%
+                                <div class="num">{{ parseFloat((state.itemData.search_visitor_ratio * 100).toFixed(2))
+                                    }}%
                                 </div>
                             </div>
                         </div>
@@ -67,7 +69,8 @@
                             <div class="roduct_num_box_charts" id="echarts5"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">搜索GMV占比</div>
-                                <div class="num">{{ parseFloat((state.itemData.search_gmv_ratio * 100).toFixed(2)) }}%</div>
+                                <div class="num">{{ parseFloat((state.itemData.search_gmv_ratio * 100).toFixed(2)) }}%
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -76,8 +79,9 @@
                             <div class="roduct_num_box_charts" id="echarts6"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">老客占比</div>
-                                <div class="num">{{ parseFloat((state.itemData.returning_customer_ratio * 100).toFixed(2))
-                                }}%</div>
+                                <div class="num">{{ parseFloat((state.itemData.returning_customer_ratio *
+        100).toFixed(2))
+                                    }}%</div>
                             </div>
                         </div>
                         <div class="roduct_num_box">
@@ -107,7 +111,8 @@
                             <div class="roduct_num_box_charts" id="echarts10"></div>
                             <div class="roduct_num_box_text">
                                 <div class="tit">复购率</div>
-                                <div class="num">{{ parseFloat((state.itemData.repeat_purchase_rate * 100).toFixed(2)) }}%
+                                <div class="num">{{ parseFloat((state.itemData.repeat_purchase_rate * 100).toFixed(2))
+                                    }}%
                                 </div>
                             </div>
                         </div>
@@ -149,6 +154,7 @@
         <goHome />
     </div>
 </template>
+
 <script setup lang="ts" name="palletLinkAnalysis">
 import goHome from "./components/goHome.vue";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
@@ -328,7 +334,10 @@ const getTopData = async () => {
     const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
     if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
         state.itemChart3data = { ...res1.data }
-        state.itemIndexTrend = res2.data.records ?? [];
+        state.itemIndexTrend = res2.data.records ? res2.data.records.map((item: any, index: any) => {
+            item.date = item.date.substring(5)
+            return item
+        }) : [];
         state.itemData = { ...res3.data };
         await getHeaderChart()
         state.loading = false
@@ -442,7 +451,7 @@ const getHeaderChart = () => {
     let arr9 = state.itemIndexTrend?.map(i => i.bundle_purchase)
     let arr10 = state.itemIndexTrend?.map(i => i.repeat_purchase_rate)
 
-    let arr11Date = state.itemChart3data.price_power?.records?.map(i => i.date)
+    let arr11Date = state.itemChart3data.price_power?.records?.map(i => i.date.substring(5))
     let arr11pp_level = state.itemChart3data.price_power?.records?.map(i => i.pp_level)
     let arr11unit_price = state.itemChart3data.price_power?.records?.map(i => i.unit_price)
 
@@ -451,7 +460,6 @@ const getHeaderChart = () => {
             name: i.sku_name,
             value: parseFloat((i.pay_amount).toFixed(2)),
             ...i,
-
         }
     })
 
@@ -525,6 +533,7 @@ const loadMore = (at: string) => {
 
 
 </script>
+
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
@@ -760,4 +769,3 @@ $echarts_bg_img: url("./images/_2.png");
     /* 滑块悬停状态颜色 */
 }
 </style>
-  
