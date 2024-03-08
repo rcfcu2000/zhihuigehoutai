@@ -353,19 +353,20 @@ export const getGmvVistorTrenddata = (data) => {
     })
 }
 
-// 流量分析-新老客户分析
-export const getNewOldCustomerListdata = (data) => {
-    return service({
-        url: '/traffic/getNewOldCustomerListdata',
-        method: 'post',
-        data
-    })
-}
 
 // 流量分析-货盘数据
 export const getPalletCountdata = (data) => {
     return service({
         url: '/traffic/getPalletCountdata',
+        method: 'post',
+        data
+    })
+}
+
+// 流量分析-流量分析
+export const getTrafficListdata = (data) => {
+    return service({
+        url: '/traffic/getTrafficListdata',
         method: 'post',
         data
     })
@@ -380,10 +381,10 @@ export const getProductListdata_traffic = (data) => {
     })
 }
 
-// 流量分析-流量分析
-export const getTrafficListdata = (data) => {
+// 流量分析-新老客户分析
+export const getNewOldCustomerListdata = (data) => {
     return service({
-        url: '/traffic/getTrafficListdata',
+        url: '/traffic/getNewOldCustomerListdata',
         method: 'post',
         data
     })

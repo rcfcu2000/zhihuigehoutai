@@ -563,7 +563,7 @@ const GMVDismantling = () => {
                     formatter: function (param) {
                         return [
                             `{a|${param.name} }` +
-                            `{b|${param.value} }` +
+                            `{b|${lueNum(param.value)} }` +
                             `{c|${param.data.bfb}}`,
                         ].join("\n");
                     },

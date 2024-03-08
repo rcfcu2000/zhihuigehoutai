@@ -450,6 +450,81 @@ export const lineOptions = (arr: any, date: any, linetype: boolean = false, type
         }),
     }
 }
+// 假数据线图
+export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = false, type: any) => {
+    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${lueNum(value)}${type}`
+                } else {
+                    return `${lueNum(value)}`
+                }
+            }
+        },
+        legend: {
+            // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+            data: arr?.map((i: { name: any; }) => i.name),
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: '6%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        yAxis: {
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        series: arr?.map((i: { name: any; type: any; data: any; }, index: number) => {
+            return {
+                name: i.name,
+                stack: 'Total',
+                symbolSize: 1, // 设置数据点的大小为8像素
+                type: i.type,
+                data: i.data,
+                itemStyle: {
+                    color: backColor[index],
+                }
+            }
+        }),
+    }
+}
 // 饼图
 export const pieOptions = (arr: any) => {
     arr = arr.sort(by("cost"))
@@ -594,7 +669,7 @@ export const barOptionsX = (arr: any) => {
                 realtime: false, //是否实时更新
                 minValueSpan: 10,  // 放大到最少几个
                 maxValueSpan: 10,  //  缩小到最多几个
-                filterMode: 'filter',
+                filterMode: 'empty',
                 yAxisIndex: [0, 1],//控制的y轴
             },
             //滑块的属性
@@ -1621,7 +1696,9 @@ export const pieOptionsHome = (arr: any, title: string) => {
         },
         tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
+            formatter: (params: any) => {
+                return `${params.marker}${params.name}:<br/> ${lueNum(params.value) + '(' + params.percent})%`;
+            }
         },
         legend: {
             type: 'scroll',
@@ -1767,7 +1844,7 @@ export const lineFillOptionsNum_100 = (arr: any, times: any, type: any) => {
             // formatter: '{b0}<br />{c0}'
             formatter: (params: any) => {
                 if (type == '%') {
-                    return `${params[0].axisValue}<br />${params[0].value+type}`
+                    return `${params[0].axisValue}<br />${params[0].value + type}`
                 } else {
                     return `${params[0].axisValue}<br />${params[0].value}`
                 }
