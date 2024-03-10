@@ -456,13 +456,13 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
     return {
         tooltip: {
             trigger: 'axis',
-            valueFormatter: (value: number | string, dataIndex: number) => {
-                if (type == '%') {
-                    return `${lueNum(value)}${type}`
-                } else {
-                    return `${lueNum(value)}`
-                }
-            }
+            // valueFormatter: (value: number | string, dataIndex: number) => {
+            //     if (type == '%') {
+            //         return `${lueNum(value)}${type}`
+            //     } else {
+            //         return `${lueNum(value)}`
+            //     }
+            // }
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
@@ -514,7 +514,7 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
         series: arr?.map((i: { name: any; type: any; data: any; }, index: number) => {
             return {
                 name: i.name,
-                stack: 'Total',
+                // stack: 'Total',
                 symbolSize: 1, // 设置数据点的大小为8像素
                 type: i.type,
                 data: i.data,

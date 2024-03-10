@@ -43,473 +43,513 @@
             </div>
         </el-affix>
 
-        <div class="box1">
-            <div class="box1_left">
-                <div class="title">渠道分布</div>
-                <div class="echarts_box">
-                    <div id="pie1"> </div>
-                    <div id="pie2"> </div>
+        <div class="pad020">
+
+            <div class="box1">
+                <div class="box1_left">
+                    <div class="title">渠道分布</div>
+                    <div class="echarts_box">
+                        <div id="pie1"> </div>
+                        <div id="pie2"> </div>
+                    </div>
                 </div>
-            </div>
-            <div class="box1_right">
-                <div class="title">重点渠道访客&GMV趋势</div>
-                <div class="echarts_box">
-                    <div id="line1"> </div>
-                    <div id="line2"> </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="box2">
-            <div class="box2_left">
-                <div class="echarts_title">货盘商品数</div>
-                <div class="echarts_box" id="barPallet">
-
-                </div>
-            </div>
-            <div class="box2_right">
-                <div class="echarts_title">商品明细</div>
-                <div class="echarts_box">
-                    <div class="aiData_table table">
-                        <el-table :data="productData.tableData" border v-loading="productLoad"
-                            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-                            v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
-                            :infinite-scroll-disabled="false" lazy :load="load_product"
-                            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-                            <el-table-column label="商品ID" width="150">
-                                <template #default="scope">F
-                                    <span>{{ scope.row.product_id }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="商品简称" show-overflow-tooltip width="200">
-
-                                <template #default="scope">
-                                    <span>{{ scope.row.product_abbreviation }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="GMV" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')"
-                                width="150" align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.gmv).toFixed(0)) }} </span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="净利润率" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'net_profit_margin')" width="150" align="center">
-
-                                <template #default="scope">
-                                    <div class="alcenter">
-                                        <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
-                                            <Top />
-                                        </el-icon>
-                                        <el-icon size="15" color="#FECD04"
-                                            v-if="scope.row.net_profit_margin < 0.2 && scope.row.net_profit_margin > -0.5">
-                                            <Right />
-                                        </el-icon>
-                                        <el-icon size="15" color="red" v-if="scope.row.net_profit_margin < -0.5">
-                                            <Bottom />
-                                        </el-icon>
-                                        <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
-                                    </div>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="产品分类" width="150" align="center">
-
-                                <template #default="scope">
-                                    <span>{{ scope.row.product_category }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="搜索访客占比" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'search_visitor_ratio')" width="150"
-                                align="center">
-
-                                <template #default="scope">
-                                    <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
-        parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="搜索GMV占比" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')" width="150" align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="老客占比" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'returning_customer_ratio')" width="130"
-                                align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2))
-                                        }}%</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="本月货盘" align="center">
-
-                                <template #default="scope">
-                                    <span>{{ scope.row.current_inventory }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="上月货盘" align="center">
-
-                                <template #default="scope">
-                                    <span>{{ scope.row.last_period_stockpile }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="盘货变化" align="center">
-
-                                <template #default="scope">
-                                    <div v-if="scope.row.stockpile_change === 1"
-                                        style="width: 100%; background-color: #01E5FF;">上升
-                                    </div>
-                                    <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降
-                                    </div>
-                                    <div v-else>持平</div>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="客单价" sortable :sort-method="(a, b) => sortList(a, b, 'unit_price')"
-                                width="100" align="center">
-
-                                <template #default="scope">
-                                    <span>{{ parseFloat((scope.row.unit_price).toFixed(2)) }} </span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="预估毛利率" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'estimated_gross_profit_margin')" width="140"
-                                align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2))
-                                        }}%</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="支付转化率" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'payment_conversion_rate')" width="140"
-                                align="center">
-
-                                <template #default="scope">
-                                    <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }}
-                                        %</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="收藏率" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'collection_rate')" width="100" align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="加购率" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')" width="100" align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="连带率" sortable
-                                :sort-method="(a, b) => sortList(a, b, 'attachment_rate')" width="100" align="center">
-
-                                <template #default="scope">
-                                    <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="三级类目" width="200">
-
-                                <template #default="scope">
-                                    <span>{{ scope.row.tertiary_category }}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="商品名称" show-overflow-tooltip width="200">
-
-                                <template #default="scope">
-                                    <span>{{ scope.row.product_name }}</span>
-                                </template>
-                            </el-table-column>
-
-                            <template #empty>
-                                <div class="flex items-center justify-center"
-                                    style="height: 200px;width: 50%;display: flex;align-items: center;justify-content: center;">
-                                    暂无数据
-                                </div>
-                            </template>
-                        </el-table>
+                <div class="box1_right">
+                    <div class="title">重点渠道访客&GMV趋势</div>
+                    <div class="echarts_box">
+                        <div id="line1"> </div>
+                        <div id="line2"> </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+            <div class="box2">
+                <div class="box2_left">
+                    <div class="echarts_title">货盘商品数</div>
+                    <div class="echarts_box" id="barPallet">
 
-        <div class="table_title"><span>流量分析</span> </div>
-        <div class="aiData_table table">
-            <el-table :data="state.tableData" max-height="400">
-                <el-table-column label="三级来源(组)" width="150">
-
-                    <template #default="scope">
-                        <span>{{ scope.row.product_id }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="访客数" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')" width="100">
-
-                    <template #default="scope">
-                        <span>{{ scope.row.product_abbreviation }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="访客TGI" width="100" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.gmv).toFixed(0)) }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="购买TGI" width="100" align="center">
-
-                    <template #default="scope">
-                        <div class="alcenter">
-                            <el-icon size="15" color="#03FF91" v-if="scope.row.net_profit_margin > 0.2">
-                                <Top />
-                            </el-icon>
-                            <el-icon size="15" color="#FECD04"
-                                v-if="scope.row.net_profit_margin < 0.2 && scope.row.net_profit_margin > -0.5">
-                                <Right />
-                            </el-icon>
-                            <el-icon size="15" color="red" v-if="scope.row.net_profit_margin < -0.5">
-                                <Bottom />
-                            </el-icon>
-                            <span> {{ parseFloat((scope.row.net_profit_margin * 100).toFixed(2)) }} %</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="渠道属性" width="100" align="center">
-
-                    <template #default="scope">
-                        <span>{{ scope.row.product_category }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="渠道属性差异" width="120" align="center">
-
-                    <template #default="scope">
-                        <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
-        parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="客单价" width="100" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="支付买家数" width="100" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.returning_customer_ratio * 100).toFixed(2)) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="支付转化率" align="center" width="100">
-
-                    <template #default="scope">
-                        <span>{{ scope.row.current_inventory }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="加购率" align="center">
-
-                    <template #default="scope">
-                        <span>{{ scope.row.last_period_stockpile }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="加购人数" align="center">
-
-                    <template #default="scope">
-                        <div v-if="scope.row.stockpile_change === 1" style="width: 100%; background-color: #01E5FF;">上升
-                        </div>
-                        <div v-else-if="scope.row.stockpile_change === -1" style="background-color: red;">下降</div>
-                        <div v-else>持平</div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="加购转化率" width="100" align="center">
-
-                    <template #default="scope">
-                        <span>{{ parseFloat((scope.row.unit_price).toFixed(2)) }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="全店加购率" width="100" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.estimated_gross_profit_margin * 100).toFixed(2)) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="全店加购转化率" width="130" align="center">
-
-                    <template #default="scope">
-                        <span>{{ parseFloat((scope.row.payment_conversion_rate * 100).toFixed(2)) }} %</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="全店支付转化率" width="130" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="UV价值" width="80" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="本品访客占比" width="120" align="center">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="本品买家占比" width="120">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="全店访客占比" width="120">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="全店买家占比" width="120">
-
-                    <template #default="scope">
-                        <span> {{ parseFloat((scope.row.attachment_rate).toFixed(2)) }}</span>
-                    </template>
-                </el-table-column>
-
-                <template #empty>
-                    <div class="flex items-center justify-center"
-                        style="height: 300px;width: 50%;display: flex;align-items: center;justify-content: center;">
-                        暂无数据
                     </div>
-                </template>
-            </el-table>
-        </div>
+                </div>
+                <div class="box2_right">
+                    <div class="echarts_title">商品明细</div>
+                    <div class="echarts_box">
+                        <div>
+                            <el-table :data="productData.tableData" border v-loading="productLoad"
+                                element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
+                                v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
+                                :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
+                                :load="load_product" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                                <el-table-column label="商品ID" width="150">
+                                    <template #default="scope">F
+                                        <span>{{ scope.row.product_id }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="商品简称" show-overflow-tooltip width="200">
 
-        <div class="trend_comparison">
-            <div class="trend_comparison_left flex_size">
-                <div class="title">客户新访分析</div>
-                <div class="trend_comparison_box" id="customerAnalysis">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.product_alias }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="GMV" width="150" align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.gmv }} </span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="净利润" align="center">
+
+                                    <template #default="scope">
+                                        <div class="alcenter">
+                                            <el-icon size="15" color="#03FF91" v-if="scope.row.profit > 0.2">
+                                                <Top />
+                                            </el-icon>
+                                            <el-icon size="15" color="#FECD04"
+                                                v-if="scope.row.profit < 0.2 && scope.row.profit > -0.5">
+                                                <Right />
+                                            </el-icon>
+                                            <el-icon size="15" color="red" v-if="scope.row.profit < -0.5">
+                                                <Bottom />
+                                            </el-icon>
+                                            <span> {{ scope.row.profit }} </span>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="盘货变化" align="center">
+
+                                    <template #default="scope">
+                                        <div v-if="scope.row.pallet_change === 1"
+                                            style="width: 100%; background-color: #01E5FF;">上升
+                                        </div>
+                                        <div v-else-if="scope.row.pallet_change === -1" style="background-color: red;">
+                                            下降
+                                        </div>
+                                        <div v-else>持平</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="上月货盘" align="center">
+
+                                    <template #default="scope">
+                                        <span>{{ scope.row.pre_pallet }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="本月货盘" align="center">
+
+                                    <template #default="scope">
+                                        <span>{{ scope.row.cur_pallet }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="货盘" align="center">
+
+                                    <template #default="scope">
+                                        <span>{{ scope.row.pallet }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="货盘变化" align="center">
+
+                                    <template #default="scope">
+                                        <span>{{ scope.row.pallet_change }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="老客占比" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.old_percentage }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="付费GMV占比" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.pay_gmv_percentage }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="推广花费占比" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.spend_percentage }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="综合得分" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.overall_score }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="加购效率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.add_car_efficiency }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="退款效率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.refund_efficiency }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="复购效率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.repurchase_efficiency }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="流量效率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.loss_efficiency }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="转化效率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.conversion_efficiency }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="支付转化率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.pay_conversion_rate }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="流量归属原则" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.belong }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="责任人" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.responsible }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="UV价值" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.uv }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="跳失率" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.bounce_rate }}%</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="平均停留时长" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.avg_stay_duration }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="访问深度" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.depth_visit }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="二级类目名称" width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.category_lv2 }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="商品名称" show-overflow-tooltip width="130"
+                                    align="center">
+
+                                    <template #default="scope">
+                                        <span> {{ scope.row.product_name }}</span>
+                                    </template>
+                                </el-table-column>
+
+                                <template #empty>
+                                    <div class="flex items-center justify-center"
+                                        style="height: 200px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                                        暂无数据
+                                    </div>
+                                </template>
+                            </el-table>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="trend_comparison_right flex_size">
-                <div class="title">客户新访转化率对比</div>
-                <div class="trend_comparison_box" id="customerRate">
-                </div>
-            </div>
-        </div>
-        <div class="tableHead" style="margin: 30px 0 0;"><span>新老客分析</span> </div>
 
-        <div style="margin: 0px 0 30px;">
-            <el-table :data="customerData.tableData" border v-loading="customerLoad" class="palletGmv"
-                element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 350px"
-                v-el-table-infinite-scroll="loadMore_customer" :infinite-scroll-distance="100"
-                :infinite-scroll-disabled="false">
-                <el-table-column label="日期" width="120">
 
-                    <template #default="scope">
-                        <span>{{ scope.row.date }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="店铺客户数" show-overflow-tooltip width="120" sortable
-                    :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')">
+            <div class="tableHead" style="margin: 30px 0 0;"><span>流量分析</span> </div>
+            <div style="margin: 0px 0 30px;">
+                <el-table :data="flowData.tableData" border v-loading="customerLoad" class="palletGmv"
+                    element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
+                    v-el-table-infinite-scroll="loadMore_flow" :infinite-scroll-distance="100"
+                    :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy :load="load_product"
+                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                    <el-table-column label="三级来源(组)" width="150" :show-overflow-tooltip="true">
 
-                    <template #default="scope">
-                        <span>{{ scope.row.total_customers }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="客户新访" width="80" align="center">
+                        <template #default="scope">
+                            <span>{{ scope.row.source_type_3 }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="访客数" sortable :sort-method="(a, b) => sortList(a, b, 'gmv')" width="100">
 
-                    <template #default="scope">
-                        <span> {{ scope.row.new_visits }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="客户新访占比" width="120" align="center">
+                        <template #default="scope">
+                            <span>{{ scope.row.visitors_count }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="访客TGI" width="100" align="center">
 
-                    <template #default="scope">
-                        <div class="alcenter">
-                            <el-icon size="15" color="#03FF91" v-if="scope.row.new_visits_percentage > 0.2">
-                                <Top />
-                            </el-icon>
-                            <el-icon size="15" color="#FECD04"
-                                v-if="scope.row.new_visits_percentage < 0.2 && scope.row.new_visits_percentage > -0.5">
-                                <Right />
-                            </el-icon>
-                            <el-icon size="15" color="red" v-if="scope.row.new_visits_percentage < -0.5">
-                                <Bottom />
-                            </el-icon>
-                            <span> {{ lueNum((scope.row.new_visits_percentage)) }} %</span>
+                        <template #default="scope">
+                            <span> {{ scope.row.visitor_tgi }} </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="购买TGI" width="100" align="center">
+
+                        <template #default="scope">
+                            <span> {{ scope.row.buy_tgi }} </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="渠道属性" width="100" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.channel_attribute }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="渠道属性差异" width="120" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.channel_diff }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="客单价" width="100" align="center">
+
+                        <template #default="scope">
+                            <span> {{ scope.row.customer_unit_price }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="支付买家数" width="100" align="center">
+
+                        <template #default="scope">
+                            <span> {{ scope.row.paid_buyers }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="支付转化率" align="center" width="100">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.pay_conversion_rate }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="加购率" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.add_car_rate }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="加购人数" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.add_to_cart_buyers }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="加购转化率" width="100" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.add_cart_conversion_rate }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="全店加购率" width="100" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.shop_add_car_rate }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="全店加购转化率" width="130" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.shop_add_cart_conversion_rate }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="全店支付转化率" width="130" align="center">
+
+                        <template #default="scope">
+                            <span>缺少字段</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="UV价值" width="80" align="center">
+
+                        <template #default="scope">
+                            <span> {{ scope.row.uv }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="本品访客占比" width="120" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.product_visitor_percentage }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="本品买家占比" width="120">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.product_buyer_percentage }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="全店访客占比" width="120">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.shop_visitor_percentage }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="全店买家占比" width="120">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.shop_buyer_percentage }}%</span>
+                        </template>
+                    </el-table-column>
+
+                    <template #empty>
+                        <div class="flex items-center justify-center"
+                            style="height: 300px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                            暂无数据
                         </div>
                     </template>
-                </el-table-column>
-                <el-table-column label="未购客户回访占比" width="150" align="center">
+                </el-table>
+            </div>
 
-                    <template #default="scope">
-                        <span>{{ lueNum(scope.row.non_purchase_return_visits_percentage) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="店铺转化率" width="100" align="center">
+            <div class="trend_comparison">
+                <div class="trend_comparison_left flex_size">
+                    <div class="title">客户新访分析</div>
+                    <div class="trend_comparison_box" id="customerAnalysis">
+                    </div>
+                </div>
+                <div class="trend_comparison_right flex_size">
+                    <div class="title">客户新访转化率对比</div>
+                    <div class="trend_comparison_box" id="customerRate">
+                    </div>
+                </div>
+            </div>
+            <div class="tableHead" style="margin: 30px 0 0;"><span>新老客分析</span> </div>
 
-                    <template #default="scope">
-                        <div :class="scope.row.conversion_rate > 0.3 ? 'backgroundBlue' : ''"> {{
+            <div style="margin: 0px 0 30px;">
+                <el-table :data="customerData.tableData" border v-loading="customerLoad" class="palletGmv"
+                    element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 350px"
+                    v-el-table-infinite-scroll="loadMore_customer" :infinite-scroll-distance="100"
+                    :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy :load="load_product"
+                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                    <el-table-column label="日期" width="120">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.date }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="店铺客户数" show-overflow-tooltip width="120" sortable
+                        :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.total_customers }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="客户新访" width="80" align="center">
+
+                        <template #default="scope">
+                            <span> {{ scope.row.new_visits }} </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="客户新访占比" width="120" align="center">
+
+                        <template #default="scope">
+                            <div class="alcenter">
+                                <el-icon size="15" color="#03FF91" v-if="scope.row.new_visits_percentage > 0.2">
+                                    <Top />
+                                </el-icon>
+                                <el-icon size="15" color="#FECD04"
+                                    v-if="scope.row.new_visits_percentage < 0.2 && scope.row.new_visits_percentage > -0.5">
+                                    <Right />
+                                </el-icon>
+                                <el-icon size="15" color="red" v-if="scope.row.new_visits_percentage < -0.5">
+                                    <Bottom />
+                                </el-icon>
+                                <span> {{ lueNum((scope.row.new_visits_percentage)) }} %</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="未购客户回访占比" width="150" align="center">
+
+                        <template #default="scope">
+                            <span>{{ lueNum(scope.row.non_purchase_return_visits_percentage) }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="店铺转化率" width="100" align="center">
+
+                        <template #default="scope">
+                            <div :class="scope.row.conversion_rate > 0.3 ? 'backgroundBlue' : ''"> {{
         lueNum((scope.row.conversion_rate)) }} %</div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="客户新访转化率" width="150" align="center">
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="客户新访转化率" width="150" align="center">
 
-                    <template #default="scope">
-                        <span> {{ lueNum((scope.row.new_visit_payment_conversion_rate)) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="未购新客回访转化率" width="180" align="center">
+                        <template #default="scope">
+                            <span> {{ lueNum((scope.row.new_visit_payment_conversion_rate)) }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="未购新客回访转化率" width="180" align="center">
 
-                    <template #default="scope">
-                        <span> {{ lueNum((scope.row.non_purchase_return_visits_percentage)) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="已购新客回访转化率" width="180" align="center">
+                        <template #default="scope">
+                            <span> {{ lueNum((scope.row.non_purchase_return_visits_percentage)) }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="已购新客回访转化率" width="180" align="center">
 
-                    <template #default="scope">
-                        <span>{{ lueNum(scope.row.purchased_customer_return_visits_percentage) }}%</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="店铺UV价值" align="center">
+                        <template #default="scope">
+                            <span>{{ lueNum(scope.row.purchased_customer_return_visits_percentage) }}%</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="店铺UV价值" align="center">
 
-                    <template #default="scope">
-                        <span>{{ scope.row.shop_uv }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="客户新访UV价值" align="center">
+                        <template #default="scope">
+                            <span>{{ scope.row.shop_uv }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="客户新访UV价值" align="center">
 
-                    <template #default="scope">
-                        <div v-if="scope.row.new_visit_uv === 1" style="width: 100%; background-color: #01E5FF;">上升
+                        <template #default="scope">
+                            <div v-if="scope.row.new_visit_uv === 1" style="width: 100%; background-color: #01E5FF;">上升
+                            </div>
+                            <div v-else-if="scope.row.new_visit_uv === -1" style="background-color: red;">下降</div>
+                            <div v-else>持平</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="未购新客回访UV价值" width="180" align="center">
+
+                        <template #default="scope">
+                            <span>{{ scope.row.non_purchaser_uv }} </span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="已购客户回访UV价值" width="180" align="center">
+
+                        <template #default="scope">
+                            <span> {{ scope.row.purchaser_uv }} %</span>
+                        </template>
+                    </el-table-column>
+
+                    <template #empty>
+                        <div class="flex items-center justify-center"
+                            style="height: 300px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                            <span> 暂无数据</span>
                         </div>
-                        <div v-else-if="scope.row.new_visit_uv === -1" style="background-color: red;">下降</div>
-                        <div v-else>持平</div>
                     </template>
-                </el-table-column>
-                <el-table-column label="未购新客回访UV价值" width="180" align="center">
-
-                    <template #default="scope">
-                        <span>{{ scope.row.non_purchaser_uv }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="已购客户回访UV价值" width="180" align="center">
-
-                    <template #default="scope">
-                        <span> {{ scope.row.purchaser_uv }} %</span>
-                    </template>
-                </el-table-column>
-
-                <template #empty>
-                    <div class="flex items-center justify-center"
-                        style="height: 300px;width: 50%;display: flex;align-items: center;justify-content: center;">
-                        <span> 暂无数据</span>
-                    </div>
-                </template>
-            </el-table>
+                </el-table>
+            </div>
         </div>
 
         <goHome />
@@ -536,7 +576,7 @@ import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 import type { FormInstance } from "element-plus";
-import { pieOptionsHome, lineOptions2, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar } from "./echartsOptions";
+import { pieOptionsHome, lineOptions2, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar, lineOptions } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -571,7 +611,7 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const searchData = reactive({
-    product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
+    product_manager: [] as Array<any>, //	string 商品负责人 - 负责该商品的人员或团队名称w
     pallet: [], // 货盘
     all: 999 as any,
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
@@ -611,10 +651,12 @@ const getData2 = async () => {
 };
 
 const getAllEcharts = async () => {
-    getPieEcharts()
+    await getPieEcharts()
     // getLineEcharts()
-    palletEcharts()
-    getCustomer()
+    await palletEcharts()
+    await getProduct()
+    await getFlow()
+    await getCustomer()
 }
 
 
@@ -625,7 +667,7 @@ const getPieEcharts = async () => {
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getChanneldata(data)];
-    console.log(res, "getChanneldata")
+    console.log(data, res, "getChanneldata")
     if (res.code == 0) {
         let pie1Data = {
             data: [],
@@ -934,26 +976,33 @@ let productLoad = ref(true)
 let load_product = ref(false) //树节点加载
 const getProduct = async () => {
     productLoad.value = true
-    let data = searchData as any;
-    console.log(data, "dattttttttttttttttttttttttttttttttttttttttt")
+    let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = product_pageNum
     data.pageSize = product_pageSize.value
     const [res] = [await getProductListdata_traffic(data)];
+    console.log(data, res, "dattttttttttttttttttttttttttttttttttttttttt")
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
+            item.avg_stay_duration = lueNum(item.avg_stay_duration)
+            item.depth_visit = lueNum(item.depth_visit)
             item.gmv = lueNum(item.gmv)
-            item.target_gmv = lueNum(item.target_gmv)
-            item.monthly_budget = lueNum(item.monthly_budget)
-            item.spend = lueNum(item.spend)
-            item.customer_unit_price = lueNum(item.customer_unit_price)
+            item.overall_score = lueNum(item.overall_score)
+            item.pallet_change = lueNum(item.pallet_change)
             item.profit = lueNum(item.profit)
-            item.time_schedule = lueNum(item.time_schedule * 100) + "%"
-            item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
-            item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
-            item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%"
-            item.promotion_target_percentage = lueNum(item.promotion_target_percentage * 100) + "%"
+            item.uv = lueNum(item.uv)
+
+            item.add_car_efficiency = lueNum(item.add_car_efficiency * 100)
+            item.conversion_efficiency = lueNum(item.conversion_efficiency * 100)
+            item.loss_efficiency = lueNum(item.loss_efficiency * 100)
+            item.old_percentage = lueNum(item.old_percentage * 100)
+            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100)
+            item.pay_gmv_percentage = lueNum(item.pay_gmv_percentage * 100)
+            item.refund_efficiency = lueNum(item.refund_efficiency * 100)
+            item.repurchase_efficiency = lueNum(item.repurchase_efficiency * 100)
+            item.spend_percentage = lueNum(item.spend_percentage * 100)
+            item.bounce_rate = lueNum(item.bounce_rate * 100)
             item.children = []
             return item
         }) : []
@@ -1123,7 +1172,7 @@ let flowLoad = ref(true)
 let load_flow = ref(false)
 const getFlow = async () => {
     flowLoad.value = true
-    let data = searchData as any;
+    let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = flow_pageNum
@@ -1131,17 +1180,21 @@ const getFlow = async () => {
     const [res] = [await getTrafficListdata(data)];
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
-            item.month_gmv = lueNum(item.month_gmv)
-            item.target_gmv = lueNum(item.target_gmv)
-            item.monthly_budget = lueNum(item.monthly_budget)
-            item.spend = lueNum(item.spend)
+            item.buy_tgi = lueNum(item.buy_tgi)
+            item.channel_diff = lueNum(item.channel_diff)
             item.customer_unit_price = lueNum(item.customer_unit_price)
-            item.profit = lueNum(item.profit)
-            item.time_schedule = lueNum(item.time_schedule * 100) + "%"
-            item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
-            item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
-            item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%"
-            item.promotion_target_percentage = lueNum(item.promotion_target_percentage * 100) + "%"
+            item.uv = lueNum(item.uv)
+            item.visitor_tgi = lueNum(item.visitor_tgi)
+
+            item.add_car_rate = lueNum(item.add_car_rate * 100)  //加购率
+            item.add_cart_conversion_rate = lueNum(item.add_cart_conversion_rate * 100)  //加购转化率
+            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100)  //支付转化率
+            item.product_buyer_percentage = lueNum(item.product_buyer_percentage * 100)  //本品买家占比
+            item.product_visitor_percentage = lueNum(item.product_visitor_percentage * 100)  // 本品访客占比
+            item.shop_add_car_rate = lueNum(item.shop_add_car_rate * 100)  // 全店加购率
+            item.shop_add_cart_conversion_rate = lueNum(item.shop_add_cart_conversion_rate * 100)  // 全店加购转化率
+            item.shop_buyer_percentage = lueNum(item.shop_buyer_percentage * 100)  // 全店买家占比
+            item.shop_visitor_percentage = lueNum(item.shop_visitor_percentage * 100)  // 全店访客占比
             item.children = []
             return item
         }) : []
@@ -1311,7 +1364,7 @@ let customerLoad = ref(true)
 let load_customer = ref(false)
 const getCustomer = async () => {
     customerLoad.value = true
-    let data = searchData as any;
+    let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = customer_pageNum
@@ -1323,15 +1376,15 @@ const getCustomer = async () => {
             name: "客户新访",
             type: 'bar',
             data: [] as any
-        },{
+        }, {
             name: "客户新访占比",
             type: 'line',
             data: [] as any
-        },{
+        }, {
             name: "未购客户回访占比",
             type: 'line',
             data: [] as any
-        },{
+        }, {
             name: "已购客户回访占比",
             type: 'line',
             data: [] as any
@@ -1340,20 +1393,20 @@ const getCustomer = async () => {
             name: "店铺转化率",
             type: 'line',
             data: [] as any
-        },{
+        }, {
             name: "客户新访转化率",
             type: 'line',
             data: [] as any
-        },{
+        }, {
             name: "未购客户回访转化率",
             type: 'line',
             data: [] as any
-        },{
+        }, {
             name: "已购客户回访转化率",
             type: 'line',
             data: [] as any
         },] as any
-        
+
         let timeX = [] as any
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
             item.date = item.date.substring(5, 10)  //店铺UV价值  
@@ -1376,7 +1429,7 @@ const getCustomer = async () => {
             new_visit_data[2].data.push(item.non_purchase_return_visits_percentage)
             new_visit_data[3].data.push(item.purchased_customer_return_visits_percentage)
 
-            
+
             new_visit_rate_data[0].data.push(item.conversion_rate)
             new_visit_rate_data[1].data.push(item.new_visit_payment_conversion_rate)
             new_visit_rate_data[2].data.push(item.return_visit_payment_conversion_rate_non_purchasers)
@@ -1399,10 +1452,10 @@ const getCustomer = async () => {
             }
         };
         EleResize.on(chartDom1, listener1);
-        
+
         const chartDom2 = document.getElementById("customerRate") as HTMLElement;
         const myChart2 = echarts.init(chartDom2);
-        const option2 = lineOptions_lineAndbar(new_visit_rate_data, timeX, false, '');
+        const option2 = lineOptions(new_visit_rate_data, timeX, false, '');
         option2 && myChart2.setOption(option2);
         let listener2 = function () {
             if (myChart2) {
@@ -1450,6 +1503,7 @@ $echarts_bg_img: url("./images/_2.png");
     align-items: center;
     color: rgba(255, 255, 255, 1);
 }
+
 .main {
     height: 100%;
     width: 100%;
@@ -1525,290 +1579,269 @@ $echarts_bg_img: url("./images/_2.png");
         }
     }
 
-    .title {
-        height: 70px;
-        line-height: 60px;
-        padding-left: 80px;
-        font-size: 24px;
-        font-weight: 700;
-        width: 462px;
-        background-image: url("./images/image-2.png");
-        background-size: 100% 100%;
-    }
+    .pad020 {
 
-    .title_btn {
-        display: flex;
-        justify-content: space-between;
-
-        .btn {
-            margin-top: 24px;
-            padding: 0 20px;
-            height: 40px;
-            border-radius: 2px;
-            font-size: 12px;
+        .title {
+            height: 70px;
+            line-height: 60px;
+            padding-left: 80px;
+            font-size: 24px;
             font-weight: 700;
-            border: none;
-            color: #fff;
-            background: linear-gradient(180deg,
-                    rgba(0, 72, 92, 1) 0%,
-                    rgba(1, 190, 226, 1) 100%);
-        }
-    }
-
-    .box1 {
-        display: flex;
-        // justify-content: space-between;
-        height: 36%;
-        justify-content: space-around;
-
-        .echarts_box {
-            height: calc(100% - 70px);
-            width: 100%;
-        }
-
-        .box1_left {
-            flex: 0.28;
-
-            .title {
-                width: 100%;
-            }
-
-            .echarts_box {
-
-                background: url("./images/piecharts.png") no-repeat;
-                background-position: left;
-                display: flex;
-                flex-direction: column;
-
-                div {
-                    flex: 0.5;
-                    // border: 1px solid #ccc;
-                }
-            }
-        }
-
-        .box1_right {
-            flex: 0.7;
-
-            .echarts_box {
-                // border: 1px solid #ccc;
-                background-image: $echarts_bg_img;
-                background-size: 100% 100%;
-                display: flex;
-                flex-direction: column;
-
-                div {
-                    flex: 0.5;
-                    // border: 1px solid #ccc;
-                }
-            }
-        }
-
-
-    }
-
-    .box2 {
-        display: flex;
-        // justify-content: space-between;
-        height: 36%;
-        justify-content: space-around;
-
-        .echarts_box {
-            height: calc(100% - 70px);
-            width: 100%;
-        }
-
-        .box2_left {
-            flex: 0.2;
-
-            .title {
-                width: 100%;
-            }
-
-            .echarts_box {
-
-                background-image: $echarts_bg_img;
-                background-size: 100% 100%;
-
-            }
-        }
-
-        .box2_right {
-            // flex: 0.78;
-            width: 79%;
-            height: 100%;
-
-            .echarts_box {
-                // background-color: #fff;
-                overflow: hidden;
-
-                .table {
-                    height: 100%;
-                    width: 98%;
-                    overflow: auto;
-                }
-            }
-        }
-
-
-    }
-
-    .echarts_title {
-        margin: 10px 0 16px 0;
-        width: 220px;
-        height: 32px;
-        padding-left: 40px;
-        background-image: url("./images/11.png");
-        background-size: 100% 100%;
-        font-size: 24px;
-    }
-
-    .trend_comparison {
-
-        height: 30%;
-        display: flex;
-        justify-content: space-between;
-
-        .flex_size {
-            flex: 0.48;
-        }
-
-        .trend_comparison_box {
-            padding: 10px 20px;
-            height: calc(100% - 78px);
-            background-image: $echarts_bg_img;
+            width: 462px;
+            background-image: url("./images/image-2.png");
             background-size: 100% 100%;
-            position: relative;
+        }
 
-            .eharts_empty {
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                margin: auto;
+        .title_btn {
+            display: flex;
+            justify-content: space-between;
+
+            .btn {
+                margin-top: 24px;
+                padding: 0 20px;
+                height: 40px;
+                border-radius: 2px;
+                font-size: 12px;
+                font-weight: 700;
+                border: none;
+                color: #fff;
+                background: linear-gradient(180deg,
+                        rgba(0, 72, 92, 1) 0%,
+                        rgba(1, 190, 226, 1) 100%);
             }
         }
-    }
 
-    .table_title {
-        margin-top: 20px;
-        width: 98%;
-        height: 43px;
-        line-height: 43px;
-        font-size: 24px;
-        padding: 0 60px;
-        font-weight: 700;
-        background-image: url("./images/table_title.png");
-        // background: linear-gradient(90deg, #008CC2 0%, #008CC2 100%);
-        background-size: 100% 100%;
-        margin-left: 20px;
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+        .box1 {
+            display: flex;
+            // justify-content: space-between;
+            height: 36%;
+            justify-content: space-around;
 
-    .table {
-        height: 360px;
-        padding: 10px;
-        width: 98%;
-        box-sizing: border-box;
-        overflow: auto;
-        margin-bottom: 10px;
-        margin-top: 4px;
-        overflow-x: hidden;
+            .echarts_box {
+                height: calc(100% - 70px);
+                width: 100%;
+            }
 
-        .backgroundBlue {
-            width: 100%;
-            background-color: #01E5FF;
+            .box1_left {
+                flex: 0.28;
+
+                .title {
+                    width: 100%;
+                }
+
+                .echarts_box {
+
+                    background: url("./images/piecharts.png") no-repeat;
+                    background-position: left;
+                    display: flex;
+                    flex-direction: column;
+
+                    div {
+                        flex: 0.5;
+                        // border: 1px solid #ccc;
+                    }
+                }
+            }
+
+            .box1_right {
+                flex: 0.7;
+
+                .echarts_box {
+                    // border: 1px solid #ccc;
+                    background-image: $echarts_bg_img;
+                    background-size: 100% 100%;
+                    display: flex;
+                    flex-direction: column;
+
+                    div {
+                        flex: 0.5;
+                        // border: 1px solid #ccc;
+                    }
+                }
+            }
+
+
         }
 
-        .alcenter {
+        .box2 {
+            display: flex;
+            // justify-content: space-between;
+            height: 36%;
+            justify-content: space-between;
+
+            .echarts_box {
+                height: calc(100% - 70px);
+                width: 100%;
+            }
+
+            .box2_left {
+                flex: 0.8;
+
+                .title {
+                    width: 100%;
+                }
+
+                .echarts_box {
+
+                    background-image: $echarts_bg_img;
+                    background-size: 100% 100%;
+
+                }
+            }
+
+            .box2_right {
+                // flex: 0.78;
+                width: 79%;
+                height: 100%;
+
+                .echarts_box {
+                    // background-color: #fff;
+                    overflow: hidden;
+
+                    .table {
+                        height: 100%;
+                        width: 98%;
+                        overflow: auto;
+                    }
+                }
+            }
+
+
+        }
+
+        .echarts_title {
+            margin: 10px 0 16px 0;
+            width: 220px;
+            height: 32px;
+            padding-left: 40px;
+            background-image: url("./images/11.png");
+            background-size: 100% 100%;
+            font-size: 24px;
+        }
+
+        .trend_comparison {
+
+            height: 350px;
+            display: flex;
+            justify-content: space-between;
+
+            .flex_size {
+                flex: 0.48;
+            }
+
+            .trend_comparison_box {
+                padding: 10px 20px;
+                height: calc(100% - 78px);
+                background-image: $echarts_bg_img;
+                background-size: 100% 100%;
+                position: relative;
+
+                .eharts_empty {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    margin: auto;
+                }
+            }
+        }
+
+        .table_title {
+            margin-top: 20px;
+            // width: 98%;
+            height: 43px;
+            line-height: 43px;
+            font-size: 24px;
+            padding: 0 60px;
+            font-weight: 700;
+            background-image: url("./images/table_title.png");
+            // background: linear-gradient(90deg, #008CC2 0%, #008CC2 100%);
+            background-size: 100% 100%;
+            margin-left: 20px;
+            box-sizing: border-box;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
         }
 
-        // border: 1px solid #fff;
+        ::v-deep(.el-overlay) {
+            .el-overlay-dialog {
+                .el-dialog {
+                    background: linear-gradient(116.95deg,
+                            rgba(0, 13, 36, 1) 0%,
+                            rgba(0, 82, 117, 1) 100%);
 
-    }
+                    .el-dialog__header {
+                        border-bottom: 2px solid rgba(6, 132, 188, 1);
 
-    ::v-deep(.el-overlay) {
-        .el-overlay-dialog {
-            .el-dialog {
-                background: linear-gradient(116.95deg,
-                        rgba(0, 13, 36, 1) 0%,
-                        rgba(0, 82, 117, 1) 100%);
-
-                .el-dialog__header {
-                    border-bottom: 2px solid rgba(6, 132, 188, 1);
-
-                    .el-dialog__title {
-                        color: #fff;
-                    }
-                }
-
-                .dialog-content {
-                    color: #fff;
-
-                    .item_line {
-                        position: relative;
-
-                        .position_right {
-                            position: absolute;
-                            right: 20px;
+                        .el-dialog__title {
+                            color: #fff;
                         }
                     }
 
-                    .tip {
-                        margin: 10px 0;
-                        font-size: 16px;
-                    }
+                    .dialog-content {
+                        color: #fff;
 
-                    .input_width {
-                        width: 140px;
-                        margin: 0 10px;
-                    }
+                        .item_line {
+                            position: relative;
 
-                    .input_style {
-                        .el-input__wrapper {
-                            background: transparent;
-
-                            .el-input__inner {
-                                color: #fff;
+                            .position_right {
+                                position: absolute;
+                                right: 20px;
                             }
                         }
+
+                        .tip {
+                            margin: 10px 0;
+                            font-size: 16px;
+                        }
+
+                        .input_width {
+                            width: 140px;
+                            margin: 0 10px;
+                        }
+
+                        .input_style {
+                            .el-input__wrapper {
+                                background: transparent;
+
+                                .el-input__inner {
+                                    color: #fff;
+                                }
+                            }
+                        }
+
+                        .btn_style {
+                            background: transparent;
+                            color: #fff;
+                            border: 1px solid #fff;
+                        }
                     }
 
-                    .btn_style {
-                        background: transparent;
-                        color: #fff;
-                        border: 1px solid #fff;
-                    }
-                }
+                    .dialog-footer {
+                        .btn {
+                            border: none;
+                            padding: 8px 18px;
+                            margin: 0 10px;
+                            color: #fff;
+                            background: transparent;
+                        }
 
-                .dialog-footer {
-                    .btn {
-                        border: none;
-                        padding: 8px 18px;
-                        margin: 0 10px;
-                        color: #fff;
-                        background: transparent;
-                    }
+                        .cancellation {
+                            border: 1px solid #fff;
+                        }
 
-                    .cancellation {
-                        border: 1px solid #fff;
-                    }
-
-                    .primary {
-                        border: 1px solid rgb(7, 95, 154);
-                        background: rgb(7, 95, 154);
+                        .primary {
+                            border: 1px solid rgb(7, 95, 154);
+                            background: rgb(7, 95, 154);
+                        }
                     }
                 }
             }
         }
     }
+
 }
 
 ::v-deep(.el-input__wrapper) {
@@ -1963,10 +1996,10 @@ $echarts_bg_img: url("./images/_2.png");
 
 ::v-deep(.el-table) {
     color: rgba(255, 255, 255, 1)
-}.el-table
+}
 
 ::v-deep(.el-table td.el-table__cell) {
-    border: none;
+    border: none !important;
 }
 
 ::v-deep(.el-table__inner-wrapper::before) {
@@ -1978,6 +2011,11 @@ $echarts_bg_img: url("./images/_2.png");
 }
 
 ::v-deep(.hover-row) {
+    background-color: rgba(#fff, 0.2) !important;
+}
+
+
+::v-deep(.el-table__row:hover) {
     background-color: rgba(#fff, 0.2) !important;
 }
 
