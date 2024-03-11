@@ -258,7 +258,7 @@ const getData = async () => {
 const remoteMethod = async () => { };
 
 onMounted(async () => {
-    // await getData()
+    await getData()
     await getIndexData();
     await getGmvTarget();
     await getGmvTrend();
