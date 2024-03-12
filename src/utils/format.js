@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-01 16:48:21
+ * @LastEditTime: 2024-03-12 18:23:48
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -96,4 +96,25 @@ export function mergeArr(array) { //数组去重
     }
   }
   return temp
+}
+
+// 数组对象分组
+// array原数组
+// key指定属性分组
+export function groupBy(array, key) {
+  return array.reduce((result, currentItem) => {
+    // 获取当前项的关键属性用于分组
+    const groupKey = currentItem[key];
+
+    // 如果输出结果中还没有这个组的属性，则创建一个数组
+    if (!result[groupKey]) {
+      result[groupKey] = [];
+    }
+
+    // 将当前项添加到对应组的数组中
+    result[groupKey].push(currentItem);
+
+    // 返回累积的结果对象
+    return result;
+  }, {}); // 初始化结果为一个空对象
 }

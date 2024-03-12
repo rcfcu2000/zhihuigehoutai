@@ -8,33 +8,24 @@
                         <div class="search_line">
                             负责人
                             <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip
-                                class="select_width" placeholder="请选择" @change="getData2">
+                                class="select_width" placeholder="请选择" @change="getAllEcharts">
                                 <el-option v-for="item in state.responsibleList" :key="item.responsible"
                                     :label="item.responsible" :value="item.responsible" />
                             </el-select>
                         </div>
-                        <!-- <div class="search_line">
-                            本期货盘
-                            <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip
-                                clearable multiple @change="getData2" class="select_width" placeholder="全部">
-                                <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
-                                    :label="item.current_inventory" :value="item.current_inventory" />
-                            </el-select>
-                        </div>
-                        <div class="search_line">
-                            货盘变化
-                            <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip
-                                clearable multiple @change="getData2" class="select_width" placeholder="全部">
-                                <el-option v-for="(item, index) in cities" :key="index" :label="item.value"
-                                    :value="item.label">
-                                </el-option>
-                            </el-select>
-                        </div> -->
                     </div>
                     <div class="search_right">
                         <div class="search_line">
-                            请选择起止时间
-                            <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false"
+                            流量归属原则：
+                            <el-radio-group v-model="searchData.traffic_belong" @change="getAllEcharts" size="large">
+                                <el-radio-button label="第一次" value="第一次" />
+                                <el-radio-button label="每一次" value="每一次" />
+                                <el-radio-button label="最后一次" value="最后一次" />
+                            </el-radio-group>
+                        </div>
+                        <div class="search_line">
+                            请选择起止时间：
+                            <el-date-picker @change="getAllEcharts" v-model="searchData.date" :clearable="false"
                                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
                                 type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
                         </div>
@@ -53,7 +44,14 @@
                     </div>
                 </el-col>
                 <el-col :span="16">
-                    <div class="title">重点渠道访客&GMV趋势</div>
+                    <div class="title">
+                        <span>重点渠道访客&GMV趋势</span>
+                        <el-select :key="channelsdata_key" @change="selectChange" v-model="searchData.channel" multiple collapse-tags
+                            collapse-tags-tooltip placeholder="请选择渠道" style="width: 240px" class="gmvTrend">
+                            <el-option v-for="item in channelsdata" :key="item.channel" :label="item.channel"
+                                :value="item.channel" />
+                        </el-select>
+                    </div>
                     <div class="echarts_box">
                         <div id="line1" style="height: 150px;"> </div>
                         <div id="line2" style="height: 150px;"> </div>
@@ -72,8 +70,9 @@
                             <el-table :data="productData.tableData" border v-loading="productLoad"
                                 element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
                                 v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
-                                :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
-                                :load="load_product" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                                :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+                                :infinite-scroll-delay="2000" lazy :load="load_product"
+                                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                                 <el-table-column label="商品ID" width="150">
                                     <template #default="scope">F
                                         <span>{{ scope.row.product_id }}</span>
@@ -267,11 +266,12 @@
                 <el-col :span="24">
                     <div class="tableHead" style="margin: 30px 0 0;"><span>流量分析</span> </div>
                     <div style="margin: 0px 0 30px;">
-                        <el-table :data="flowData.tableData" border v-loading="customerLoad" class="palletGmv"
+                        <el-table :data="flowData.tableData" border v-loading="flowLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
                             v-el-table-infinite-scroll="loadMore_flow" :infinite-scroll-distance="100"
-                            :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
-                            :load="load_product" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                            :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+                            :infinite-scroll-delay="2000" lazy :load="load_product"
+                            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                             <el-table-column label="三级来源(组)" width="150" :show-overflow-tooltip="true">
 
                                 <template #default="scope">
@@ -419,8 +419,9 @@
                         <el-table :data="customerData.tableData" border v-loading="customerLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 350px"
                             v-el-table-infinite-scroll="loadMore_customer" :infinite-scroll-distance="100"
-                            :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
-                            :load="load_product" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                            :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+                            :infinite-scroll-delay="2000" lazy :load="load_product"
+                            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                             <el-table-column label="日期" width="120">
 
                                 <template #default="scope">
@@ -548,15 +549,16 @@ import {
     getTrafficListdata,
     getProductListdata_traffic,
     getNewOldCustomerListdata,
+    getTrafficChannelsdata,
 } from "@/api/AIdata";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum, roundNum, groupBy } from "@/utils/format.js";
 import type { FormInstance } from "element-plus";
-import { pieOptionsHome, lineOptions2, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar, lineOptions } from "./echartsOptions";
+import { pieOptionsHome, lineOptions1, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar, lineOptions } from "./echartsOptions";
 const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
@@ -593,7 +595,7 @@ const disabledDate = (time: Date) => {
 const searchData = reactive({
     product_manager: [] as Array<any>, //	string 商品负责人 - 负责该商品的人员或团队名称w
     pallet: [], // 货盘
-    all: 999 as any,
+    // all: 999 as any,
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     productid: "",
@@ -601,6 +603,7 @@ const searchData = reactive({
     end_date: "",
     shop_name: "蜡笔派家居旗舰店", //店铺名称
     traffic_belong: "", //流量归属原则
+    channel: ['手淘搜索', '手淘推荐', '万相台', '引力魔方', '直通车'] as any, // 渠道
 });
 
 onMounted(async () => {
@@ -631,14 +634,32 @@ const getData2 = async () => {
 };
 
 const getAllEcharts = async () => {
+    await getTrafficdata()
     await getPieEcharts()
-    // getLineEcharts()
+    await getLineEcharts()
     await palletEcharts()
     await getProduct()
     await getFlow()
     await getCustomer()
 }
 
+// 渠道列表
+let channelsdata_key = ref(0)
+let channelsdata = []
+const getTrafficdata = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getTrafficChannelsdata(data)];
+    if (res.code == 0) {
+        channelsdata = res.data.records.length > 0 ? res.data.records : []
+        channelsdata_key.value++
+    }
+}
+
+const selectChange = async () => {
+    await getLineEcharts()
+}
 
 // 渠道分布
 const pieData = {} as any
@@ -701,63 +722,83 @@ const getPieEcharts = async () => {
 
 }
 
+// 重点渠道访客&GMV趋势
 const getLineEcharts = async () => {
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getGmvVistorTrenddata(data)];
-    console.log(res, "getGmvVistorTrenddata")
     if (res.code == 0) {
-        let arr = [
-            {
-                name: '手淘搜索',
-                data: [],
-            },
-            {
-                name: '手淘推荐',
-                data: [],
-            },
-            {
-                name: '万相台',
-                data: [],
-            },
-            {
-                name: '引力魔方',
-                data: [],
-            },
-            {
-                name: '直通车',
-                data: [],
-            },
-        ]
+        if (res.data.records) {
+            const gmvTrendData = groupBy(res.data.records, 'tertiary_source')
+            // 自增分组后的键
+            let increment = 0;
+            const incrementedKeysGroup = Object.keys(gmvTrendData).reduce((acc, key) => {
+                acc[increment] = gmvTrendData[key];
+                increment++;
+                return acc;
+            }, {});
+            const arr = Object.values(incrementedKeysGroup)
+            let seriesGmvData = [] as any
+            let seriesVisData = [] as any
+            let date = []
+            arr.map((item: any, index: any) => {
+                let objGmv = {
+                    name: '',
+                    data: [] as any
+                }
+                let objVis = {
+                    name: '',
+                    data: [] as any
+                }
+                item.map((itm: any, idx: any) => {
+                    objGmv.name = itm.tertiary_source
+                    objGmv.data.push(itm.gmv)
+                    objVis.name = itm.tertiary_source
+                    objVis.data.push(itm.visitors_count)
+                    if (index == 0) {
+                        date.push(itm.date)
+                    }
+                })
+                seriesGmvData.push(objGmv)
+                seriesVisData.push(objVis)
+            })
+
+            const chartDom1:any = document.getElementById("line1") as HTMLElement;
+            chartDom1.removeAttribute('_echarts_instance_')
+            const myChart1 = echarts.init(chartDom1);
+
+            const chartDom2:any = document.getElementById("line2") as HTMLElement;
+            chartDom2.removeAttribute('_echarts_instance_')
+            const myChart2 = echarts.init(chartDom2);
+
+            if (chartDom1 != null && chartDom1 != "" && chartDom1 != undefined) {
+                myChart1.clear()
+            }
+            if (chartDom2 != null && chartDom2 != "" && chartDom2 != undefined) {
+                myChart2.clear()
+            }
+
+            const option1:any = lineOptions1(seriesGmvData, date);
+            const option2:any = lineOptions1(seriesVisData, date);
+            option1 && myChart1.setOption(option1);
+            option2 && myChart2.setOption(option2);
+            let listener1 = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+            };
+            let listener2 = function () {
+                if (myChart2) {
+                    myChart2.resize();
+                }
+            };
+            EleResize.on(chartDom1, listener1);
+            EleResize.on(chartDom2, listener2);
+        }
 
 
     }
-
-    const chartDom1 = document.getElementById("line1") as HTMLElement;
-    chartDom1.removeAttribute('_echarts_instance_')
-    const myChart1 = echarts.init(chartDom1);
-
-    const chartDom2 = document.getElementById("line2") as HTMLElement;
-    chartDom2.removeAttribute('_echarts_instance_')
-    const myChart2 = echarts.init(chartDom2);
-
-    const option1 = lineOptions2(arr);
-    const option2 = lineOptions2(arr);
-    option1 && myChart1.setOption(option1);
-    option2 && myChart2.setOption(option2);
-    let listener1 = function () {
-        if (myChart1) {
-            myChart1.resize();
-        }
-    };
-    let listener2 = function () {
-        if (myChart2) {
-            myChart2.resize();
-        }
-    };
-    EleResize.on(chartDom1, listener1);
-    EleResize.on(chartDom2, listener2);
 }
 
 const palletEcharts = async () => {
@@ -981,6 +1022,7 @@ const getProduct = async () => {
             item.spend_percentage = lueNum(item.spend_percentage * 100)
             item.bounce_rate = lueNum(item.bounce_rate * 100)
             item.children = []
+            item.hasChildren = true
             return item
         }) : []
         nomore_product.value = (resd.length > 0) ? false : true
@@ -989,7 +1031,8 @@ const getProduct = async () => {
     }
 }
 const loadMore_product = async () => {
-    debounce(getProduct(), 300)
+    product_pageNum++
+    debounce(getProduct(), 1000)
 }
 
 // 流量分析
@@ -1173,6 +1216,7 @@ const getFlow = async () => {
             item.shop_buyer_percentage = lueNum(item.shop_buyer_percentage * 100)  // 全店买家占比
             item.shop_visitor_percentage = lueNum(item.shop_visitor_percentage * 100)  // 全店访客占比
             item.children = []
+            item.hasChildren = true
             return item
         }) : []
         nomore_flow.value = (resd.length > 0) ? false : true
@@ -1181,7 +1225,8 @@ const getFlow = async () => {
     }
 }
 const loadMore_flow = async () => {
-    debounce(getFlow(), 300)
+    flow_pageNum++
+    debounce(getFlow(), 1000)
 }
 
 // 新老客分析
@@ -1442,19 +1487,19 @@ const getCustomer = async () => {
     }
 }
 const loadMore_customer = async () => {
-    debounce(getCustomer(), 300)
+    customer_pageNum++
+    debounce(getCustomer(), 1000)
 }
 
 // 节流
-const debounce = async (func: any, delay: any) => {
-    let inThrottle = true;
-    return function () {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, delay);
+function debounce(func: any, limit = 500) {
+    const inThrottle = ref(false);
+
+    return function (...args) {
+        if (!inThrottle.value) {
+            func(...args);
+            inThrottle.value = true;
+            setTimeout(() => (inThrottle.value = false), limit);
         }
     };
 }
@@ -1466,6 +1511,16 @@ const debounce = async (func: any, delay: any) => {
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
+.gmvTrend {
+    margin: 0 0 0 20px;
+    background: rgb(14, 58, 121) !important;
+}
+
+::v-deep(.el-radio-button__inner) {
+    background: transparent;
+    border-color: rgb(1, 229, 255) !important;
+    color: #fff;
+}
 
 .echarts_title {
     margin: 10px 0 16px 0;
@@ -1532,12 +1587,15 @@ $echarts_bg_img: url("./images/_2.png");
 
             .search_right {
                 display: flex;
-                flex: 0.3;
+                // flex: 0.3;
+                align-items: center;
                 justify-content: space-between;
             }
 
             .search_line {
                 margin: 0 4px;
+                display: flex;
+                align-items: center;
 
                 .line {
                     display: flex;
@@ -1574,7 +1632,7 @@ $echarts_bg_img: url("./images/_2.png");
             padding-left: 80px;
             font-size: 24px;
             font-weight: 700;
-            width: 462px;
+            // width: 462px;
             background-image: url("./images/image-2.png");
             background-size: 100% 100%;
         }
@@ -1820,6 +1878,7 @@ $echarts_bg_img: url("./images/_2.png");
 
 ::v-deep(.el-table th.el-table__cell) {
     background: transparent;
+    color: #fff;
 }
 
 ::v-deep(.el-table-v2__row) {

@@ -102,7 +102,7 @@
                     <div class="managerA">
                         <el-table :data="managerData.tableData" border v-loading="managerLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
-                            v-el-table-infinite-scroll="loadMore_manager" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
+                            v-el-table-infinite-scroll="loadMore_manager" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" lazy
                             :load="load_manager" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" >
                             <el-table-column v-for="item, index in managerData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
@@ -126,7 +126,7 @@
                     <div class="managerA">
                         <el-table :data="categoryData.tableData" border v-loading="categoryLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
-                            v-el-table-infinite-scroll="loadMore_category" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
+                            v-el-table-infinite-scroll="loadMore_category" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" lazy
                             :load="load_category" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" >
                             <el-table-column v-for="item, index in categoryData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
@@ -151,7 +151,7 @@
                     <div class="managerA">
                         <el-table :data="palletData.tableData" border v-loading="palletLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-                            v-el-table-infinite-scroll="loadMore_pallet" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
+                            v-el-table-infinite-scroll="loadMore_pallet" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" lazy
                             :load="load_pallet" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                             <el-table-column v-for="item, index in palletData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
@@ -176,7 +176,7 @@
                     <div class="managerA">
                         <el-table :data="productData.tableData" border v-loading="productLoad" class="palletGmv"
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-                            v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" lazy
+                            v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" lazy
                             :load="load_product" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
                             <el-table-column v-for="item, index in productData.table_head" :key="index"
                                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
@@ -1166,6 +1166,7 @@ $echarts_bg_img: url("./images/_2.png");
 
 ::v-deep(.el-table th.el-table__cell) {
     background: transparent;
+    color: #fff;
 }
 
 ::v-deep(.el-table-v2__row) {
