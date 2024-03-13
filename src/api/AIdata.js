@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-12 14:25:59
+ * @LastEditTime: 2024-03-13 12:03:12
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -394,6 +394,51 @@ export const getNewOldCustomerListdata = (data) => {
 export const getTrafficChannelsdata = (data) => {
     return service({
         url: '/traffic/getTrafficChannelsdata',
+        method: 'post',
+        data
+    })
+}
+
+// 关键词分析-行业关键词信息  
+export const getIndustrywordListdata = (data) => {
+    return service({
+        url: '/keywordsa/getIndustrywordListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 关键词分析-无界词  
+export const getKeywordListdata = (data) => {
+    return service({
+        url: '/keywordsa/getKeywordListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 关键词分析-关键词明细信息  
+export const getKeywordMuList = (data) => {
+    return service({
+        url: '/keywordsa/getKeywordMuList',
+        method: 'post',
+        data
+    })
+}
+
+// 关键词分析-关键词趋势信息  
+export const getKeywordTrendList = (data) => {
+    return service({
+        url: '/keywordsa/getKeywordTrendList',
+        method: 'post',
+        data
+    })
+}
+
+// 关键词分析-生意参谋关键词信息  
+export const getScKeywordListdata = (data) => {
+    return service({
+        url: '/keywordsa/getScKeywordListdata',
         method: 'post',
         data
     })

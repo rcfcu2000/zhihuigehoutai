@@ -1,5 +1,5 @@
 <template>
-    <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+    <div class="main" v-loading="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
         <el-affix :offset="0">
             <div class="header">
                 <span class="titl1_h1">流量分析</span>
@@ -634,6 +634,8 @@ const getData2 = async () => {
 };
 
 const getAllEcharts = async () => {
+    state.loading = true;
+
     await getTrafficdata()
     await getPieEcharts()
     await getLineEcharts()
@@ -641,6 +643,7 @@ const getAllEcharts = async () => {
     await getProduct()
     await getFlow()
     await getCustomer()
+    state.loading = false;
 }
 
 // 渠道列表
@@ -741,7 +744,7 @@ const getLineEcharts = async () => {
             const arr = Object.values(incrementedKeysGroup)
             let seriesGmvData = [] as any
             let seriesVisData = [] as any
-            let date = []
+            let date = [] as any
             arr.map((item: any, index: any) => {
                 let objGmv = {
                     name: '',
@@ -1570,6 +1573,7 @@ $echarts_bg_img: url("./images/_2.png");
         width: 100%;
         background-image: url("./images/0.png");
         background-size: 100% 100%;
+        background-color: rgb(1, 16, 37);
         position: relative;
 
         .search {
@@ -1927,6 +1931,10 @@ $echarts_bg_img: url("./images/_2.png");
 
 ::v-deep(.el-table__row:hover) {
     background-color: rgba(#fff, 0.2) !important;
+}
+
+::v-deep(.el-table__body tr td.el-table__cell){
+    background-color: transparent !important;
 }
 
 ::v-deep(.el-table__body tr.hover-row>td.el-table__cell) {
