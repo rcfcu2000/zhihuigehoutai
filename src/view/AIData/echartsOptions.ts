@@ -377,7 +377,7 @@ export const lineOptions1_y_100 = (arr: any, date: any, linetype: boolean = fals
 }
 // 假数据线图
 export const lineOptions = (arr: any, date: any, linetype: boolean = false, type: any) => {
-    const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
             trigger: 'axis',
@@ -444,7 +444,7 @@ export const lineOptions = (arr: any, date: any, linetype: boolean = false, type
                 type: 'line',
                 data: i.data,
                 itemStyle: {
-                    color: backColor[index],
+                    // color: backColor[index],
                 }
             }
         }),
@@ -930,6 +930,13 @@ export const wordsCloud = (arr: any, name: any) => {
                     },
                 },
                 data: arr,
+                // data: [{
+                //     name: 'Farrah Abraham',
+                //     value: 366,
+                //     // Style of single text
+                //     textStyle: {
+                //     }
+                // }]
             },
         ],
     }

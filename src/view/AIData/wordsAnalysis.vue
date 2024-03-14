@@ -3,7 +3,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 14:35:35
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-13 16:51:25
+ * @LastEditTime: 2024-03-14 18:21:16
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -24,8 +24,8 @@
         </el-form>
         <div class="page_words">
             <el-row :gutter="30" class="wordsRow">
-                <el-col :span="12" v-for="(item,index) in boxData" :key="index">
-                    <box :datas="item" :index="index" />
+                <el-col :span="12" v-for="(item, index) in boxData" :key="index">
+                    <box :datas="item" :idx="index" />
                 </el-col>
                 <el-col :span="12">
                     <boxHead title="访客趋势" />
@@ -71,6 +71,7 @@ import boxHead from "./components/box_head.vue";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, ref, onMounted } from "vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
+import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 import {
     getIndustrywordListdata,
     getKeywordListdata,
@@ -78,9 +79,11 @@ import {
     getKeywordTrendList,
     getScKeywordListdata,
 } from "@/api/AIdata";
+
 import * as echarts from "echarts";
+import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import 'echarts-wordcloud';
-import { lineOptions1, lineOptions } from "./echartsOptions";
+import { lineOptions1, lineOptions, wordsCloud } from "./echartsOptions";
 
 const pageTitle = "关键词分析"
 const userStore = useUserStore();
@@ -104,11 +107,11 @@ const allData = reactive({
 })
 
 // 词云图数据
-const boxData = ref([
-    { title: '无界词', chartsData: [] },
-    { title: '生参付费词', chartsData: [] },
-    { title: '生参免费词', chartsData: [] },
-    { title: '生参行业词', chartsData: [] },
+const boxData = reactive([
+    { title: '无界词', chartsData: [] as any },
+    { title: '生参付费词', chartsData: [] as any },
+    { title: '生参免费词', chartsData: [] as any },
+    { title: '生参行业词', chartsData: [] as any },
 ])
 
 
@@ -120,20 +123,22 @@ const searchData = reactive({
     end_date: "",
     shop_name: "蜡笔派家居旗舰店", //店铺名称
     "pageNum": 0,
-    "pageSize": 0,
+    "pageSize": 30,
 });
-// getIndustrywordListdata,
 //     getKeywordListdata,
-//     getKeywordMuList,
-//     getKeywordTrendList,
-//     getScKeywordListdata,
 
 onMounted(async () => {
+    getData()
+})
+
+const getData = async () => {
+    words_pageNum = 1
     await getTrafficdata()
+    await getKeywordList()
     await getIndustrywordList()
     await getwordMuList()
     await getScKeywordList()
-})
+}
 
 // 关键词趋势
 const getTrafficdata = async () => {
@@ -142,10 +147,71 @@ const getTrafficdata = async () => {
     data.end_date = data.date[1];
     const [res] = [await getKeywordTrendList(data)];
     if (res.code == 0) {
-        console.log(res, 'getKeywordTrendList')
+        let visData = [{
+            name: '无界词-点击量',
+            data: [] as any
+        }, {
+            name: '生参付费词访客数',
+            data: [] as any
+        }, {
+            name: '生参免费词访客数',
+            data: [] as any
+        }, {
+            name: '行业-点击数',
+            data: [] as any
+        }
+        ]
+        let changeData = [{
+            name: '无界词转化率',
+            data: [] as any
+        }, {
+            name: '生参付费词转化率',
+            data: [] as any
+        }, {
+            name: '生参免费词转化率',
+            data: [] as any
+        }, {
+            name: '行业转化率',
+            data: [] as any
+        }
+        ]
+        let date = [] as any
+        res.data.records?.map((item: any, index: any) => {
+            visData[0].data.push(item.clicks)
+            visData[1].data.push(item.visitors_count_notfree)
+            visData[2].data.push(item.visitors_count_free)
+            visData[3].data.push(item.industry_clicks)
+            changeData[0].data.push(item.cr)
+            changeData[1].data.push(item.cr_notfree)
+            changeData[2].data.push(item.cr_free)
+            changeData[3].data.push(item.cr_industry)
+            date.push(item.date)
+        })
+
+        const chartDom = document.getElementById('visitor') as HTMLElement;
+        const myChart = echarts.init(chartDom);
+        const option = lineOptions(visData, date, false, '');
+        option && myChart.setOption(option);
+        let listener = function () {
+            if (myChart) {
+                myChart.resize();
+            }
+        };
+        EleResize.on(chartDom, listener);
+
+        const chartDom1 = document.getElementById('conversion') as HTMLElement;
+        const myChart1 = echarts.init(chartDom1);
+        const option1 = lineOptions(visData, date, false, '');
+        option1 && myChart1.setOption(option1);
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        EleResize.on(chartDom1, listener1);
     }
 }
-// 关键词趋势
+// 行业关键词
 const getIndustrywordList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -155,25 +221,42 @@ const getIndustrywordList = async () => {
         console.log(res, 'getIndustrywordListdata')
     }
 }
-// 关键词明细
-const getwordMuList = async () => {
-    let data = searchData;
-    data.start_date = data.date[0];
-    data.end_date = data.date[1];
-    const [res] = [await getKeywordMuList(data)];
-    if (res.code == 0) {
-        console.log(res, 'getKeywordMuList')
-    }
-}
 
-// 关键词明细
+// 生意参谋收费免费关键词明细
 const getScKeywordList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getScKeywordListdata(data)];
     if (res.code == 0) {
-        console.log(res, 'getScKeywordListdata')
+        let arr1 = res.data.records_notfree.length > 0 ? res.data.records_notfree.map((item: any, index: any) => {
+            item.name = item.keyword
+            item.value = item.visitors_count
+            return item
+        }) : []
+        boxData[1].chartsData = arr1
+        let arr2 = res.data.records_notfree.length > 0 ? res.data.records_notfree.map((item: any, index: any) => {
+            item.name = item.keyword
+            item.value = item.visitors_count
+            return item
+        }) : []
+        boxData[2].chartsData = arr2
+    }
+}
+
+// 无界词信息
+const getKeywordList = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getKeywordListdata(data)];
+    if (res.code == 0) {
+        let arr = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
+            item.name = item.keyword
+            item.value = item.visitors_count
+            return item
+        }) : []
+        boxData[0].chartsData = arr
     }
 }
 
@@ -181,67 +264,145 @@ const getScKeywordList = async () => {
 const wordsData = reactive({
     table_head: [
         {
-            title: "类目名称",
+            title: "分类",
             width: '',
             align: "center",
-            dataKey: "words_lv3",
-            key: "words_lv3",
+            dataKey: "keyword",
+            key: "keyword",
             fixed: true,
             unit: "",
         },
         {
-            title: "GMV",
+            title: "词数量",
             width: '',
             align: "center",
-            dataKey: "gmv",
-            key: "gmv",
+            dataKey: "count",
+            key: "count",
             fixed: false,
             unit: "",
         },
         {
-            title: "时间进度",
+            title: "无界点击量",
             width: '',
             align: "center",
-            dataKey: "target_day_rate",
-            key: "target_day_rate",
+            dataKey: "clicks",
+            key: "clicks",
             fixed: false,
             unit: "",
         },
         {
-            title: "GMV达成率",
+            title: "无界转化率",
             width: '',
             align: "center",
-            dataKey: "target_gmv_rate",
-            key: "target_gmv_rate",
+            dataKey: "cr",
+            key: "cr",
+            fixed: false,
+            unit: "%",
+        },
+        {
+            title: "搜索访客",
+            width: '',
+            align: "center",
+            dataKey: "visitors_count_free",
+            key: "visitors_count_free",
             fixed: false,
             unit: "",
         },
         {
-            title: "GMV目标",
+            title: "搜索转化率",
             width: '',
             align: "center",
-            dataKey: "target_gmv",
-            key: "target_gmv",
+            dataKey: "cr_free",
+            key: "cr_free",
+            fixed: false,
+            unit: "%",
+        },
+        {
+            title: "付费访客",
+            width: '',
+            align: "center",
+            dataKey: "visitors_count_notfree",
+            key: "visitors_count_notfree",
             fixed: false,
             unit: "",
         },
         {
-            title: "商品简称",
+            title: "付费转化率",
             width: '',
             align: "center",
-            dataKey: "product_name",
-            key: "product_name",
+            dataKey: "cr_notfree",
+            key: "cr_notfree",
+            fixed: false,
+            unit: "%",
+        },
+        {
+            title: "行业访客",
+            width: '',
+            align: "center",
+            dataKey: "industry_clicks",
+            key: "industry_clicks",
             fixed: false,
             unit: "",
+        },
+        {
+            title: "行业转化率",
+            width: '',
+            align: "center",
+            dataKey: "cr_industry",
+            key: "cr_industry",
+            fixed: false,
+            unit: "%",
         },
     ],
-    tableData: []
+    tableData: [] as any
 })
 let words_pageNum = 1
 const words_pageSize = ref(20)
 let nomore_words = ref(false)
 let wordsLoad = ref(true)
 let load_words = ref(false)
+// 关键词明细
+const getwordMuList = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    data.pageNum = words_pageNum
+    const [res] = [await getKeywordMuList(data)];
+    if (res.code == 0) {
+        wordsData.tableData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
+            item.count = lueNum(item.count)
+            item.clicks = lueNum(item.clicks)
+            item.visitors_count_free = lueNum(item.visitors_count_free)
+            item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
+            item.industry_clicks = lueNum(item.industry_clicks)
+
+            item.cr = lueNum(item.cr * 100) + '%'
+            item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
+            item.cr_free = lueNum(item.cr_free * 100) + '%'
+            item.cr_industry = lueNum(item.cr_industry * 100) + '%'
+            item.hasChildren = true
+            item.children = [{}]
+            return item
+        }) : []
+        wordsLoad.value = false
+    }
+}
+const loadMore_words = async () => {
+    words_pageNum++
+    debounce(getwordMuList(), 1000)
+}
+// 节流
+function debounce(func: any, limit = 500) {
+    const inThrottle = ref(false);
+
+    return function (...args) {
+        if (!inThrottle.value) {
+            func(...args);
+            inThrottle.value = true;
+            setTimeout(() => (inThrottle.value = false), limit);
+        }
+    };
+}
 
 </script>
 
@@ -276,7 +437,8 @@ let load_words = ref(false)
 ::v-deep(.el-form-item__label) {
     color: #fff !important;
 }
-.box_body{
+
+.box_body {
     background-image: $echarts_bg_img2;
     background-size: 100% 100%;
     background-repeat: no-repeat;
