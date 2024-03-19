@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-13 12:03:12
+ * @LastEditTime: 2024-03-15 16:41:52
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -439,6 +439,78 @@ export const getKeywordTrendList = (data) => {
 export const getScKeywordListdata = (data) => {
     return service({
         url: '/keywordsa/getScKeywordListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-人群流量来源Top20  
+export const getCrowdGmv20Listdata = (data) => {
+    return service({
+        url: '/Crowdsa/getCrowdGmv20Listdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-人群GMV数据列表  
+export const getCrowdGmvListdata = (data) => {
+    return service({
+        url: '/Crowdsa/getCrowdGmvListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-人群GMV趋势数据列表  
+export const getCrowdGmvTrenddata = (data) => {
+    return service({
+        url: '/Crowdsa/getCrowdGmvTrenddata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-人群流量来源  
+export const getCrowdSrcListdata = (data) => {
+    return service({
+        url: '/Crowdsa/getCrowdSrcListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-商品crowd分类10  
+export const getProductCrowd10Listdata = (data) => {
+    return service({
+        url: '/Crowdsa/getProductCrowd10Listdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-某一商品按人群分类数据  
+export const getProductCrowdsListdata = (data) => {
+    return service({
+        url: '/Crowdsa/getProductCrowdsListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-某一商品按人群分类趋势数据  
+export const getProductCrowdsTrendListdata = (data) => {
+    return service({
+        url: '/Crowdsa/getProductCrowdsTrendListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 人群分析-商品流量来源  
+export const getProductSrcListdata = (data) => {
+    return service({
+        url: '/Crowdsa/getProductSrcListdata',
         method: 'post',
         data
     })

@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-13 17:48:19
+ * @LastEditTime: 2024-03-18 15:08:16
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -21,16 +21,59 @@
           " />
             </el-form-item>
         </el-form>
+        <el-row :gutter="20">
+            <el-col :span="10">
+                <boxHead title="人群分布" />
+                <div></div>
+            </el-col>
+            <el-col :span="4">
+                <boxHead1 title="GMV分布" />
+                <div></div>
+            </el-col>
+            <el-col :span="10">
+                <boxHead1 title="GMV趋势" />
+                <div></div>
+            </el-col>
+            
+            <el-col :span="10">
+                <boxHead title="TOP10商品" />
+                <div></div>
+            </el-col>
+            <el-col :span="7">
+                <boxHead1 title="人群分布" />
+                <div></div>
+            </el-col>
+            <el-col :span="7">
+                <boxHead1 title="GMV趋势" />
+                <div></div>
+            </el-col>
+            
+            <el-col :span="10" class="colflex">
+                <boxHeadtb title="商品流量来源" />
+                <div></div>
+            </el-col>
+            <el-col :span="10" class="colflex">
+                <boxHeadtb title="人群流量来源" />
+                <div></div>
+            </el-col>
+            <el-col :span="4">
+                <boxHead1 title="人群分布" />
+                <div></div>
+            </el-col>
+        </el-row>
 
     </div>
     <goHome />
 </template>
 
 <script setup lang="ts" name="crowd">
+import { reactive, onMounted, ref } from "vue";
 import page_header from "./components/page_header.vue";
 import goHome from "./components/goHome.vue";
 import boxHead from "./components/box_head.vue";
-import { reactive, onMounted, ref } from "vue";
+import boxHead1 from "./components/box_head1.vue";
+import boxHeadtb from "./components/box_head_tb.vue";
+import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
@@ -38,13 +81,14 @@ import {
     lineOptions,
 } from "./echartsOptions";
 import {
-    GetGmvTargetdata,
-    GetGmvTrenddata,
-    getCategoryAlysisdata,
-    getIndexdata_target,
-    getManagerAlysisdata,
-    getPalletListdata,
-    getProductListdata,
+    getCrowdGmv20Listdata,
+    getCrowdGmvListdata,
+    getCrowdGmvTrenddata,
+    getCrowdSrcListdata,
+    getProductCrowd10Listdata,
+    getProductCrowdsListdata,
+    getProductCrowdsTrendListdata,
+    getProductSrcListdata,
 } from "@/api/AIdata";
 const pageTitle = "人群分析";
 const disabledDate = (time: Date) => {
@@ -52,17 +96,140 @@ const disabledDate = (time: Date) => {
 };
 const searchData = reactive({
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    loading: false,
-    date: ["2024-01-01", "2024-01-25"],
-    product_id: "",
+    "crowd_type": "小镇中老年",
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: "",
     end_date: "",
+    "pageNum": 1,
+    "pageSize": 30,
     shop_name: "蜡笔派家居旗舰店", //店铺名称
+    "secondary_source": "",
+    "tertiary_source": "", 
+    ids: [] as any,
 });
 
-</script>
-<style lang="scss" scoped>
+onMounted(()=>{
+    getData()
+})
 
+const getData = async () => {
+    await get20data();
+    await getListData();
+    await getTrendListData()
+    await getSrcListData()
+    await getPro10ListData()
+    await getProListData()
+    await getProTrendListData()
+    await getProSrcListData()
+}
+
+// 人群流量来源Top20
+const get20data = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getCrowdGmv20Listdata(data)];
+    console.log(res,'getCrowdGmv20Listdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 人群GMV数据列表
+const getListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getCrowdGmvListdata(data)];
+    console.log(res,'getCrowdGmvListdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 人群GMV趋势数据列表
+const getTrendListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getCrowdGmvTrenddata(data)];
+    console.log(res,'getCrowdGmvTrenddata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 人群流量来源
+const getSrcListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getCrowdSrcListdata(data)];
+    console.log(res,'getCrowdSrcListdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 商品crowd分类10
+const getPro10ListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getProductCrowd10Listdata(data)];
+    console.log(res,'getProductCrowd10Listdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 某一商品按人群分类数据
+const getProListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getProductCrowdsListdata(data)];
+    console.log(res,'getProductCrowdsListdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 某一商品按人群分类趋势数据
+const getProTrendListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getProductCrowdsTrendListdata(data)];
+    console.log(res,'getProductCrowdsTrendListdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+// 商品流量来源
+const getProSrcListData = async () => {
+    let data = searchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getProductSrcListdata(data)];
+    console.log(res,'getProductSrcListdata')
+    if(res.code == 0){
+
+    }
+
+}
+
+</script>
+
+<style lang="scss" scoped>
 .goal-from {
     text-align: right;
     position: absolute;
@@ -75,7 +242,10 @@ const searchData = reactive({
     color: #fff !important;
 }
 
-
+.colflex{
+    display: flex;
+    align-items: center;
+}
 
 ::v-deep(.el-table) {
     background: transparent;

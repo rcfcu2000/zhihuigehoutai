@@ -3,7 +3,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 14:35:35
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-14 18:21:16
+ * @LastEditTime: 2024-03-19 14:36:21
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -43,13 +43,16 @@
         </div>
         <div class="wordsTable">
             <boxHead title="关键词明细" />
-            <el-table :data="wordsData.tableData" border v-loading="wordsLoad" class="palletGmv"
-                element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
-                v-el-table-infinite-scroll="loadMore_words" :infinite-scroll-distance="100"
-                :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" lazy
-                :load="load_words" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+            <el-table ref="tableListRef" :data="wordsData.tableData" border v-loading="wordsLoad" class="palletGmv"
+                show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+                style="width: 100%; height: 400px" v-el-table-infinite-scroll="loadMore_words"
+                :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+                :infinite-scroll-delay="2000" :lazy="load_words" :load="loadWords"
+                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
+                @row-click="rowClick">
                 <el-table-column v-for="item, index in wordsData.table_head" :key="index" :prop="item.dataKey"
-                    :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
+                    show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
+                    :fixed="item.fixed">
                 </el-table-column>
 
                 <template #append v-if="nomore_words">
@@ -62,9 +65,11 @@
             </el-table>
         </div>
     </div>
+    <goHome />
 </template>
 
 <script setup lang="ts" name="wordsAnalysis">
+import goHome from "./components/goHome.vue";
 import page_header from './components/page_header.vue'
 import box from './components/box.vue'
 import boxHead from "./components/box_head.vue";
@@ -218,7 +223,19 @@ const getIndustrywordList = async () => {
     data.end_date = data.date[1];
     const [res] = [await getIndustrywordListdata(data)];
     if (res.code == 0) {
-        console.log(res, 'getIndustrywordListdata')
+        let len = res.data.records.length
+        if (len > 0) {
+            for (let i = 0; i < len; i++) {
+                let arr = [] as any
+                for (let i = 0; i < len; i++) {
+                    let item = res.data.records[i]
+                    item.name = item.keyword
+                    item.value = item.visitors_count
+                    arr.push(item)
+                }
+                boxData[3].chartsData = arr
+            }
+        }
     }
 }
 
@@ -229,18 +246,28 @@ const getScKeywordList = async () => {
     data.end_date = data.date[1];
     const [res] = [await getScKeywordListdata(data)];
     if (res.code == 0) {
-        let arr1 = res.data.records_notfree.length > 0 ? res.data.records_notfree.map((item: any, index: any) => {
-            item.name = item.keyword
-            item.value = item.visitors_count
-            return item
-        }) : []
-        boxData[1].chartsData = arr1
-        let arr2 = res.data.records_notfree.length > 0 ? res.data.records_notfree.map((item: any, index: any) => {
-            item.name = item.keyword
-            item.value = item.visitors_count
-            return item
-        }) : []
-        boxData[2].chartsData = arr2
+        let len1 = res.data.records_notfree.length
+        let len2 = res.data.records_free.length
+        if (len1 > 0) {
+            let arr1 = [] as any
+            for (let i = 0; i < len1; i++) {
+                let item = res.data.records_notfree[i]
+                item.name = item.keyword
+                item.value = item.visitors_count
+                arr1.push(item)
+            }
+            boxData[1].chartsData = arr1
+        }
+        if (len2 > 0) {
+            let arr2 = [] as any
+            for (let i = 0; i < len2; i++) {
+                let item = res.data.records_free[i]
+                item.name = item.keyword
+                item.value = item.visitors_count
+                arr2.push(item)
+            }
+            boxData[2].chartsData = arr2
+        }
     }
 }
 
@@ -251,22 +278,28 @@ const getKeywordList = async () => {
     data.end_date = data.date[1];
     const [res] = [await getKeywordListdata(data)];
     if (res.code == 0) {
-        let arr = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
-            item.name = item.keyword
-            item.value = item.visitors_count
-            return item
-        }) : []
-        boxData[0].chartsData = arr
+        let len = res.data.records.length
+        if (len > 0) {
+            let arr = [] as any
+            for (let i = 0; i < len; i++) {
+                let item = res.data.records[i]
+                item.name = item.keyword
+                item.value = item.visitors_count
+                arr.push(item)
+            }
+            boxData[0].chartsData = arr
+        }
     }
 }
 
 // 关键词明细信息
+const tableListRef = ref()
 const wordsData = reactive({
     table_head: [
         {
             title: "分类",
             width: '',
-            align: "center",
+            align: "left",
             dataKey: "keyword",
             key: "keyword",
             fixed: true,
@@ -380,12 +413,22 @@ const getwordMuList = async () => {
             item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
             item.cr_free = lueNum(item.cr_free * 100) + '%'
             item.cr_industry = lueNum(item.cr_industry * 100) + '%'
-            item.hasChildren = true
-            item.children = [{}]
+            item.hasChildren = ref(true)
+            item.children = [] as any
+            item.id = wordsData.tableData.length++
             return item
         }) : []
         wordsLoad.value = false
+        refreshTable()
     }
+}
+/**
+     * 刷新table
+    */
+const refreshTable = () => {
+    let table = tableListRef.value;
+    //强制刷新组件
+    table.doLayout()
 }
 const loadMore_words = async () => {
     words_pageNum++
@@ -402,6 +445,58 @@ function debounce(func: any, limit = 500) {
             setTimeout(() => (inThrottle.value = false), limit);
         }
     };
+}
+
+// 表格行点击
+const rowClick = (row: any, column: any, event: Event) => {
+    load_words.value = true
+    // searchData.keyword = row.keyword
+}
+interface words {
+    id: number
+    keyword: number
+    count: string
+    clicks: string
+    cr: string
+    visitors_count_free: string
+    cr_free: string
+    visitors_count_notfree: string
+    cr_notfree: string
+    industry_clicks: string
+    cr_industry: string
+    hasChildren?: boolean
+    children?: words[]
+}
+// 加载子数据
+const childPageNum = 0
+const loadWords = async (row: any, treeNode: TreeNode, resolve: (data: any[]) => void) => {
+    console.log(row.id, "load")
+    let data = searchData;
+    data.keyword = row.keyword
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    data.pageNum = childPageNum
+    const [res] = [await getKeywordMuList(data)];
+    if (res.code == 0) {
+        let rData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
+            item.count = lueNum(item.count)
+            item.clicks = lueNum(item.clicks)
+            item.visitors_count_free = lueNum(item.visitors_count_free)
+            item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
+            item.industry_clicks = lueNum(item.industry_clicks)
+
+            item.cr = lueNum(item.cr * 100) + '%'
+            item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
+            item.cr_free = lueNum(item.cr_free * 100) + '%'
+            item.cr_industry = lueNum(item.cr_industry * 100) + '%'
+            item.id = wordsData.tableData.length + '_' + wordsData.tableData[row.id].children.length++
+            return item
+        }) : []
+        resolve(rData)
+        // wordsData.tableData[row.id].children = wordsData.tableData[row.id].children.concat(rData)
+        // treeNode.lazy = false
+        // refreshTable()
+    }
 }
 
 </script>
@@ -443,6 +538,10 @@ function debounce(func: any, limit = 500) {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     height: 268px;
+}
+
+.wordsTable {
+    padding: 0 20px 20px;
 }
 
 
@@ -532,5 +631,9 @@ function debounce(func: any, limit = 500) {
 
 ::v-deep(.el-table-fixed-column--left) {
     background-color: rgba(1, 16, 37, 1) !important;
+}
+
+::v-deep(.el-table__expand-icon > .el-icon) {
+    color: #fff !important
 }
 </style>
