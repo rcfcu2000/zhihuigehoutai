@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-12 18:23:48
+ * @LastEditTime: 2024-03-19 18:06:57
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -118,3 +118,65 @@ export function groupBy(array, key) {
     return result;
   }, {}); // 初始化结果为一个空对象
 }
+
+// 异步更新大数组，要更新的数组 array，分段大小 chunkSize，以及要赋给数组元素的新值 updateValue，delay更新时间间隔
+export function updateArrayInChunksAsync(array, chunkSize, updateValue, delay) {
+  let i = 0;
+  
+  function updateChunk() {
+    const end = Math.min(i + chunkSize, array.length);
+    for (; i < end; i++) {
+      array[i] = updateValue;
+    }
+    if (i < array.length) {
+      setTimeout(updateChunk, delay); // 延迟后再次更新下一分段
+    }
+  }
+  
+  updateChunk(); // 开始更新第一个分段
+}
+
+/**
+ * @description: 
+ * @param {*} array
+ * @param {*} chunkSize
+ * @param {*} delay
+ * @param {*} callback
+ * @return {*}
+ * 
+let originalArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+let chunkSize = 3; // 每段大小
+let delay = 1000; // 间隔1秒
+
+chunkArray(originalArray, chunkSize, delay, () => {
+  console.log('所有分段处理完毕');
+});
+ */
+export function chunkArray(array, chunkSize, delay, callback) {
+  // 创建一个副本防止修改原始数组
+  let arrayCopy = [...array];
+  let index = 0;
+  
+  function process() {
+    // 获取当前分段
+    let chunk = arrayCopy.slice(index, index + chunkSize);
+    if (chunk.length === 0) {
+      // 如果分段长度为0，说明处理完毕
+      callback && callback();
+      return;
+    } else {
+      // 否则，处理当前分段
+      console.log(chunk);
+      // TODO: 在此处处理分段逻辑，例如进一步处理或存储分段数据
+      
+      // 准备处理下一个分段
+      index += chunkSize;
+      // 设置延迟以后继续处理
+      setTimeout(process, delay);
+    }
+  }
+
+  // 开始处理
+  process();
+}
+

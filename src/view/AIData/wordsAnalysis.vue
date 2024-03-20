@@ -3,7 +3,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 14:35:35
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-19 14:36:21
+ * @LastEditTime: 2024-03-20 17:37:02
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -76,7 +76,7 @@ import boxHead from "./components/box_head.vue";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, ref, onMounted } from "vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum, roundNum, chunkArray } from "@/utils/format.js";
 import {
     getIndustrywordListdata,
     getKeywordListdata,
@@ -402,21 +402,24 @@ const getwordMuList = async () => {
     data.pageNum = words_pageNum
     const [res] = [await getKeywordMuList(data)];
     if (res.code == 0) {
-        wordsData.tableData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
-            item.count = lueNum(item.count)
-            item.clicks = lueNum(item.clicks)
-            item.visitors_count_free = lueNum(item.visitors_count_free)
-            item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
-            item.industry_clicks = lueNum(item.industry_clicks)
+        res.data.records.length > 0 ? chunkArrayAndRender(res.data.records, 100, 500, (chunk: any) => {
+            chunk.map((item: any, index: any) => {
+                item.count = lueNum(item.count)
+                item.clicks = lueNum(item.clicks)
+                item.visitors_count_free = lueNum(item.visitors_count_free)
+                item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
+                item.industry_clicks = lueNum(item.industry_clicks)
 
-            item.cr = lueNum(item.cr * 100) + '%'
-            item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
-            item.cr_free = lueNum(item.cr_free * 100) + '%'
-            item.cr_industry = lueNum(item.cr_industry * 100) + '%'
-            item.hasChildren = ref(true)
-            item.children = [] as any
-            item.id = wordsData.tableData.length++
-            return item
+                item.cr = lueNum(item.cr * 100) + '%'
+                item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
+                item.cr_free = lueNum(item.cr_free * 100) + '%'
+                item.cr_industry = lueNum(item.cr_industry * 100) + '%'
+                item.hasChildren = ref(true)
+                item.children = [] as any
+                item.id = wordsData.tableData.length++
+                return item
+            })
+            wordsData.tableData = chunk
         }) : []
         wordsLoad.value = false
         refreshTable()
@@ -432,6 +435,7 @@ const refreshTable = () => {
 }
 const loadMore_words = async () => {
     words_pageNum++
+    searchData.keyword = ''
     debounce(getwordMuList(), 1000)
 }
 // 节流
@@ -469,7 +473,7 @@ interface words {
 }
 // 加载子数据
 const childPageNum = 0
-const loadWords = async (row: any, treeNode: TreeNode, resolve: (data: any[]) => void) => {
+const loadWords = async (row: any, treeNode: TreeNode, resolve: (id: any[]) => void) => {
     console.log(row.id, "load")
     let data = searchData;
     data.keyword = row.keyword
@@ -478,26 +482,81 @@ const loadWords = async (row: any, treeNode: TreeNode, resolve: (data: any[]) =>
     data.pageNum = childPageNum
     const [res] = [await getKeywordMuList(data)];
     if (res.code == 0) {
-        let rData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
-            item.count = lueNum(item.count)
-            item.clicks = lueNum(item.clicks)
-            item.visitors_count_free = lueNum(item.visitors_count_free)
-            item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
-            item.industry_clicks = lueNum(item.industry_clicks)
+        res.data.records.length > 0 ? chunkArrayAndRender(res.data.records, 100, 500, (chunk: any, index: any) => {
+            chunk.map((item: any, index: any) => {
+                item.count = lueNum(item.count)
+                item.clicks = lueNum(item.clicks)
+                item.visitors_count_free = lueNum(item.visitors_count_free)
+                item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
+                item.industry_clicks = lueNum(item.industry_clicks)
 
-            item.cr = lueNum(item.cr * 100) + '%'
-            item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
-            item.cr_free = lueNum(item.cr_free * 100) + '%'
-            item.cr_industry = lueNum(item.cr_industry * 100) + '%'
-            item.id = wordsData.tableData.length + '_' + wordsData.tableData[row.id].children.length++
-            return item
+                item.cr = lueNum(item.cr * 100) + '%'
+                item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
+                item.cr_free = lueNum(item.cr_free * 100) + '%'
+                item.cr_industry = lueNum(item.cr_industry * 100) + '%'
+                // item.hasChildren = ref(true)
+                // item.children = [] as any
+                item.id = wordsData.tableData.length++
+                return item
+            })
+            // wordsData.tableData[row.id].children = wordsData.tableData[row.id].children.concat(chunk)
+            resolve(chunk)
+            refreshTable()
         }) : []
-        resolve(rData)
-        // wordsData.tableData[row.id].children = wordsData.tableData[row.id].children.concat(rData)
         // treeNode.lazy = false
         // refreshTable()
     }
 }
+
+/**
+ * @description: 
+ * @param {*} array 原数组
+ * @param {*} chunkSize 分段大小
+ * @param {*} delay 分段间隔时间
+ * @param {*} renderCallback
+ * @return {*}
+ * 
+// 示例用法
+let originalArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+let chunkSize = 3; // 每个分段的大小
+let delay = 1000; // 处理完一个分段后等待1秒钟
+
+chunkArrayAndRender(originalArray, chunkSize, delay, renderChunk);
+ */
+function chunkArrayAndRender(array, chunkSize, delay, renderCallback) {
+    let index = 0;
+
+    function processChunk() {
+        // 确定当前分段的终点
+        const end = Math.min(index + chunkSize, array.length);
+        // 切割当前分段
+        const chunk = array.slice(index, end);
+
+        if (chunk.length > 0) {
+            // 如果当前分段还有数据则进行处理
+            renderCallback(chunk); // 渲染当前分段
+
+            // 定时执行下一分段的处理
+            setTimeout(processChunk, delay);
+        } else {
+            console.log('所有分段处理渲染完毕');
+        }
+
+        // 更新下一次处理的起点
+        index += chunkSize;
+    }
+
+    // 开始处理第一个分段
+    processChunk();
+}
+
+// 渲染分段数据的回调函数
+function renderChunk(chunk) {
+    // 这里的 "render" 只是一个示例，在实际中可能是更新DOM、发送到服务器等操作
+    console.log('渲染分段数据：', chunk);
+}
+
+
 
 </script>
 
