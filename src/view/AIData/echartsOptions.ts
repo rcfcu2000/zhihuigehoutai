@@ -456,13 +456,6 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
     return {
         tooltip: {
             trigger: 'axis',
-            // valueFormatter: (value: number | string, dataIndex: number) => {
-            //     if (type == '%') {
-            //         return `${lueNum(value)}${type}`
-            //     } else {
-            //         return `${lueNum(value)}`
-            //     }
-            // }
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
@@ -477,6 +470,23 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
             bottom: '3%',
             containLabel: true
         },
+        dataZoom: [
+          {
+            show: false,
+          },
+          {
+            type: 'inside',
+          },
+          {
+            show: false,
+            yAxisIndex: 0,
+            filterMode: 'empty',
+            width: 30,
+            height: '80%',
+            showDataShadow: false,
+            left: '93%'
+          }
+        ],
         xAxis: {
             type: 'category',
             boundaryGap: false,
@@ -1627,11 +1637,14 @@ export const pieItemOptions = (arr: any) => {
 }
 
 // 饼图
-export const pieItemOptions1 = (arr: any) => {
+export const pieItemOptions1 = (arr: any, lengShow: true) => {
     // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
     return {
         tooltip: {
             trigger: 'item',
+            formatter: (params)=>{
+                return `${params.marker}${params.name}:<br/> ${lueNum(params.value) + '(' + params.percent}%)`;
+            }
         },
         // title: {
         //     text: 'SKU名称',
@@ -1648,6 +1661,7 @@ export const pieItemOptions1 = (arr: any) => {
             containLabel: true
         },
         legend: {
+            show: lengShow,
             type: 'scroll',
             left: 'center',
             // orient: 'vertical',
@@ -1678,9 +1692,9 @@ export const pieItemOptions1 = (arr: any) => {
                     formatter: function (params) {
                         var maxLength = 10; // 最大长度限制
                         if (params.name.length > maxLength) {
-                            return params.name.substring(0, maxLength) + "..." + '  ' + params.value + '  '; // 超过最大长度则添加省略号
+                            return params.name.substring(0, maxLength) + "..." + '  ' + params.value + ' (' + params.percent + '%)'; // 超过最大长度则添加省略号
                         } else {
-                            return params.name + '  ' + params.value + '  '; // 未超过最大长度则返回原始名称
+                            return params.name + '  ' + params.value + ' (' + params.percent + '%)'; // 未超过最大长度则返回原始名称
                         }
                     },
                     // formatter(params) {
@@ -1848,7 +1862,6 @@ export const lineFillOptionsNum_100 = (arr: any, times: any, type: any) => {
         tooltip: {
             show: true,
             trigger: "axis",
-            // formatter: '{b0}<br />{c0}'
             formatter: (params: any) => {
                 if (type == '%') {
                     return `${params[0].axisValue}<br />${params[0].value + type}`

@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-20 18:31:59
+ * @LastEditTime: 2024-03-21 19:43:49
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -47,11 +47,13 @@
             </el-col>
             <el-col :span="4">
                 <boxHead1 title="GMV分布" />
-                <div></div>
+                <div id="gmvDis" style="height: 300px;">
+                </div>
             </el-col>
             <el-col :span="10">
                 <boxHead1 title="GMV趋势" />
-                <div></div>
+                <div id="gmvTrend" style="height: 300px;">
+                </div>
             </el-col>
 
             <el-col :span="10">
@@ -79,11 +81,13 @@
             </el-col>
             <el-col :span="7">
                 <boxHead1 title="人群分布" />
-                <div></div>
+                <div id="gmvTrend1" style="height: 300px;">
+                </div>
             </el-col>
             <el-col :span="7">
                 <boxHead1 title="GMV趋势" />
-                <div></div>
+                <div id="gmvTrend2" style="height: 300px;">
+                </div>
             </el-col>
 
             <el-col :span="10" style="margin-top: 20px;">
@@ -111,8 +115,8 @@
             </el-col>
             <el-col :span="10" style="margin-top: 20px;">
                 <boxHeadtb title="人群流量来源" />
-                <el-table ref="tableListRef" :data="crowdSrcData.tableData" border v-loading="crowdSrcLoad" class="palletGmv"
-                    show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+                <el-table ref="tableListRef" :data="crowdSrcData.tableData" border v-loading="crowdSrcLoad"
+                    class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_crowdSrc"
                     :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                     :infinite-scroll-delay="2000" :lazy="load_crowdSrc" :load="loadcrowdSrc"
@@ -134,7 +138,8 @@
             </el-col>
             <el-col :span="4" style="margin-top: 20px;">
                 <boxHead1 title="人群分布" />
-                <div></div>
+                <div id="popDis" style="height: 300px;">
+                </div>
             </el-col>
         </el-row>
 
@@ -150,11 +155,11 @@ import boxHead from "./components/box_head.vue";
 import boxHead1 from "./components/box_head1.vue";
 import boxHeadtb from "./components/box_head_tb.vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum, roundNum, groupBy } from "@/utils/format.js";
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import {
-    lineOptions,
+    lineOptions, pieItemOptions1, lineOptions1, lineOptions_lineAndbar
 } from "./echartsOptions";
 import {
     getCrowdGmv20Listdata,
@@ -293,7 +298,19 @@ const getListData = async () => {
     data.end_date = data.date[1];
     const [res] = [await getCrowdGmvListdata(data)];
     if (res.code == 0) {
+        let arr = [] as any;
+        let arr1 = [] as any;
         crowdsaData.tableData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
+            let obj = {
+                name: item.crowd_type,
+                value: item.customer_unit_price
+            }
+            arr.push(obj)
+            let obj1 = {
+                name: item.crowd_type,
+                value: item.visitors_count
+            }
+            arr1.push(obj1)
             item.crowd_tgi = lueNum(item.crowd_tgi)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.gmv = lueNum(item.gmv)
@@ -304,6 +321,28 @@ const getListData = async () => {
             return item
         }) : []
         crowdsaLoad.value = false
+
+        let chartDom: any = document.getElementById('gmvDis');
+        let myChart = echarts.init(chartDom);
+        let option = pieItemOptions1(arr, false);
+        let listener = function () {
+            if (myChart) {
+                myChart.resize();
+            }
+        };
+        option && myChart.setOption(option);
+        EleResize.on(chartDom, listener);
+
+        let chartDom1: any = document.getElementById('popDis');
+        let myChart1 = echarts.init(chartDom1);
+        let option1 = pieItemOptions1(arr1, false);
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        option1 && myChart1.setOption(option1);
+        EleResize.on(chartDom1, listener1);
     }
 }
 
@@ -315,7 +354,77 @@ const getTrendListData = async () => {
     const [res] = [await getCrowdGmvTrenddata(data)];
     console.log(res, 'getCrowdGmvTrenddata')
     if (res.code == 0) {
+        const gmvTrendData = groupBy(res.data.records, 'crowd_type')
+        // 自增分组后的键
+        let increment = 0;
+        const incrementedKeysGroup = Object.keys(gmvTrendData).reduce((acc, key) => {
+            acc[increment] = gmvTrendData[key];
+            increment++;
+            return acc;
+        }, {});
+        const arr = Object.values(incrementedKeysGroup)
+        let seriesGmvData = [] as any
+        let serieslineAndBarData = [] as any
+        let date = [] as any
+        let date1 = [] as any
+        let objline = {
+            name: '支付金额',
+            type: 'line',
+            data: [] as any
+        }
+        let objBar = {
+            name: '购买偏好TGI',
+            type: 'bar',
+            data: [] as any
+        }
+        arr.map((item: any, index: any) => {
+            let objGmv = {
+                name: '',
+                data: [] as any
+            }
+            item.map((itm: any, idx: any) => {
+                objGmv.name = itm.crowd_type
+                objGmv.data.push(itm.gmv)
+                if (index == 0) {
+                    date.push(itm.date)
+                }
+                if (idx == 0) {
+                    date1.push(itm.crowd_type)
+                }
+                objline.data.push(itm.crowd_tgi)
+                objBar.data.push(itm.customer_unit_price)
+            })
+            seriesGmvData.push(objGmv)
+        })
+        serieslineAndBarData.push(objline, objBar)
 
+        console.log(arr, "incrementedKeysGroup")
+        console.log(serieslineAndBarData, "incrementedKeysGroup")
+
+
+        // GMV趋势
+        let chartDom: any = document.getElementById('gmvTrend');
+        let myChart = echarts.init(chartDom);
+        let option = lineOptions1(seriesGmvData, false);
+        let listener = function () {
+            if (myChart) {
+                myChart.resize();
+            }
+        };
+        option && myChart.setOption(option);
+        EleResize.on(chartDom, listener);
+
+        // 人群分布
+        let chartDom1: any = document.getElementById('gmvTrend1');
+        let myChart1 = echarts.init(chartDom1);
+        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date1, false);
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        option1 && myChart1.setOption(option1);
+        EleResize.on(chartDom1, listener1);
     }
 
 }
@@ -390,7 +499,6 @@ const getSrcListData = async () => {
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getCrowdSrcListdata(data)];
-    console.log(res, 'getCrowdSrcListdata')
     if (res.code == 0) {
         res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
             item.crowd_tgi = lueNum(item.crowd_tgi)
