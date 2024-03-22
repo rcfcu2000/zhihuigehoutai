@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-21 19:43:49
+ * @LastEditTime: 2024-03-22 16:07:10
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -26,11 +26,7 @@
                 <boxHead title="人群分布" />
                 <el-table ref="tableListRef" :data="crowdsaData.tableData" border v-loading="crowdsaLoad"
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
-                    style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_crowdsa"
-                    :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000" :lazy="load_crowdsa" :load="loadcrowdsa"
-                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
-                    @row-click="rowClick">
+                    style="width: 100%; height: 300px" row-key="keyword" @cell-click="crowdsaClick">
                     <el-table-column v-for="item, index in crowdsaData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                         :fixed="item.fixed">
@@ -56,15 +52,21 @@
                 </div>
             </el-col>
 
-            <el-col :span="10">
+            <el-col :span="10" style="position: relative;">
                 <boxHead title="TOP10商品" />
+                <div class="gmvTrend">
+                    <span>人群类型：</span>
+                    <el-select :key="channelsdata_key" @change="selectChange" v-model="searchData.crowd_type"
+                        placeholder="请选择人群类型" style="width: 240px" class="gmvTrend_sel">
+                        <el-option v-for="item in crowdsaData.tableData" :key="item.channel" :label="item.crowd_type"
+                            :value="item.crowd_type" />
+                    </el-select>
+                </div>
                 <el-table ref="tableListRef" :data="top10Data.tableData" border v-loading="top10Load" class="palletGmv"
                     show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
-                    style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_top10"
-                    :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000" :lazy="load_top10" :load="loadtop10"
+                    style="width: 100%; height: 300px"
                     :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
-                    @row-click="rowClick">
+                    @cell-click="top10Click">
                     <el-table-column v-for="item, index in top10Data.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                         :fixed="item.fixed">
@@ -121,7 +123,7 @@
                     :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                     :infinite-scroll-delay="2000" :lazy="load_crowdSrc" :load="loadcrowdSrc"
                     :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
-                    @row-click="rowClick">
+                    @cell-click="crowdSrcClick">
                     <el-table-column v-for="item, index in crowdSrcData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                         :fixed="item.fixed">
@@ -188,13 +190,17 @@ const searchData = reactive({
     "tertiary_source": "",
     ids: [] as any,
 });
+let channelsdata_key = ref(0)
 
 onMounted(() => {
     getData()
 })
 
 const getData = async () => {
-    await get20data();
+    searchData.secondary_source = ''
+    searchData.tertiary_source = ''
+    searchData.ids = []
+    // await get20data();
     await getListData();
     await getTrendListData()
     await getSrcListData()
@@ -202,6 +208,15 @@ const getData = async () => {
     await getProListData()
     await getProTrendListData()
     await getProSrcListData()
+}
+
+const selectChange = async () => {
+    searchData.secondary_source = ''
+    searchData.tertiary_source = ''
+    searchData.ids = []
+    await getPro10ListData()
+    await getProTrendListData()
+    await getSrcListData()
 }
 
 // 人群流量来源Top20
@@ -217,7 +232,7 @@ const get20data = async () => {
 
 }
 
-// 人群GMV数据列表
+// 人群GMV数据列表,人群分布饼图
 const tableListRef = ref()
 const crowdsaData = reactive({
     table_head: [
@@ -321,6 +336,7 @@ const getListData = async () => {
             return item
         }) : []
         crowdsaLoad.value = false
+        channelsdata_key.value++
 
         let chartDom: any = document.getElementById('gmvDis');
         let myChart = echarts.init(chartDom);
@@ -332,6 +348,10 @@ const getListData = async () => {
         };
         option && myChart.setOption(option);
         EleResize.on(chartDom, listener);
+        myChart.on('click', function (params) {
+            searchData.crowd_type = params.name
+            console.log(params, 'click');
+        });
 
         let chartDom1: any = document.getElementById('popDis');
         let myChart1 = echarts.init(chartDom1);
@@ -346,7 +366,17 @@ const getListData = async () => {
     }
 }
 
-// 人群GMV趋势数据列表
+const crowdsaClick = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
+    searchData.crowd_type = row.crowd_type
+    searchData.secondary_source = ''
+    searchData.tertiary_source = ''
+    searchData.ids = []
+    await getSrcListData() //人群流量
+    await getProTrendListData() // GMV趋势
+    await getPro10ListData() //top10
+}
+
+// GMV趋势,人群分布
 const getTrendListData = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -398,10 +428,6 @@ const getTrendListData = async () => {
         })
         serieslineAndBarData.push(objline, objBar)
 
-        console.log(arr, "incrementedKeysGroup")
-        console.log(serieslineAndBarData, "incrementedKeysGroup")
-
-
         // GMV趋势
         let chartDom: any = document.getElementById('gmvTrend');
         let myChart = echarts.init(chartDom);
@@ -417,7 +443,7 @@ const getTrendListData = async () => {
         // 人群分布
         let chartDom1: any = document.getElementById('gmvTrend1');
         let myChart1 = echarts.init(chartDom1);
-        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date1, false);
+        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date1, false, '');
         let listener1 = function () {
             if (myChart1) {
                 myChart1.resize();
@@ -495,6 +521,7 @@ let nomore_crowdSrc = ref(false)
 let crowdSrcLoad = ref(true)
 let load_crowdSrc = ref(false)
 const getSrcListData = async () => {
+    crowdSrcLoad.value = true
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
@@ -517,6 +544,12 @@ const getSrcListData = async () => {
         crowdSrcLoad.value = false
     }
 
+}
+const crowdSrcClick = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) =>{
+    searchData.secondary_source = row.secondary_source
+    searchData.tertiary_source = row.tertiary_source
+    searchData.ids = []
+    await getListData()
 }
 
 // 商品crowd分类10
@@ -588,17 +621,14 @@ const top10Data = reactive({
     ],
     tableData: [] as any
 })
-let top10_pageNum = 1
-const top10_pageSize = ref(20)
 let nomore_top10 = ref(false)
 let top10Load = ref(true)
-let load_top10 = ref(false)
 const getPro10ListData = async () => {
+    top10Load.value = true
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getProductCrowd10Listdata(data)];
-    console.log(res, 'getProductCrowd10Listdata')
     if (res.code == 0) {
         top10Data.tableData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
             item.crowd_tgi = lueNum(item.crowd_tgi)
@@ -612,6 +642,15 @@ const getPro10ListData = async () => {
         }) : []
         top10Load.value = false
     }
+}
+// top10表格点击
+const top10Click = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
+    searchData.ids = [row.product_id]
+    searchData.secondary_source = ''
+    searchData.tertiary_source = ''
+    await getProSrcListData() // 商品流量来源
+    await getProTrendListData() // GMV趋势
+    await getTrendListData() //GMV趋势,人群分布
 }
 
 // 某一商品按人群分类数据
@@ -633,8 +672,36 @@ const getProTrendListData = async () => {
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getProductCrowdsTrendListdata(data)];
-    console.log(res, 'getProductCrowdsTrendListdata')
     if (res.code == 0) {
+        let serieslineAndBarData = [] as any
+        let date = [] as any
+        let objline = {
+            name: '支付金额',
+            type: 'line',
+            data: [] as any
+        }
+        let objBar = {
+            name: '购买偏好TGI总和',
+            type: 'bar',
+            data: [] as any
+        }
+        res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
+            objline.data.push(item.crowd_tgi)
+            objBar.data.push(item.customer_unit_price)
+            date.push(item.date)
+        }) : []
+        serieslineAndBarData.push(objline, objBar)
+        // 人群分布
+        let chartDom1: any = document.getElementById('gmvTrend2');
+        let myChart1 = echarts.init(chartDom1);
+        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date, false, '');
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        option1 && myChart1.setOption(option1);
+        EleResize.on(chartDom1, listener1);
 
     }
 
@@ -762,6 +829,76 @@ function debounce(func: any, limit = 500) {
 ::v-deep(.el-form-item__label) {
     color: #fff !important;
 }
+
+#gmvDis,
+#popDis {
+    background: url("./images/_13.png") no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.gmvTrend {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    margin: 0 0 0 20px;
+    display: flex;
+    align-items: center;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.gmvTrend_sel {
+    background: rgb(14, 58, 121) !important;
+}
+
+::v-deep(.el-input__wrapper) {
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid rgba(1, 229, 255, 1);
+    width: 200px;
+
+    .el-range-input {
+        color: #fff;
+    }
+}
+
+::v-deep(.el-popper).is-light {
+    background-color: rgb(0, 98, 147);
+    border: 1px solid rgb(0, 98, 147);
+}
+
+::v-deep(.el-select-dropdown__item).hover {
+    background-color: rgb(0, 0, 0, 0.3);
+}
+
+::v-deep(.el-select-dropdown__item) {
+    :hover {
+        background-color: rgb(0, 0, 0, 0.3);
+    }
+}
+
+::v-deep(.el-select-dropdown__item).selected {
+    background-color: rgb(0, 0, 0, 0.1);
+}
+
+::v-deep(.el-select-dropdown__item) {
+    color: #fff;
+}
+
+::v-deep(.el-select__tags) {
+    .el-tag--info {
+        background-color: rgba(0, 98, 147, 0.5);
+    }
+}
+
+::v-deep(.el-select__tags) {
+    .el-tag--info span {
+        color: #fff;
+    }
+}
+
 
 .colflex {
     display: flex;
