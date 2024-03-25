@@ -1,8 +1,8 @@
 <!--
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-25 10:26:01
+ * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
+ * @LastEditTime: 2024-03-25 18:41:01
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -209,7 +209,7 @@ const getData = async () => {
     await getTrendListData()
     await getSrcListData()
     await getPro10ListData()
-    await getProListData()
+    // await getProListData()
     await getProTrendListData()
     await getProSrcListData()
 }
@@ -389,7 +389,6 @@ const getTrendListData = async () => {
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getCrowdGmvTrenddata(data)];
-    console.log(res, 'getCrowdGmvTrenddata')
     if (res.code == 0) {
         const gmvTrendData = groupBy(res.data.records, 'crowd_type')
         // 自增分组后的键
@@ -526,8 +525,9 @@ let nomore_crowdSrc = ref(false)
 let crowdSrcLoad = ref(true)
 let load_crowdSrc = ref(false)
 let crowdSrc_filter = [] as any
-let crowdSrc_key = 0
-const getSrcListData = async () => {
+let crowdSrc_key = 0 //跟新筛选用
+let crowdSrc_filterData = [] as any
+const getSrcListData = async (filter: boolean = false, level: number = 0) => {
     crowdSrcLoad.value = true
     let data = searchData;
     data.start_date = data.date[0];
@@ -544,18 +544,23 @@ const getSrcListData = async () => {
                 item.visitors_count = lueNum(item.visitors_count)
 
                 item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
-                item.hasChildren = ref(true)
-                item.children = [] as any
-                item.id = crowdSrcData.tableData.length++
-                let obj = {
-                    text: item.secondary_source,
-                    value: item.secondary_source,
-                    index: index
+                if (level == 0) {
+                    let obj = {
+                        text: item.secondary_source,
+                        value: item.secondary_source,
+                        index: index
+                    }
+                    crowdSrc_filter.push(obj)
                 }
-                crowdSrc_filter.push(obj)
                 arr.push(item)
             })
             crowdSrc_key += 1
+        }
+        if (filter) {
+            crowdSrcData.tableData = [...crowdSrc_filterData, ...arr].filter(item => item !== undefined)
+            crowdSrcLoad.value = false
+            refreshTable()
+            return
         }
         console.log(crowdSrc_filter, "crowdSrc_filter")
         crowdSrcData.tableData = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
@@ -579,7 +584,11 @@ interface User {
 }
 // 筛选点击
 const crowdSrcRowClick = async (value: string, row: User) => {
-    console.log(value, row, "row: any, column: any, event: Event")
+    searchData.secondary_source = value
+    if (value == row.secondary_source) {
+        crowdSrc_filterData = [{ ...row }]
+        getSrcListData(true, 1)
+    }
 }
 
 // 商品crowd分类10
@@ -829,19 +838,28 @@ const getProSrcListData = async () => {
 
 const loadMore_crowdsa = async () => {
     crowdsa_pageNum++
-    searchData.keyword = ''
+    // searchData.keyword = ''
     debounce(getListData(), 1000)
 }
 // 节流
 function debounce(func: any, limit = 500) {
     const inThrottle = ref(false);
-
     return function (...args) {
         if (!inThrottle.value) {
             func(...args);
             inThrottle.value = true;
             setTimeout(() => (inThrottle.value = false), limit);
         }
+    };
+}
+// 防抖函数
+function debounce1(fn: any, delay = 500) {
+    let timeoutId = null;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            fn(...args);
+        }, delay);
     };
 }
 
