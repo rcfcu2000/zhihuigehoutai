@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
  * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-22 16:07:10
+ * @LastEditTime: 2024-03-25 10:26:01
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -117,13 +117,17 @@
             </el-col>
             <el-col :span="10" style="margin-top: 20px;">
                 <boxHeadtb title="人群流量来源" />
-                <el-table ref="tableListRef" :data="crowdSrcData.tableData" border v-loading="crowdSrcLoad"
+                <el-table ref="tableListRefcrowdSrc" :data="crowdSrcData.tableData" border :v-loading="crowdSrcLoad"
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_crowdSrc"
                     :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                     :infinite-scroll-delay="2000" :lazy="load_crowdSrc" :load="loadcrowdSrc"
-                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
+                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="index"
                     @cell-click="crowdSrcClick">
+                    <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" :key="crowdSrc_key"
+                        prop="secondary_source" :filters="crowdSrc_filter" :filter-method="crowdSrcRowClick"
+                        :filter-multiple="false" filter-class-name="crowdSrc_filter">
+                    </el-table-column>
                     <el-table-column v-for="item, index in crowdSrcData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                         :fixed="item.fixed">
@@ -300,7 +304,7 @@ const crowdsaData = reactive({
             unit: "",
         },
     ],
-    tableData: [] as any
+    tableData: [] as Array<any>
 })
 let crowdsa_pageNum = 1
 const crowdsa_pageSize = ref(20)
@@ -326,6 +330,9 @@ const getListData = async () => {
                 value: item.visitors_count
             }
             arr1.push(obj1)
+            if (item.tertiary_source) {
+                item.secondary_source = item.secondary_source + '_' + item.tertiary_source
+            }
             item.crowd_tgi = lueNum(item.crowd_tgi)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.gmv = lueNum(item.gmv)
@@ -455,18 +462,16 @@ const getTrendListData = async () => {
 
 }
 
+//刷新table
+const tableListRefcrowdSrc = ref()
+const refreshTable = () => {
+    let table = tableListRefcrowdSrc.value;
+    //强制刷新组件
+    table.doLayout()
+}
 // 人群流量来源
 const crowdSrcData = reactive({
     table_head: [
-        {
-            title: "流量来源",
-            width: '',
-            align: "left",
-            dataKey: "secondary_source",
-            key: "secondary_source",
-            fixed: false,
-            unit: "",
-        },
         {
             title: "访客数",
             width: '',
@@ -520,6 +525,8 @@ const crowdSrc_pageSize = ref(20)
 let nomore_crowdSrc = ref(false)
 let crowdSrcLoad = ref(true)
 let load_crowdSrc = ref(false)
+let crowdSrc_filter = [] as any
+let crowdSrc_key = 0
 const getSrcListData = async () => {
     crowdSrcLoad.value = true
     let data = searchData;
@@ -527,29 +534,52 @@ const getSrcListData = async () => {
     data.end_date = data.date[1];
     const [res] = [await getCrowdSrcListdata(data)];
     if (res.code == 0) {
-        res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
-            item.crowd_tgi = lueNum(item.crowd_tgi)
-            item.customer_unit_price = lueNum(item.customer_unit_price)
-            item.gmv = lueNum(item.gmv)
-            item.paid_buyers = lueNum(item.paid_buyers)
-            item.visitors_count = lueNum(item.visitors_count)
+        let arr = [] as any
+        if (res.data.records.length > 0) {
+            res.data.records.map((item: any, index: any) => {
+                item.crowd_tgi = lueNum(item.crowd_tgi)
+                item.customer_unit_price = lueNum(item.customer_unit_price)
+                item.gmv = lueNum(item.gmv)
+                item.paid_buyers = lueNum(item.paid_buyers)
+                item.visitors_count = lueNum(item.visitors_count)
 
-            item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
-            item.hasChildren = ref(true)
-            item.children = [] as any
-            item.id = crowdSrcData.tableData.length++
-            return item
-        }) : []
-        crowdSrcData.tableData = res.data.records
+                item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
+                item.hasChildren = ref(true)
+                item.children = [] as any
+                item.id = crowdSrcData.tableData.length++
+                let obj = {
+                    text: item.secondary_source,
+                    value: item.secondary_source,
+                    index: index
+                }
+                crowdSrc_filter.push(obj)
+                arr.push(item)
+            })
+            crowdSrc_key += 1
+        }
+        console.log(crowdSrc_filter, "crowdSrc_filter")
+        crowdSrcData.tableData = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
         crowdSrcLoad.value = false
+        refreshTable()
     }
 
 }
-const crowdSrcClick = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) =>{
+// 单元格点击
+const crowdSrcClick = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
     searchData.secondary_source = row.secondary_source
     searchData.tertiary_source = row.tertiary_source
     searchData.ids = []
     await getListData()
+}
+// 流量筛选
+interface User {
+    text: string
+    value: string
+    index: string
+}
+// 筛选点击
+const crowdSrcRowClick = async (value: string, row: User) => {
+    console.log(value, row, "row: any, column: any, event: Event")
 }
 
 // 商品crowd分类10
@@ -862,6 +892,14 @@ function debounce(func: any, limit = 500) {
     .el-range-input {
         color: #fff;
     }
+}
+
+::v-deep(.el-input__inner) {
+    color: #fff;
+}
+
+::v-deep(.el-checkbox .el-checkbox__label) {
+    color: #000 !important;
 }
 
 ::v-deep(.el-popper).is-light {
