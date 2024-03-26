@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-26 15:38:30
+ * @LastEditTime: 2024-03-26 17:54:00
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -92,15 +92,20 @@
                 </div>
             </el-col>
 
-            <el-col :span="10" style="margin-top: 20px;">
+            <el-col :span="10" style="margin-top: 20px;position: relative;">
                 <boxHeadtb title="商品流量来源" />
+                <div class="gmvTrend" style="top:6px;left:12vw">
+                    <el-button type="primary" :icon="RefreshLeft" :circle="true" @click="proSource_filter_R" />
+                </div>
                 <el-table ref="tableListRef" :data="proSourceData.tableData" border v-loading="proSourceLoad"
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_proSource"
                     :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000" :lazy="load_proSource" :load="loadproSource"
-                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
-                    @row-click="rowClick">
+                    :infinite-scroll-delay="2000" @cell-click="crowdSrcClick" @filter-change="proSourceClick">
+                    <el-table-column show-overflow-tooltip :label="proSource_filter_label" width="120" align="left" key="secondary_source"
+                        prop="secondary_source" :filters="proSource_filter" :filter-multiple="false"
+                        filter-class-name="crowdSrc_filter">
+                    </el-table-column>
                     <el-table-column v-for="item, index in proSourceData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                         :fixed="item.fixed">
@@ -114,16 +119,37 @@
                         </div>
                     </template>
                 </el-table>
+                <el-table ref="tableListRef_sum" :show-header="false" :data="proSourceData.sumData" border
+                    :v-loading="crowdSrcLoad" class="palletGmv" show-overflow-tooltip
+                    element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+                    <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="secondary_source"
+                        prop="secondary_source">
+                    </el-table-column>
+                    <el-table-column v-for="item, index in crowdSrcData.table_head" :key="index" :prop="item.dataKey"
+                        show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
+                        :fixed="item.fixed">
+                    </el-table-column>
+
+                    <template #append v-if="nomore_crowdSrc">
+                        <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                            <el-icon>
+                                <MagicStick />
+                            </el-icon> <span>没有合计</span>
+                        </div>
+                    </template>
+                </el-table>
             </el-col>
-            <el-col :span="10" style="margin-top: 20px;">
+            <el-col :span="10" style="margin-top: 20px;position: relative;">
                 <boxHeadtb title="人群流量来源" />
+                <div class="gmvTrend" style="top:6px;left:12vw">
+                    <el-button type="primary" :icon="RefreshLeft" :circle="true" @click="crowdSrc_filter_R" />
+                </div>
                 <el-table ref="tableListRefcrowdSrc" :data="crowdSrcData.tableData" border :v-loading="crowdSrcLoad"
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_crowdSrc"
                     :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000"
-                    @cell-click="crowdSrcClick" @filter-change="crowdSrcRowClick">
-                    <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="secondary_source"
+                    :infinite-scroll-delay="2000" @filter-change="crowdSrcRowClick">
+                    <el-table-column show-overflow-tooltip :label="crowdSrc_filter_label" width="120" align="left" key="secondary_source"
                         prop="secondary_source" :filters="crowdSrc_filter" :filter-multiple="false"
                         filter-class-name="crowdSrc_filter">
                     </el-table-column>
@@ -140,9 +166,9 @@
                         </div>
                     </template>
                 </el-table>
-                <el-table ref="tableListRefcrowdSrc_sum" :show-header="false" :data="crowdSrcData.sumData" border :v-loading="crowdSrcLoad"
-                    class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
-                    style="width: 100%; height: 30px">
+                <el-table ref="tableListRefcrowdSrc_sum" :show-header="false" :data="crowdSrcData.sumData" border
+                    :v-loading="crowdSrcLoad" class="palletGmv" show-overflow-tooltip
+                    element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
                     <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="secondary_source"
                         prop="secondary_source">
                     </el-table-column>
@@ -155,7 +181,7 @@
                         <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
                             <el-icon>
                                 <MagicStick />
-                            </el-icon> <span>没有更多了</span>
+                            </el-icon> <span>没有合计</span>
                         </div>
                     </template>
                 </el-table>
@@ -172,6 +198,8 @@
 </template>
 
 <script setup lang="ts" name="crowd">
+
+import { RefreshLeft, } from '@element-plus/icons-vue'
 import { reactive, onMounted, ref, nextTick } from "vue";
 import page_header from "./components/page_header.vue";
 import goHome from "./components/goHome.vue";
@@ -541,11 +569,11 @@ const crowdSrcData = reactive({
     tableData: [] as any,
     sumData: [] as any,
 })
+let crowdSrc_filter_label = "流量来源"
 let crowdSrc_pageNum = 1
 let nomore_crowdSrc = ref(false)
 let crowdSrcLoad = ref(true)
 let crowdSrc_filter = [] as any
-let crowdSrc_key = 0 //跟新筛选用
 let crowdSrc_filterData = [] as any
 let crowdSrc_filterFirst = [] as any
 const getSrcListData = async (filter: boolean = false, level: number = 0) => {
@@ -566,6 +594,9 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
                 item.visitors_count = lueNum(item.visitors_count)
 
                 item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
+                if(item.tertiary_source){
+                    item.secondary_source = item.tertiary_source
+                }
                 if (level == 0) {
                     let obj = {
                         text: item.secondary_source,
@@ -576,7 +607,6 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
                 }
                 arr.push(item)
             })
-            crowdSrc_key += 1
         }
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
@@ -590,14 +620,12 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
         }
         if (filter) {
             crowdSrcData.tableData = [...crowdSrc_filterData, ...arr].filter(item => item !== undefined)
-            crowdSrcLoad.value = false
-            refreshTable()
         } else {
             crowdSrcData.tableData = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
             crowdSrc_filterFirst = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
-            crowdSrcLoad.value = false
-            refreshTable()
         }
+        crowdSrcLoad.value = false
+        refreshTable()
         nextTick(() => {
             addScrollListener();
         });
@@ -615,7 +643,7 @@ const addScrollListener = () => {
         table1.scrollLeft = event.target.scrollLeft
     }
 };
-
+// 滚动加载更多
 const loadMore_crowdSrc = async () => {
     crowdSrc_pageNum++
     // searchData.keyword = ''
@@ -628,12 +656,6 @@ const crowdSrcClick = async (row: any, column: any, cell: HTMLTableCellElement, 
     searchData.ids = []
     await getListData()
 }
-// 流量筛选
-interface User {
-    text: string
-    value: string
-    index: string
-}
 // 筛选点击
 const crowdSrcRowClick = async (newFilters: any) => {
     let counter = 1;
@@ -643,10 +665,17 @@ const crowdSrcRowClick = async (newFilters: any) => {
         newObject[`key${counter}`] = [...newFilters[key]];
         counter++;
     });
-    searchData.secondary_source = newObject.key1[0]
+    searchData.secondary_source = crowdSrc_filter_label = newObject.key1[0]
     const data = crowdSrc_filterFirst.find(crowdSrc_filterData => crowdSrc_filterData.secondary_source === newObject.key1[0]);
     crowdSrc_filterData = [{ ...data }]
     getSrcListData(true, 1)
+}
+// 重置筛选
+const crowdSrc_filter_R = () => {
+    crowdSrc_filter_label = "流量来源"
+    crowdSrc_pageNum = 1
+    crowdSrcData.tableData = crowdSrc_filterFirst
+    refreshTable()
 }
 
 // 商品crowd分类10
@@ -804,18 +833,28 @@ const getProTrendListData = async () => {
 
 }
 
+
+//刷新table
+const tableListRef_sum = ref()
+const refreshTable1 = () => {
+    let table = tableListRef.value;
+    let tables = tableListRef_sum.value;
+    //强制刷新组件
+    table.doLayout()
+    tables.doLayout()
+}
 // 商品流量来源
 const proSourceData = reactive({
     table_head: [
-        {
-            title: "流量来源",
-            width: '',
-            align: "left",
-            dataKey: "secondary_source",
-            key: "secondary_source",
-            fixed: false,
-            unit: "",
-        },
+        // {
+        //     title: "流量来源",
+        //     width: '',
+        //     align: "left",
+        //     dataKey: "secondary_source",
+        //     key: "secondary_source",
+        //     fixed: false,
+        //     unit: "",
+        // },
         {
             title: "访客数",
             width: '',
@@ -862,42 +901,109 @@ const proSourceData = reactive({
             unit: "",
         },
     ],
-    tableData: [] as any
+    tableData: [] as any,
+    sumData: [] as any
 })
+let proSource_filter_label = "流量来源"
 let proSource_pageNum = 1
-const proSource_pageSize = ref(20)
 let nomore_proSource = ref(false)
 let proSourceLoad = ref(true)
-let load_proSource = ref(false)
-const getProSrcListData = async () => {
+let proSource_filter = [] as any
+let proSource_filterData = [] as any
+let proSource_filterFirst = [] as any
+const getProSrcListData = async (filter: boolean = false, level: number = 0) => {
+    proSourceLoad.value = true
     let data = searchData;
+    data.pageNum = proSource_pageNum
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getProductSrcListdata(data)];
     if (res.code == 0) {
-        res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
-            item.crowd_tgi = lueNum(item.crowd_tgi)
-            item.customer_unit_price = lueNum(item.customer_unit_price)
-            item.gmv = lueNum(item.gmv)
-            item.paid_buyers = lueNum(item.paid_buyers)
-            item.visitors_count = lueNum(item.visitors_count)
+        let arr = [] as any
+        if (res.data.records.length > 0) {
+            res.data.records.map((item: any, index: any) => {
+                item.crowd_tgi = lueNum(item.crowd_tgi)
+                item.customer_unit_price = lueNum(item.customer_unit_price)
+                item.gmv = lueNum(item.gmv)
+                item.paid_buyers = lueNum(item.paid_buyers)
+                item.visitors_count = lueNum(item.visitors_count)
+                if(item.tertiary_source){
+                    item.secondary_source = item.tertiary_source
+                }
 
-            item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
-            item.hasChildren = ref(true)
-            item.children = [] as any
-            item.id = proSourceData.tableData.length++
-            return item
-        }) : []
-        proSourceData.tableData = res.data.records
+                item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
+                if (level == 0) {
+                    let obj = {
+                        text: item.secondary_source,
+                        value: item.secondary_source,
+                        index: index
+                    }
+                    proSource_filter.push(obj)
+                }
+                arr.push(item)
+            })
+        }
+        if (res.data.sum !== null && res.data.sum !== undefined) {
+            let sum = res.data.sum
+            sum.crowd_tgi = lueNum(sum.crowd_tgi)
+            sum.customer_unit_price = lueNum(sum.customer_unit_price)
+            sum.gmv = lueNum(sum.gmv)
+            sum.paid_buyers = lueNum(sum.paid_buyers)
+            sum.visitors_count = lueNum(sum.visitors_count)
+            sum.payment_conversion_rate = lueNum(sum.payment_conversion_rate * 100) + '%'
+            proSourceData.sumData = [sum]
+        }
+        if (filter) {
+            proSourceData.tableData = [...proSource_filterData, ...arr].filter(item => item !== undefined)
+            refreshTable()
+        } else {
+            proSourceData.tableData = [...proSourceData.tableData, ...arr].filter(item => item !== undefined)
+            proSource_filterFirst = [...proSourceData.tableData, ...arr].filter(item => item !== undefined)
+        }
         proSourceLoad.value = false
+        refreshTable()
+        nextTick(() => {
+            addScrollListener1();
+        });
     }
+}
+// 添加滚动监听函数
+const addScrollListener1 = () => {
+    const table1 = tableListRef.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    const table2 = tableListRef_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    tableListRef.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
+        table2.scrollLeft = event.target.scrollLeft
+    }
+    tableListRef_sum.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
+        table1.scrollLeft = event.target.scrollLeft
+    }
+};
+// 筛选点击
+const proSourceClick = async (newFilters: any) => {
+    let counter = 1;
+    const newObject = {} as any;
 
+    Object.keys(newFilters).forEach(key => {
+        newObject[`key${counter}`] = [...newFilters[key]];
+        counter++;
+    });
+    searchData.secondary_source = proSource_filter_label = newObject.key1[0]
+    const data = proSource_filterFirst.find(proSource_filterData => proSource_filterData.secondary_source === newObject.key1[0]);
+    proSource_filterData = [{ ...data }]
+    getProSrcListData(true, 1)
+}
+// 重置筛选
+const proSource_filter_R = () => {
+    proSource_filter_label = "流量来源"
+    proSource_pageNum = 1
+    proSourceData.tableData = proSource_filterFirst
+    refreshTable1()
 }
 
-const loadMore_crowdsa = async () => {
-    crowdsa_pageNum++
+const loadMore_proSource = async () => {
+    proSource_pageNum++
     // searchData.keyword = ''
-    debounce(getListData(), 1000)
+    debounce(getProSrcListData(), 1000)
 }
 // 节流
 function debounce(func: any, limit = 500) {
@@ -1029,9 +1135,10 @@ function debounce1(fn: any, delay = 500) {
 
 ::v-deep(.el-table tr) {
     background: transparent;
-
 }
-
+::v-deep(.el-table .cell){
+    padding: 0;
+}
 ::v-deep(.el-table.is-scrolling-left th.el-table-fixed-column--left) {
     background: transparent;
 }
