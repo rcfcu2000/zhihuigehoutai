@@ -1,8 +1,8 @@
 <!--
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
- * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2024-03-25 18:41:01
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-03-26 15:38:30
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -121,12 +121,30 @@
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_crowdSrc"
                     :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000" :lazy="load_crowdSrc" :load="loadcrowdSrc"
-                    :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="index"
-                    @cell-click="crowdSrcClick">
-                    <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" :key="crowdSrc_key"
-                        prop="secondary_source" :filters="crowdSrc_filter" :filter-method="crowdSrcRowClick"
-                        :filter-multiple="false" filter-class-name="crowdSrc_filter">
+                    :infinite-scroll-delay="2000"
+                    @cell-click="crowdSrcClick" @filter-change="crowdSrcRowClick">
+                    <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="secondary_source"
+                        prop="secondary_source" :filters="crowdSrc_filter" :filter-multiple="false"
+                        filter-class-name="crowdSrc_filter">
+                    </el-table-column>
+                    <el-table-column v-for="item, index in crowdSrcData.table_head" :key="index" :prop="item.dataKey"
+                        show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
+                        :fixed="item.fixed">
+                    </el-table-column>
+
+                    <template #append v-if="nomore_crowdSrc">
+                        <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                            <el-icon>
+                                <MagicStick />
+                            </el-icon> <span>没有更多了</span>
+                        </div>
+                    </template>
+                </el-table>
+                <el-table ref="tableListRefcrowdSrc_sum" :show-header="false" :data="crowdSrcData.sumData" border :v-loading="crowdSrcLoad"
+                    class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+                    style="width: 100%; height: 30px">
+                    <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="secondary_source"
+                        prop="secondary_source">
                     </el-table-column>
                     <el-table-column v-for="item, index in crowdSrcData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
@@ -154,7 +172,7 @@
 </template>
 
 <script setup lang="ts" name="crowd">
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted, ref, nextTick } from "vue";
 import page_header from "./components/page_header.vue";
 import goHome from "./components/goHome.vue";
 import boxHead from "./components/box_head.vue";
@@ -463,10 +481,13 @@ const getTrendListData = async () => {
 
 //刷新table
 const tableListRefcrowdSrc = ref()
+const tableListRefcrowdSrc_sum = ref()
 const refreshTable = () => {
     let table = tableListRefcrowdSrc.value;
+    let tables = tableListRefcrowdSrc_sum.value;
     //强制刷新组件
     table.doLayout()
+    tables.doLayout()
 }
 // 人群流量来源
 const crowdSrcData = reactive({
@@ -517,19 +538,20 @@ const crowdSrcData = reactive({
             unit: "",
         },
     ],
-    tableData: [] as any
+    tableData: [] as any,
+    sumData: [] as any,
 })
 let crowdSrc_pageNum = 1
-const crowdSrc_pageSize = ref(20)
 let nomore_crowdSrc = ref(false)
 let crowdSrcLoad = ref(true)
-let load_crowdSrc = ref(false)
 let crowdSrc_filter = [] as any
 let crowdSrc_key = 0 //跟新筛选用
 let crowdSrc_filterData = [] as any
+let crowdSrc_filterFirst = [] as any
 const getSrcListData = async (filter: boolean = false, level: number = 0) => {
     crowdSrcLoad.value = true
     let data = searchData;
+    data.pageNum = crowdSrc_pageNum
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getCrowdSrcListdata(data)];
@@ -556,18 +578,48 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
             })
             crowdSrc_key += 1
         }
+        if (res.data.sum !== null && res.data.sum !== undefined) {
+            let sum = res.data.sum
+            sum.crowd_tgi = lueNum(sum.crowd_tgi)
+            sum.customer_unit_price = lueNum(sum.customer_unit_price)
+            sum.gmv = lueNum(sum.gmv)
+            sum.paid_buyers = lueNum(sum.paid_buyers)
+            sum.visitors_count = lueNum(sum.visitors_count)
+            sum.payment_conversion_rate = lueNum(sum.payment_conversion_rate * 100) + '%'
+            crowdSrcData.sumData = [sum]
+        }
         if (filter) {
             crowdSrcData.tableData = [...crowdSrc_filterData, ...arr].filter(item => item !== undefined)
             crowdSrcLoad.value = false
             refreshTable()
-            return
+        } else {
+            crowdSrcData.tableData = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
+            crowdSrc_filterFirst = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
+            crowdSrcLoad.value = false
+            refreshTable()
         }
-        console.log(crowdSrc_filter, "crowdSrc_filter")
-        crowdSrcData.tableData = [...crowdSrcData.tableData, ...arr].filter(item => item !== undefined)
-        crowdSrcLoad.value = false
-        refreshTable()
+        nextTick(() => {
+            addScrollListener();
+        });
     }
+}
 
+// 添加滚动监听函数
+const addScrollListener = () => {
+    const table1 = tableListRefcrowdSrc.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    const table2 = tableListRefcrowdSrc_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    tableListRefcrowdSrc.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
+        table2.scrollLeft = event.target.scrollLeft
+    }
+    tableListRefcrowdSrc_sum.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
+        table1.scrollLeft = event.target.scrollLeft
+    }
+};
+
+const loadMore_crowdSrc = async () => {
+    crowdSrc_pageNum++
+    // searchData.keyword = ''
+    debounce(getSrcListData(), 1000)
 }
 // 单元格点击
 const crowdSrcClick = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
@@ -583,12 +635,18 @@ interface User {
     index: string
 }
 // 筛选点击
-const crowdSrcRowClick = async (value: string, row: User) => {
-    searchData.secondary_source = value
-    if (value == row.secondary_source) {
-        crowdSrc_filterData = [{ ...row }]
-        getSrcListData(true, 1)
-    }
+const crowdSrcRowClick = async (newFilters: any) => {
+    let counter = 1;
+    const newObject = {} as any;
+
+    Object.keys(newFilters).forEach(key => {
+        newObject[`key${counter}`] = [...newFilters[key]];
+        counter++;
+    });
+    searchData.secondary_source = newObject.key1[0]
+    const data = crowdSrc_filterFirst.find(crowdSrc_filterData => crowdSrc_filterData.secondary_source === newObject.key1[0]);
+    crowdSrc_filterData = [{ ...data }]
+    getSrcListData(true, 1)
 }
 
 // 商品crowd分类10
