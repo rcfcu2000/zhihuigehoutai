@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-26 17:54:00
+ * @LastEditTime: 2024-03-26 18:52:44
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -94,17 +94,19 @@
 
             <el-col :span="10" style="margin-top: 20px;position: relative;">
                 <boxHeadtb title="商品流量来源" />
-                <div class="gmvTrend" style="top:6px;left:12vw">
-                    <el-button type="primary" :icon="RefreshLeft" :circle="true" @click="proSource_filter_R" />
+                <div class="gmvTrend" style="top:10px;left:8vw">
+                    <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true"
+                        @click="proSource_filter_R" />
                 </div>
                 <el-table ref="tableListRef" :data="proSourceData.tableData" border v-loading="proSourceLoad"
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_proSource"
-                    :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000" @cell-click="crowdSrcClick" @filter-change="proSourceClick">
-                    <el-table-column show-overflow-tooltip :label="proSource_filter_label" width="120" align="left" key="secondary_source"
-                        prop="secondary_source" :filters="proSource_filter" :filter-multiple="false"
-                        filter-class-name="crowdSrc_filter">
+                    :infinite-scroll-distance="100" :infinite-scroll-disabled="scroll_proSource"
+                    :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" @cell-click="crowdSrcClick"
+                    @filter-change="proSourceClick">
+                    <el-table-column show-overflow-tooltip :label="proSource_filter_label" width="120" align="left"
+                        key="secondary_source" prop="secondary_source" :filters="proSource_filter"
+                        :filter-multiple="false" filter-class-name="crowdSrc_filter">
                     </el-table-column>
                     <el-table-column v-for="item, index in proSourceData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
@@ -112,7 +114,8 @@
                     </el-table-column>
 
                     <template #append v-if="nomore_proSource">
-                        <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                        <div
+                            style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
                             <el-icon>
                                 <MagicStick />
                             </el-icon> <span>没有更多了</span>
@@ -120,7 +123,7 @@
                     </template>
                 </el-table>
                 <el-table ref="tableListRef_sum" :show-header="false" :data="proSourceData.sumData" border
-                    :v-loading="crowdSrcLoad" class="palletGmv" show-overflow-tooltip
+                    :v-loading="proSourceLoad" class="palletGmv" show-overflow-tooltip
                     element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
                     <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="secondary_source"
                         prop="secondary_source">
@@ -130,8 +133,9 @@
                         :fixed="item.fixed">
                     </el-table-column>
 
-                    <template #append v-if="nomore_crowdSrc">
-                        <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                    <template #append v-if="nomore_proSource">
+                        <div
+                            style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
                             <el-icon>
                                 <MagicStick />
                             </el-icon> <span>没有合计</span>
@@ -141,17 +145,18 @@
             </el-col>
             <el-col :span="10" style="margin-top: 20px;position: relative;">
                 <boxHeadtb title="人群流量来源" />
-                <div class="gmvTrend" style="top:6px;left:12vw">
-                    <el-button type="primary" :icon="RefreshLeft" :circle="true" @click="crowdSrc_filter_R" />
+                <div class="gmvTrend" style="top:10px;left:8vw">
+                    <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true"
+                        @click="crowdSrc_filter_R" />
                 </div>
                 <el-table ref="tableListRefcrowdSrc" :data="crowdSrcData.tableData" border :v-loading="crowdSrcLoad"
                     class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                     style="width: 100%; height: 300px" v-el-table-infinite-scroll="loadMore_crowdSrc"
-                    :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                    :infinite-scroll-delay="2000" @filter-change="crowdSrcRowClick">
-                    <el-table-column show-overflow-tooltip :label="crowdSrc_filter_label" width="120" align="left" key="secondary_source"
-                        prop="secondary_source" :filters="crowdSrc_filter" :filter-multiple="false"
-                        filter-class-name="crowdSrc_filter">
+                    :infinite-scroll-distance="100" :infinite-scroll-disabled="scroll_crowdSrc"
+                    :infinite-scroll-immediate="false" :infinite-scroll-delay="2000" @filter-change="crowdSrcRowClick">
+                    <el-table-column show-overflow-tooltip :label="crowdSrc_filter_label" width="120" align="left"
+                        key="secondary_source" prop="secondary_source" :filters="crowdSrc_filter"
+                        :filter-multiple="false" filter-class-name="crowdSrc_filter">
                     </el-table-column>
                     <el-table-column v-for="item, index in crowdSrcData.table_head" :key="index" :prop="item.dataKey"
                         show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
@@ -159,7 +164,8 @@
                     </el-table-column>
 
                     <template #append v-if="nomore_crowdSrc">
-                        <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                        <div
+                            style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
                             <el-icon>
                                 <MagicStick />
                             </el-icon> <span>没有更多了</span>
@@ -178,7 +184,8 @@
                     </el-table-column>
 
                     <template #append v-if="nomore_crowdSrc">
-                        <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                        <div
+                            style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
                             <el-icon>
                                 <MagicStick />
                             </el-icon> <span>没有合计</span>
@@ -264,6 +271,10 @@ const selectChange = async () => {
     searchData.secondary_source = ''
     searchData.tertiary_source = ''
     searchData.ids = []
+    crowdSrcData.tableData = []
+    crowdSrc_pageNum = 1
+    scroll_crowdSrc.value = false
+    nomore_crowdSrc.value = false
     await getPro10ListData()
     await getProTrendListData()
     await getSrcListData()
@@ -403,7 +414,16 @@ const getListData = async () => {
         EleResize.on(chartDom, listener);
         myChart.on('click', function (params) {
             searchData.crowd_type = params.name
-            console.log(params, 'click');
+            searchData.secondary_source = ''
+            searchData.tertiary_source = ''
+            searchData.ids = []
+            crowdSrcData.tableData = []
+            crowdSrc_pageNum = 1
+            scroll_crowdSrc.value = false
+            nomore_crowdSrc.value = false
+            getSrcListData() //人群流量
+            getProTrendListData() // GMV趋势
+            getPro10ListData() //top10
         });
 
         let chartDom1: any = document.getElementById('popDis');
@@ -424,6 +444,10 @@ const crowdsaClick = async (row: any, column: any, cell: HTMLTableCellElement, e
     searchData.secondary_source = ''
     searchData.tertiary_source = ''
     searchData.ids = []
+    crowdSrcData.tableData = []
+    crowdSrc_pageNum = 1
+    scroll_crowdSrc.value = false
+    nomore_crowdSrc.value = false
     await getSrcListData() //人群流量
     await getProTrendListData() // GMV趋势
     await getPro10ListData() //top10
@@ -572,6 +596,7 @@ const crowdSrcData = reactive({
 let crowdSrc_filter_label = "流量来源"
 let crowdSrc_pageNum = 1
 let nomore_crowdSrc = ref(false)
+let scroll_crowdSrc = ref(false)
 let crowdSrcLoad = ref(true)
 let crowdSrc_filter = [] as any
 let crowdSrc_filterData = [] as any
@@ -594,7 +619,7 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
                 item.visitors_count = lueNum(item.visitors_count)
 
                 item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
-                if(item.tertiary_source){
+                if (item.tertiary_source) {
                     item.secondary_source = item.tertiary_source
                 }
                 if (level == 0) {
@@ -607,6 +632,9 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
                 }
                 arr.push(item)
             })
+        } else {
+            nomore_crowdSrc.value = true
+            scroll_crowdSrc.value = true
         }
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
@@ -668,6 +696,7 @@ const crowdSrcRowClick = async (newFilters: any) => {
     searchData.secondary_source = crowdSrc_filter_label = newObject.key1[0]
     const data = crowdSrc_filterFirst.find(crowdSrc_filterData => crowdSrc_filterData.secondary_source === newObject.key1[0]);
     crowdSrc_filterData = [{ ...data }]
+    scroll_crowdSrc.value = false
     getSrcListData(true, 1)
 }
 // 重置筛选
@@ -774,6 +803,10 @@ const top10Click = async (row: any, column: any, cell: HTMLTableCellElement, eve
     searchData.ids = [row.product_id]
     searchData.secondary_source = ''
     searchData.tertiary_source = ''
+    proSourceData.tableData = []
+    scroll_proSource.value = false
+    nomore_proSource.value = false
+    proSource_pageNum = 1
     await getProSrcListData() // 商品流量来源
     await getProTrendListData() // GMV趋势
     await getTrendListData() //GMV趋势,人群分布
@@ -907,6 +940,7 @@ const proSourceData = reactive({
 let proSource_filter_label = "流量来源"
 let proSource_pageNum = 1
 let nomore_proSource = ref(false)
+let scroll_proSource = ref(false)
 let proSourceLoad = ref(true)
 let proSource_filter = [] as any
 let proSource_filterData = [] as any
@@ -927,7 +961,7 @@ const getProSrcListData = async (filter: boolean = false, level: number = 0) => 
                 item.gmv = lueNum(item.gmv)
                 item.paid_buyers = lueNum(item.paid_buyers)
                 item.visitors_count = lueNum(item.visitors_count)
-                if(item.tertiary_source){
+                if (item.tertiary_source) {
                     item.secondary_source = item.tertiary_source
                 }
 
@@ -942,6 +976,9 @@ const getProSrcListData = async (filter: boolean = false, level: number = 0) => 
                 }
                 arr.push(item)
             })
+        } else {
+            nomore_proSource.value = true
+            scroll_proSource.value = true
         }
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
@@ -990,6 +1027,7 @@ const proSourceClick = async (newFilters: any) => {
     searchData.secondary_source = proSource_filter_label = newObject.key1[0]
     const data = proSource_filterFirst.find(proSource_filterData => proSource_filterData.secondary_source === newObject.key1[0]);
     proSource_filterData = [{ ...data }]
+    scroll_proSource.value = false
     getProSrcListData(true, 1)
 }
 // 重置筛选
@@ -1136,9 +1174,11 @@ function debounce1(fn: any, delay = 500) {
 ::v-deep(.el-table tr) {
     background: transparent;
 }
-::v-deep(.el-table .cell){
+
+::v-deep(.el-table .cell) {
     padding: 0;
 }
+
 ::v-deep(.el-table.is-scrolling-left th.el-table-fixed-column--left) {
     background: transparent;
 }
