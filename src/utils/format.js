@@ -87,6 +87,21 @@ export function lueNum(num) {
   }
   return num;
 }
+export function lueNum1(num) {
+  num = Number(num)
+  // 格式化为千分位输出 num.toLocaleString()
+  if (num > 9999) {
+    num = (num / 10000).toFixed(2); //保留小数点后两位
+    if (num > 9999) {
+      num = (num.toLocaleString() / 10000).toFixed(4) + "亿";
+    } else {
+      num = num.toLocaleString() + "万";
+    }
+  } else {
+    num = num.toFixed(0)
+  }
+  return num;
+}
 
 export function mergeArr(array) { //数组去重
   var temp = []; //一个新的临时数组

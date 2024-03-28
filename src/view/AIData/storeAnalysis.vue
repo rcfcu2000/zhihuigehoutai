@@ -106,7 +106,7 @@
                                             </div>
                                             <div class="describe" style="color: #01e5ff;">
                                                 超过{{
-                                                    persentNum(numS.data.shop_service_analysis.product_negative_review_rate_above_peers)
+                                                    lueNum1(persentNum(numS.data.shop_service_analysis.product_negative_review_rate_above_peers))
                                                 }}%同行
                                             </div>
                                         </div>
@@ -260,7 +260,7 @@
                                                 会员人数
                                             </div>
                                             <div class="describe" style="color: #01e5ff;">
-                                                昨日招募会员数{{ lueNum(numS.data.customer_analysis.members_recruited_yesterday)
+                                                昨日招募会员数{{ lueNum1(numS.data.customer_analysis.members_recruited_yesterday)
                                                 }}
                                             </div>
                                         </div>
@@ -392,7 +392,7 @@
 </template>
 <script setup lang="ts" name="storeAnalysis">
 import goHome from "./components/goHome.vue";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum, lueNum1, roundNum } from "@/utils/format.js"
 import { reactive, onMounted, ref } from "vue";
 import {
     shopGetAlldata,

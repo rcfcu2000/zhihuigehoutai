@@ -1638,7 +1638,8 @@ $echarts_bg_img: url("./images/_2.png");
             font-weight: 700;
             // width: 462px;
             background-image: url("./images/image-2.png");
-            background-size: 100% 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
         .title_btn {

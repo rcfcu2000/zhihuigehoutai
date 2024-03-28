@@ -1,8 +1,8 @@
 /*
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-15 16:41:52
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-03-27 12:16:00
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -511,6 +511,42 @@ export const getProductCrowdsTrendListdata = (data) => {
 export const getProductSrcListdata = (data) => {
     return service({
         url: '/Crowdsa/getProductSrcListdata',
+        method: 'post',
+        data
+    })
+}
+
+// 市场分析-类目明细列表  
+export const getCategoryGmvDetailList = (data) => {
+    return service({
+        url: '/industry/getCategoryGmvDetailList',
+        method: 'post',
+        data
+    })
+}
+
+// 市场分析-类目GMV列表 
+export const getCategoryGmvList = (data) => {
+    return service({
+        url: '/industry/getCategoryGmvList',
+        method: 'post',
+        data
+    })
+}
+
+// 市场分析-类目GMV趋势  
+export const getCategoryGmvTreadData = (data) => {
+    return service({
+        url: '/industry/getCategoryGmvTreadData',
+        method: 'post',
+        data
+    })
+}
+
+// 市场分析-店铺行业数据  
+export const getShopIndustryList = (data) => {
+    return service({
+        url: '/industry/getShopIndustryList',
         method: 'post',
         data
     })

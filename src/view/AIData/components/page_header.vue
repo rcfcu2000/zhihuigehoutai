@@ -29,8 +29,6 @@
 
 const props = defineProps(['title'])
 
-console.log(props, "page_header_props")
-
 </script>
 <style lang="scss" scoped>
 // $header_bg: url('../images/0.png');

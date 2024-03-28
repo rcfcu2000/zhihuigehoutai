@@ -52,7 +52,6 @@
                     <li>
                         <span class="ctn_num">
                             {{ lueNum(state.titleData.promotion_cost) }}
-                            %
                         </span>
                         <span class="ctn_name"> 推广花费 </span>
                     </li>
@@ -60,7 +59,7 @@
                         <span class="ctn_num">
                             {{
             parseFloat((state.titleData.cost_percentage * 100).toFixed(2))
-        }}% %
+        }}%
                         </span>
                         <span class="ctn_name"> 推广占比 </span>
                     </li>
@@ -209,7 +208,7 @@
                             </li>
                             <li class="roduct_right_ctn_data" :title="parseFloat(ikun.gmv.toFixed(2))">
                                 <span class="ctn_num">{{ lueNum(0) }}</span>
-                                <span class="ctn_tit">GMV占比</span>
+                                <span class="ctn_tit">渠道占比</span>
                             </li>
                             <li class="roduct_right_ctn_data" :title="parseFloat(ikun.promotion_roi.toFixed(2))">
                                 <span class="ctn_num">{{ lueNum(ikun.promotion_roi) }}</span>
@@ -297,6 +296,7 @@ import {
     pieOptionsHome,
     wordsCloud,
     lineOptions,
+    lineOptionsYY,
     lineOptions1_y,
 } from "./echartsOptions";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
@@ -812,8 +812,14 @@ const getbox2Echarts = async () => {
     if (res1.code == 0) {
         let gmv_date = [] as any;
         let gmv_data = [
-            { name: "访客数", data: [] },
-            { name: "GMV", data: [] },
+            {
+                name: "访客数",
+                yAxisIndex: 0, data: []
+            },
+            {
+                name: "GMV",
+                yAxisIndex: 1, data: []
+            },
         ] as any;
         res1.data.records?.map((item: any, index: any) => {
             gmv_date.push(item.date);
@@ -822,7 +828,7 @@ const getbox2Echarts = async () => {
         });
         const chartDom1 = document.getElementById("box2center") as HTMLElement;
         const myChart1 = echarts.init(chartDom1);
-        const option1 = lineOptions(gmv_data, gmv_date, false, "");
+        const option1 = lineOptionsYY(gmv_data, gmv_date, false, "");
         option1 && myChart1.setOption(option1);
 
         let listener1 = function () {
@@ -875,7 +881,34 @@ const getBox4 = async () => {
         const chartDom2 = document.getElementById("box4Right") as HTMLElement;
         const myChart2 = echarts.init(chartDom2);
 
-
+        let arr1Min = arr1[0].data.reduce((min, item) => {
+            return item < min ? item : min;
+        })
+        arr1[0].name = arr1[0].name + ':' +  arr1Min
+        arr1[0].data = arr1[0].data.map((item: any, index: any) =>{
+            return (item-arr1Min)
+        })
+        let arr2Min1 = arr2[0].data.reduce((min, item) => {
+            return item < min ? item : min;
+        })
+        arr2[0].name = arr2[0].name + ':' +  arr2Min1
+        arr2[0].data = arr2[0].data.map((item: any, index: any) =>{
+            return (item-arr2Min1)
+        })
+        let arr2Min2 = arr2[1].data.reduce((min, item) => {
+            return item < min ? item : min;
+        })
+        arr2[1].name = arr2[1].name + ':' +  arr2Min2
+        arr2[1].data = arr2[1].data.map((item: any, index: any) =>{
+            return (item-arr2Min2)
+        })
+        let arr2Min3 = arr2[2].data.reduce((min, item) => {
+            return item < min ? item : min;
+        })
+        arr2[2].name = arr2[2].name + ':' +  arr2Min3
+        arr2[2].data = arr2[2].data.map((item: any, index: any) =>{
+            return (item-arr2Min3)
+        })
         const option1 = lineOptions(arr1, timeX, false, '');
         option1 && myChart1.setOption(option1);
 

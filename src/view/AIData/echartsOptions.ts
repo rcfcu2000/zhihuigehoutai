@@ -44,6 +44,21 @@ function lueNum(num) {
     }
     return num;
 }
+function lueNum1(num) {
+    num = Number(num)
+    // 格式化为千分位输出 num.toLocaleString()
+    if (num > 9999) {
+        num = (num / 10000).toFixed(2); //保留小数点后两位
+        if (num > 9999) {
+            num = (num.toLocaleString() / 10000).toFixed(0) + "亿";
+        } else {
+            num = num.toLocaleString() + "万";
+        }
+    } else {
+        num = num.toFixed(0)
+    }
+    return num;
+}
 const orderMap = {
     S: 1,
     A: 2,
@@ -471,21 +486,21 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
             containLabel: true
         },
         dataZoom: [
-          {
-            show: false,
-          },
-          {
-            type: 'inside',
-          },
-          {
-            show: false,
-            yAxisIndex: 0,
-            filterMode: 'empty',
-            width: 30,
-            height: '80%',
-            showDataShadow: false,
-            left: '93%'
-          }
+            {
+                show: false,
+            },
+            {
+                type: 'inside',
+            },
+            {
+                show: false,
+                yAxisIndex: 0,
+                filterMode: 'empty',
+                width: 30,
+                height: '80%',
+                showDataShadow: false,
+                left: '93%'
+            }
         ],
         xAxis: {
             type: 'category',
@@ -507,6 +522,7 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
         },
         yAxis: {
             type: 'value',
+            offset: 10,
             splitLine: {
                 show: false,
                 lineStyle: {
@@ -514,8 +530,11 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
                 }
             },
             axisLabel: {
-                show: false,
-                color: '#fff'
+                // show: false,
+                color: '#fff',
+                formatter: function (value, index) {
+                    return lueNum(value)
+                }
             },
             axisTick: {
                 show: false,
@@ -530,6 +549,106 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
                 data: i.data,
                 itemStyle: {
                     color: backColor[index],
+                }
+            }
+        }),
+    }
+}
+// 假数据线图双Y轴
+export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, type: any) => {
+    // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${lueNum(value)}${type}`
+                } else {
+                    return `${lueNum(value)}`
+                }
+            }
+        },
+        legend: {
+            // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+            data: arr?.map((i: { name: any; }) => i.name),
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: '6%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        yAxis: [{
+            name: '访客数',
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            // interval: 10000,
+            axisLabel: {
+                // show: false,
+                color: '#fff',
+                formatter: function (value, index) {
+                    return lueNum(value)
+                }
+            },
+            // axisTick: {
+            //     show: false,
+            // },
+        }, {
+            name: 'GMV',
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            interval: 10,
+            axisLabel: {
+                // show: false,
+                color: '#fff', 
+                formatter: function (value, index) {
+                    return lueNum(value)
+                }
+            },
+            // axisTick: {
+            //     show: false,
+            // },
+        },],
+        series: arr?.map((i: { name: any; data: any; }, index: number) => {
+            return {
+                name: i.name,
+                stack: 'Total',
+                symbolSize: 1, // 设置数据点的大小为8像素
+                type: 'line',
+                data: i.data,
+                itemStyle: {
+                    // color: backColor[index],
                 }
             }
         }),
@@ -1642,7 +1761,7 @@ export const pieItemOptions1 = (arr: any, lengShow: true) => {
     return {
         tooltip: {
             trigger: 'item',
-            formatter: (params)=>{
+            formatter: (params) => {
                 return `${params.marker}${params.name}:<br/> ${lueNum(params.value) + '(' + params.percent}%)`;
             }
         },
@@ -1661,9 +1780,11 @@ export const pieItemOptions1 = (arr: any, lengShow: true) => {
             containLabel: true
         },
         legend: {
+            
+            orient: 'vertical',
             show: lengShow,
             type: 'scroll',
-            left: 'center',
+            right: 10,
             // orient: 'vertical',
             // right: 20,
             icon: "circle",
@@ -1673,6 +1794,7 @@ export const pieItemOptions1 = (arr: any, lengShow: true) => {
             },
             pageIconColor: '#fff',
             top: "5%",
+            bottom: 20,
             textStyle: {
                 color: '#FFF'
             }

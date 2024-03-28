@@ -29,16 +29,16 @@
                                 <span class="ctn_name"> 净利润 </span>
                             </li>
                             <li :title="lueNum(indexData.data.gmv)">
+                                <span class="ctn_num"> {{ lueNum(indexData.data.profit_rate * 100) }}% </span>
+                                <span class="ctn_name"> 净利润率 </span>
+                            </li>
+                            <li :title="lueNum(indexData.data.gmv)">
                                 <span class="ctn_num"> {{ lueNum(indexData.data.spend) }} </span>
                                 <span class="ctn_name"> 推广花费 </span>
                             </li>
                             <li>
                                 <span class="ctn_num"> {{ lueNum(indexData.data.promotion_percentage * 100) }}% </span>
                                 <span class="ctn_name"> 推广占比 </span>
-                            </li>
-                            <li :title="lueNum(indexData.data.gmv)">
-                                <span class="ctn_num"> {{ lueNum(indexData.data.profit_rate * 100) }}% </span>
-                                <span class="ctn_name"> 净利润率 </span>
                             </li>
                         </ul>
                     </div>
@@ -251,6 +251,7 @@ const disabledDate = (time: Date) => {
 const getData = async () => {
     await getManager()
     await getCategory()
+    palletData.tableData = []
     await getPallet()
     await getProduct()
 };
@@ -527,7 +528,8 @@ const getManager = async () => {
     }
 }
 const loadMore_manager = async () => {
-    console.log("loadMore_managerloadMore_manager")
+    manager_pageNum++
+    managerLoad.value = true
     debounce(getManager(), 300)
 }
 
@@ -619,6 +621,8 @@ const getCategory = async () => {
     }
 }
 const loadMore_category = async () => {
+    category_pageNum++
+    categoryLoad.value = true
     debounce(getCategory(), 300)
 }
 
@@ -789,6 +793,8 @@ const getPallet = async () => {
     }
 }
 const loadMore_pallet = async () => {
+    pallet_pageNum++
+    palletLoad.value = true
     debounce(getPallet(), 300)
 }
 
@@ -977,6 +983,8 @@ const getProduct = async () => {
     }
 }
 const loadMore_product = async () => {
+    product_pageNum++
+    productLoad.value = true
     debounce(getProduct(), 300)
 }
 
