@@ -13,7 +13,8 @@
         <el-form :inline="true" :model="searchData" class="goal-from">
             <el-form-item label="类目选择">
                 <el-cascader :key="listKey" v-model="searchData.category" :options="categoryList"
-                    :show-all-levels="false" :props="{ value: 'category', label: 'category' }" @change="categoryChange" />
+                    :show-all-levels="false" :props="{ value: 'category', label: 'category' }"
+                    @change="categoryChange" />
             </el-form-item>
             <el-form-item label="请选择起止时间">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
@@ -251,48 +252,9 @@ const getCategoryList = async (filter: boolean = false, level: number = 0) => {
     data.end_date = data.date[1];
     const [res] = [await getCategoryGmvDetailList(data)]
     if (res.code == 0) {
-        let date = [] as any
         let arr = [] as any;
-        let objRate = {
-            name: '市场占有率',
-            type: 'line',
-            data: [] as any
-        }
-        let objGmv = {
-            name: '类目GMV',
-            type: 'bar',
-            data: [] as any
-        }
-        let objVisCate = {
-            name: '类目访问人数',
-            type: 'line',
-            data: [] as any
-        }
-        let objVis = {
-            name: '本店访客数',
-            type: 'line',
-            data: [] as any
-        }
-        let objGmvCate = {
-            name: '类目GMV',
-            type: 'line',
-            data: [] as any
-        }
-        let objGmv1 = {
-            name: '本店GMV',
-            type: 'line',
-            data: [] as any
-        }
-        let serieslineAndBarData = [] as any
-        let seriesVisRate = [] as any
-        let seriesGmvRate = [] as any
         if (res.data.records.length > 0) {
             IndustryData.tableData = res.data.records.map((item: any, index: any) => {
-                objGmv.data.push(item.category_gmv)
-                objGmv1.data.push(item.gmv)
-                objRate.data.push(item.rate)
-                objVisCate.data.push(item.category_visitors_count)
-                objVis.data.push(item.visitors_count)
 
                 item.category_visitors_count = lueNum(item.category_visitors_count)
                 item.visitors_count = lueNum(item.visitors_count)
@@ -304,7 +266,6 @@ const getCategoryList = async (filter: boolean = false, level: number = 0) => {
                 item.rate = lueNum(item.rate * 100) + '%'
                 item.add_to_cart_rate = lueNum(item.add_to_cart_rate * 100) + '%'
                 item.category_add_to_cart_rate = lueNum(item.category_add_to_cart_rate * 100) + '%'
-                date.push(item.date)
                 if (item.category3) {
                     item.category2 = item.category3
                 }
@@ -322,42 +283,6 @@ const getCategoryList = async (filter: boolean = false, level: number = 0) => {
             nomore_Industry.value = true
             scroll_Industry.value = true
         }
-        serieslineAndBarData.push(objGmv, objRate)
-        seriesVisRate.push(objVisCate, objVis)
-        seriesGmvRate.push(objGmv, objGmv1)
-
-        let chartDom1: any = document.getElementById('inCompare');
-        let myChart1 = echarts.init(chartDom1);
-        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date, false, '');
-        let listener1 = function () {
-            if (myChart1) {
-                myChart1.resize();
-            }
-        };
-        option1 && myChart1.setOption(option1);
-        EleResize.on(chartDom1, listener1);
-
-        let chartDom2: any = document.getElementById('visCompare');
-        let myChart2 = echarts.init(chartDom2);
-        let option2 = lineOptions_lineAndbar(seriesVisRate, date, false, '');
-        let listener2 = function () {
-            if (myChart2) {
-                myChart2.resize();
-            }
-        };
-        option2 && myChart2.setOption(option2);
-        EleResize.on(chartDom2, listener2);
-
-        let chartDom3: any = document.getElementById('gmvCompare');
-        let myChart3 = echarts.init(chartDom3);
-        let option3 = lineOptions_lineAndbar(seriesGmvRate, date, false, '');
-        let listener3 = function () {
-            if (myChart3) {
-                myChart3.resize();
-            }
-        };
-        option3 && myChart3.setOption(option3);
-        EleResize.on(chartDom3, listener3);
 
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
@@ -514,9 +439,80 @@ const getGmvTrend = async () => {
     const [res] = [await getCategoryGmvTreadData(data)]
     console.log(res, "getCategoryGmvTreadData")
     if (res.code == 0) {
+        let date = [] as any
+        let objRate = {
+            name: '市场占有率',
+            type: 'line',
+            data: [] as any
+        }
+        let objGmv = {
+            name: '类目GMV',
+            type: 'bar',
+            data: [] as any
+        }
+        let objVisCate = {
+            name: '类目访问人数',
+            type: 'line',
+            data: [] as any
+        }
+        let objVis = {
+            name: '本店访客数',
+            type: 'line',
+            data: [] as any
+        }
+        let objGmv1 = {
+            name: '本店GMV',
+            type: 'line',
+            data: [] as any
+        }
+        let serieslineAndBarData = [] as any
+        let seriesVisRate = [] as any
+        let seriesGmvRate = [] as any
         res.data.records.map((item: any, index: any) => {
+            objGmv.data.push(item.category_gmv)
+            objGmv1.data.push(item.gmv)
+            objRate.data.push(item.rate)
+            objVisCate.data.push(item.category_visitors_count)
+            objVis.data.push(item.visitors_count)
+            date.push(item.date)
 
         })
+        serieslineAndBarData.push(objGmv, objRate)
+        seriesVisRate.push(objVisCate, objVis)
+        seriesGmvRate.push(objGmv, objGmv1)
+
+        let chartDom1: any = document.getElementById('inCompare');
+        let myChart1 = echarts.init(chartDom1);
+        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date, false, '');
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        option1 && myChart1.setOption(option1);
+        EleResize.on(chartDom1, listener1);
+
+        let chartDom2: any = document.getElementById('visCompare');
+        let myChart2 = echarts.init(chartDom2);
+        let option2 = lineOptions_lineAndbar(seriesVisRate, date, false, '');
+        let listener2 = function () {
+            if (myChart2) {
+                myChart2.resize();
+            }
+        };
+        option2 && myChart2.setOption(option2);
+        EleResize.on(chartDom2, listener2);
+
+        let chartDom3: any = document.getElementById('gmvCompare');
+        let myChart3 = echarts.init(chartDom3);
+        let option3 = lineOptions_lineAndbar(seriesGmvRate, date, false, '');
+        let listener3 = function () {
+            if (myChart3) {
+                myChart3.resize();
+            }
+        };
+        option3 && myChart3.setOption(option3);
+        EleResize.on(chartDom3, listener3);
     }
 }
 
