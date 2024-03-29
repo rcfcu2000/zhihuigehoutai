@@ -2,7 +2,7 @@
  * @Author: dtl 603388675@.com
  * @Date: 2024-03-27 12:16:14 市场分析
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-29 11:42:47
+ * @LastEditTime: 2024-03-29 18:05:44
  * @FilePath: \zhihuigehoutai\src\view\AIData\Industry.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -511,15 +511,53 @@ const getGmvTrend = async () => {
     }
 }
 
-// 获取行业数据
+// 获取店铺行业数据对比
 const getIndustryList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getShopIndustryList(data)]
-    console.log(res, "getShopIndustryList")
     if (res.code == 0) {
-
+        if (res.data.records.length > 0) {
+            const CompareDataI = groupBy(res.data.records, 'type')
+            // 自增分组后的键
+            let increment = 0;
+            const incrementedKeysGroup = Object.keys(CompareDataI).reduce((acc, key) => {
+                acc[increment] = CompareDataI[key];
+                increment++;
+                return acc;
+            }, {});
+            const arr = Object.values(incrementedKeysGroup)
+            let compareData = [] as any
+            let date = [] as any
+            console.log(arr, "arrarrarrarr")
+            arr.map((item: any, index: any) => {
+                let obj = {
+                    name: '',
+                    type: 'line',
+                    data: [] as any
+                }
+                item.map((itm: any, idx: any) => {
+                    obj.name = itm.type
+                    obj.data.push(itm.gmv)
+                    if (index == 0) {
+                        date.push(itm.date.substring(5))
+                    }
+                })
+                compareData.push(obj)
+            })
+            // 
+            let chartDom1: any = document.getElementById('Compare');
+            let myChart1 = echarts.init(chartDom1);
+            let option1 = lineOptions_lineAndbar(compareData, date, false, '');
+            let listener1 = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+            };
+            option1 && myChart1.setOption(option1);
+            EleResize.on(chartDom1, listener1);
+        }
     }
 }
 
@@ -585,7 +623,7 @@ function debounce(func: any, limit = 500) {
 
 // }
 
-::v-deep(.el-input__wrapper,.el-date-editor) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
     border-radius: 5px;
