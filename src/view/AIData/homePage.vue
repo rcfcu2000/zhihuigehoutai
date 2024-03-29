@@ -22,13 +22,13 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            {{ lueNum(state.titleData.search_visitor_count) }}
+                            {{ lueNum(state.titleData.visitors) }}
                         </span>
                         <span class="ctn_name"> 访客数 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ lueNum(state.titleData.overall_gmv) }}
+                            {{ lueNum(state.titleData.gmv) }}
                         </span>
                         <span class="ctn_name"> GMV </span>
                     </li>
@@ -40,7 +40,7 @@
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.zfzhl * 100).toFixed(2)) }}
+                            {{ parseFloat((state.titleData.conversion_rate_payment * 100).toFixed(2)) }}
                             %
                         </span>
                         <span class="ctn_name"> 支付转化率 </span>
@@ -51,29 +51,28 @@
                 <ul class="roduct_num_box_ctn">
                     <li>
                         <span class="ctn_num">
-                            {{ lueNum(state.titleData.promotion_cost) }}
+                            {{ lueNum(state.titleData.spend) }}
                         </span>
                         <span class="ctn_name"> 推广花费 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
                             {{
-            parseFloat((state.titleData.cost_percentage * 100).toFixed(2))
+            parseFloat((state.titleData.promotion_percentage * 100).toFixed(2))
         }}%
                         </span>
                         <span class="ctn_name"> 推广占比 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.jlrl * 100).toFixed(2)) }}
+                            {{ parseFloat((state.titleData.profit_rate * 100).toFixed(2)) }}
                             %
                         </span>
                         <span class="ctn_name"> 净利润率 </span>
                     </li>
                     <li>
                         <span class="ctn_num">
-                            {{ parseFloat((state.titleData.lrv * 100).toFixed(2)) }}
-                            %
+                            {{ lueNum((state.titleData.profit)) }}
                         </span>
                         <span class="ctn_name"> 净利润 </span>
                     </li>
@@ -192,44 +191,40 @@
                 <div class="title">推广分析</div>
                 <div class="echarts_bg">
                     <div class="roduct_right_list" v-for="(ikun, index) in state.extendList" :key="index">
-                        <div class="roduct_right_title">{{ ikun.scene_category }}</div>
+                        <div class="roduct_right_title">{{ ikun.scene }}</div>
                         <ul class="roduct_right_ctn">
-                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.spend.toFixed(2))">
+                            <li class="roduct_right_ctn_data" :title="lueNum(ikun.spend)">
                                 <span class="ctn_num"> {{ lueNum(ikun.spend) }} </span>
                                 <span class="ctn_tit">推广花费</span>
                             </li>
-                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.transaction_cost.toFixed(2))">
+                            <li class="roduct_right_ctn_data" :title="lueNum(ikun.transaction_cost)">
                                 <span class="ctn_num">{{ lueNum(ikun.transaction_cost) }}</span>
                                 <span class="ctn_tit">成交成本</span>
                             </li>
-                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.gmv.toFixed(2))">
+                            <li class="roduct_right_ctn_data" :title="lueNum(ikun.gmv)">
                                 <span class="ctn_num">{{ lueNum(ikun.gmv) }}</span>
                                 <span class="ctn_tit">GMV</span>
                             </li>
-                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.gmv.toFixed(2))">
+                            <li class="roduct_right_ctn_data" :title="lueNum(0)">
                                 <span class="ctn_num">{{ lueNum(0) }}</span>
                                 <span class="ctn_tit">渠道占比</span>
                             </li>
-                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.promotion_roi.toFixed(2))">
-                                <span class="ctn_num">{{ lueNum(ikun.promotion_roi) }}</span>
+                            <li class="roduct_right_ctn_data" :title="lueNum(ikun.roi)">
+                                <span class="ctn_num">{{ lueNum(Number(ikun.roi)) }}</span>
                                 <span class="ctn_tit">推广ROI</span>
                             </li>
-                            <li class="roduct_right_ctn_data" :title="parseFloat(ikun.clicks.toFixed(2))">
+                            <li class="roduct_right_ctn_data" :title="lueNum(ikun.clicks)">
                                 <span class="ctn_num">{{ lueNum(ikun.clicks) }}</span>
                                 <span class="ctn_tit">点击量</span>
                             </li>
                             <li class="roduct_right_ctn_data">
                                 <span class="ctn_num">
-                                    {{
-            parseFloat((ikun.click_through_rate * 100).toFixed(2))
-        }}
-                                    %</span>
+                                    {{ lueNum(ikun.clicks_rate ? (Number(ikun.clicks_rate) * 100) : 0) }} %
+                                </span>
                                 <span class="ctn_tit">点击率</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{
-                parseFloat(ikun.cpc.toFixed(2))
-            }}</span>
+                                <span class="ctn_num">{{ lueNum(Number(ikun.cpc)) }}</span>
                                 <span class="ctn_tit">CPC</span>
                             </li>
                             <!-- <li class="roduct_right_ctn_data">
@@ -237,21 +232,15 @@
                                 <span class="ctn_tit">渠道占比</span>
                             </li> -->
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{
-                parseFloat((ikun.channel_percentage * 100).toFixed(2))
-                                    }}%</span>
+                                <span class="ctn_num">{{ lueNum(Number(ikun.add_to_cart_rate) * 100) }}%</span>
                                 <span class="ctn_tit">加购率</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{
-                                    parseFloat(ikun.add_to_cart_cost.toFixed(2))
-                                    }}</span>
+                                <span class="ctn_num">{{ lueNum(ikun.add_to_cart_cost) }}</span>
                                 <span class="ctn_tit">加购成本</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{
-                                    parseFloat((ikun.channel_percentage * 100).toFixed(2))
-                                    }}%</span>
+                                <span class="ctn_num">{{lueNum((ikun.ali_wang_wang_inquiries * 100))}}</span>
                                 <span class="ctn_tit">旺旺咨询量</span>
                             </li>
                         </ul>
@@ -286,6 +275,8 @@ import {
     getTrenddata,
     getGmvVistordata,
     getTrafficdata,
+    shopGetIndexdata,
+    getPromotiondata
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
@@ -307,17 +298,7 @@ import "echarts/extension/bmap/bmap";
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const state = reactive({
-    titleData: {
-        search_visitor_count: 0,
-        overall_gmv: 0,
-        customer_unit_price: 0,
-        zfzhl: 0,
-
-        promotion_cost: 0,
-        cost_percentage: 0,
-        jlrl: 0,
-        lrv: 0,
-    } as any,
+    titleData: {} as any,
     tableData: [
         {
             name: "累计达成率",
@@ -345,11 +326,11 @@ const state = reactive({
         },
     ],
     sumGMV: {
-        gmv: 6987830.3100000005,
+        gmv: 0,
         pallet: "",
-        target_day_rate: 0.8065,
-        target_gmv: 60000000,
-        target_gmv_rate: 0.11646383850000001,
+        target_day_rate: 0,
+        target_gmv: 0,
+        target_gmv_rate: 0,
     },
     extendList: [] as any,
     tree: [] as any,
@@ -372,13 +353,43 @@ onMounted(async () => {
 });
 
 const getData = async () => {
+    await getIndexdata();
+    await getPromotion();
     await gettreeData();
-    await getAll();
+    // await getAll();
     await pieCharts();
     await getBox4();
     await cloudEcharts();
     await getbox2Echarts();
 };
+
+const getIndexdata = async () => {
+    let data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        current_inventory: [],
+        product_manager: "",
+        inventory_change: [],
+    };
+    const res = await shopGetIndexdata(data);
+    if (res.code == 0) {
+        state.titleData = res.data
+    }
+}
+
+const getPromotion = async () => {
+    let data = {
+        end_date: searchData.date[1],
+        start_date: searchData.date[0],
+        current_inventory: [],
+        product_manager: "",
+        inventory_change: [],
+    };
+    const res = await getPromotiondata(data);
+    if (res.code == 0) {
+        state.extendList = res.data.records
+    }
+}
 
 const gettreeData = async () => {
     let data = {
@@ -432,16 +443,16 @@ const getAll = async () => {
         await getPromotionGetAlldata(data),
     ];
     if (res1.code === 0 && res2.code === 0) {
-        state.titleData.search_visitor_count = res1.data.index.search_visitor_count;
-        state.titleData.overall_gmv = res2.data.promotionIndex1.overall_gmv;
-        state.titleData.customer_unit_price = res1.data.index.customer_unit_price;
-        state.titleData.zfzhl = 0;
-        state.titleData.promotion_cost = res2.data.promotionIndex1.promotion_cost;
-        state.titleData.cost_percentage = res2.data.promotionIndex1.cost_percentage;
-        state.titleData.jlrl = 0;
-        state.titleData.lrv = 0;
+        // state.titleData.search_visitor_count = res1.data.index.search_visitor_count;
+        // state.titleData.overall_gmv = res2.data.promotionIndex1.overall_gmv;
+        // state.titleData.customer_unit_price = res1.data.index.customer_unit_price;
+        // state.titleData.zfzhl = 0;
+        // state.titleData.promotion_cost = res2.data.promotionIndex1.promotion_cost;
+        // state.titleData.cost_percentage = res2.data.promotionIndex1.cost_percentage;
+        // state.titleData.jlrl = 0;
+        // state.titleData.lrv = 0;
 
-        state.extendList = res2.data.promotionIndex2?.records;
+        // state.extendList = res2.data.promotionIndex2?.records;
         state.loading = false;
     }
 };
@@ -846,87 +857,88 @@ const getBox4 = async () => {
     data.end_date = data.date[1];
     const [res] = [await getExperiencedata(data)];
     if (res.code == 0) {
-        console.log(res, "getExperiencedata")
-        let arr1 = [
-            {
-                name: "综合体验分",
-                data: [] as any,
-            },
-        ];
-        let arr2 = [
-            {
-                name: "物流体验",
-                data: [] as any,
-            },
-            {
-                name: "商品体验",
-                data: [] as any,
-            },
-            {
-                name: "服务体验",
-                data: [] as any,
-            },
-        ];
-        let timeX = [] as any
-        res.data.records?.map((item: any, index: any) => {
-            arr1[0].data.push(floatNum(item.overall_experience_score))
-            arr2[0].data.push(floatNum(item.logistics_experience_score))
-            arr2[1].data.push(floatNum(item.product_experience_score))
-            arr2[2].data.push(floatNum(item.service_experience_score))
-            timeX.push(item.date)
-        })
-        const chartDom1 = document.getElementById("box4Left") as HTMLElement;
-        const myChart1 = echarts.init(chartDom1);
+        if (res.data.records.length > 0) {
+            let arr1 = [
+                {
+                    name: "综合体验分",
+                    data: [] as any,
+                },
+            ];
+            let arr2 = [
+                {
+                    name: "物流体验",
+                    data: [] as any,
+                },
+                {
+                    name: "商品体验",
+                    data: [] as any,
+                },
+                {
+                    name: "服务体验",
+                    data: [] as any,
+                },
+            ];
+            let timeX = [] as any
+            res.data.records?.map((item: any, index: any) => {
+                arr1[0].data.push(floatNum(item.overall_experience_score))
+                arr2[0].data.push(floatNum(item.logistics_experience_score))
+                arr2[1].data.push(floatNum(item.product_experience_score))
+                arr2[2].data.push(floatNum(item.service_experience_score))
+                timeX.push(item.date)
+            })
+            const chartDom1 = document.getElementById("box4Left") as HTMLElement;
+            const myChart1 = echarts.init(chartDom1);
 
-        const chartDom2 = document.getElementById("box4Right") as HTMLElement;
-        const myChart2 = echarts.init(chartDom2);
+            const chartDom2 = document.getElementById("box4Right") as HTMLElement;
+            const myChart2 = echarts.init(chartDom2);
 
-        let arr1Min = arr1[0].data.reduce((min, item) => {
-            return item < min ? item : min;
-        })
-        arr1[0].name = arr1[0].name + ':' +  arr1Min
-        arr1[0].data = arr1[0].data.map((item: any, index: any) =>{
-            return (item-arr1Min)
-        })
-        let arr2Min1 = arr2[0].data.reduce((min, item) => {
-            return item < min ? item : min;
-        })
-        arr2[0].name = arr2[0].name + ':' +  arr2Min1
-        arr2[0].data = arr2[0].data.map((item: any, index: any) =>{
-            return (item-arr2Min1)
-        })
-        let arr2Min2 = arr2[1].data.reduce((min, item) => {
-            return item < min ? item : min;
-        })
-        arr2[1].name = arr2[1].name + ':' +  arr2Min2
-        arr2[1].data = arr2[1].data.map((item: any, index: any) =>{
-            return (item-arr2Min2)
-        })
-        let arr2Min3 = arr2[2].data.reduce((min, item) => {
-            return item < min ? item : min;
-        })
-        arr2[2].name = arr2[2].name + ':' +  arr2Min3
-        arr2[2].data = arr2[2].data.map((item: any, index: any) =>{
-            return (item-arr2Min3)
-        })
-        const option1 = lineOptions(arr1, timeX, false, '');
-        option1 && myChart1.setOption(option1);
+            let arr1Min = arr1[0].data.reduce((min, item) => {
+                return item < min ? item : min;
+            })
+            arr1[0].name = arr1[0].name + ':' + arr1Min
+            arr1[0].data = arr1[0].data.map((item: any, index: any) => {
+                return (item - arr1Min)
+            })
+            let arr2Min1 = arr2[0].data.reduce((min, item) => {
+                return item < min ? item : min;
+            })
+            arr2[0].name = arr2[0].name + ':' + arr2Min1
+            arr2[0].data = arr2[0].data.map((item: any, index: any) => {
+                return (item - arr2Min1)
+            })
+            let arr2Min2 = arr2[1].data.reduce((min, item) => {
+                return item < min ? item : min;
+            })
+            arr2[1].name = arr2[1].name + ':' + arr2Min2
+            arr2[1].data = arr2[1].data.map((item: any, index: any) => {
+                return (item - arr2Min2)
+            })
+            let arr2Min3 = arr2[2].data.reduce((min, item) => {
+                return item < min ? item : min;
+            })
+            arr2[2].name = arr2[2].name + ':' + arr2Min3
+            arr2[2].data = arr2[2].data.map((item: any, index: any) => {
+                return (item - arr2Min3)
+            })
+            const option1 = lineOptions(arr1, timeX, false, '');
+            option1 && myChart1.setOption(option1);
 
-        const option2 = lineOptions(arr2, timeX, false, '');
-        option2 && myChart2.setOption(option2);
+            const option2 = lineOptions(arr2, timeX, false, '');
+            option2 && myChart2.setOption(option2);
 
-        let listener1 = function () {
-            if (myChart1) {
-                myChart1.resize();
-            }
-        };
-        let listener2 = function () {
-            if (myChart2) {
-                myChart2.resize();
-            }
-        };
-        EleResize.on(chartDom1, listener1);
-        EleResize.on(chartDom2, listener2);
+            let listener1 = function () {
+                if (myChart1) {
+                    myChart1.resize();
+                }
+            };
+            let listener2 = function () {
+                if (myChart2) {
+                    myChart2.resize();
+                }
+            };
+            EleResize.on(chartDom1, listener1);
+            EleResize.on(chartDom2, listener2);
+        }
     }
 };
 </script>
@@ -959,11 +971,12 @@ $echarts_bg_img: url("./images/_2.png");
             .search_left {
                 display: flex;
                 flex: 0.35;
-                // justify-content: space-between;
+                justify-content: space-around;
             }
 
             .search_right {
                 display: flex;
+                justify-content: space-around;
                 flex: 0.35;
             }
 
@@ -1065,6 +1078,7 @@ $echarts_bg_img: url("./images/_2.png");
                 background-size: 100% 100%;
                 display: flex;
                 flex-direction: column;
+                overflow: auto;
 
                 >div {
                     flex: 0.5;
@@ -1262,6 +1276,26 @@ $echarts_bg_img: url("./images/_2.png");
     .el-range-input {
         color: #fff;
     }
+}
+
+::v-deep(.el-input__wrapper,.el-date-editor) {
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 5px;
+    border: 1px solid rgba(1, 229, 255, 1);
+    width: 200px;
+
+    .el-range-input {
+        color: #777777;
+    }
+}
+
+::v-deep(.el-radio-button__inner) {
+    color: #777777 !important;
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
 }
 
 ::v-deep(.el-form-item__label) {

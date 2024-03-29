@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-27 12:16:00
+ * @LastEditTime: 2024-03-29 16:00:31
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -215,7 +215,23 @@ export const getAllTrenddata = (data) => {
     })
 }
 
+// 首页-重点指标
+export const shopGetIndexdata = (data) => {
+    return service({
+        url: '/shophome/getIndexdata',
+        method: 'post',
+        data
+    })
+}
 
+// 首页-推广分析
+export const getPromotiondata = (data) => {
+    return service({
+        url: '/shophome/getPromotiondata',
+        method: 'post',
+        data
+    })
+}
 // 首页-体验分数据
 export const getExperiencedata = (data) => {
     return service({

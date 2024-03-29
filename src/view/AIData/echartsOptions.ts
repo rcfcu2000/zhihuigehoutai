@@ -633,7 +633,6 @@ export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, ty
                 // show: false,
                 color: '#fff', 
                 formatter: function (value, index) {
-                    console.log(value,"y222222222222")
                     return lueNum(value)
                 }
             },
