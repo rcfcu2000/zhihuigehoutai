@@ -2,7 +2,7 @@
  * @Author: dtl 603388675@.com
  * @Date: 2024-03-27 12:16:14 市场分析
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-28 18:48:23
+ * @LastEditTime: 2024-03-29 10:47:42
  * @FilePath: \zhihuigehoutai\src\view\AIData\Industry.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -91,7 +91,7 @@
                     </el-table-column>
                     <template #empty>
                         <div
-                            style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
+                            style="height: 30px;width: 100%;display: flex;align-items: center;justify-content: center;">
                             <el-icon>
                                 <MagicStick />
                             </el-icon> <span>没有合计</span>
@@ -255,7 +255,6 @@ const getCategoryList = async (filter: boolean = false, level: number = 0) => {
         let arr = [] as any;
         if (res.data.records.length > 0) {
             IndustryData.tableData = res.data.records.map((item: any, index: any) => {
-
                 item.category_visitors_count = lueNum(item.category_visitors_count)
                 item.visitors_count = lueNum(item.visitors_count)
                 item.gmv = lueNum(item.gmv)
