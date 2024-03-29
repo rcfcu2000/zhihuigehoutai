@@ -628,11 +628,12 @@ export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, ty
                     color: "#e0e6f126"
                 }
             },
-            interval: 10,
+            offset: -10,
             axisLabel: {
                 // show: false,
                 color: '#fff', 
                 formatter: function (value, index) {
+                    console.log(value,"y222222222222")
                     return lueNum(value)
                 }
             },
@@ -640,10 +641,11 @@ export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, ty
             //     show: false,
             // },
         },],
-        series: arr?.map((i: { name: any; data: any; }, index: number) => {
+        series: arr?.map((i: { name: any; data: any; yAxisIndex: any; }, index: number) => {
             return {
                 name: i.name,
                 stack: 'Total',
+                yAxisIndex: i.yAxisIndex,
                 symbolSize: 1, // 设置数据点的大小为8像素
                 type: 'line',
                 data: i.data,

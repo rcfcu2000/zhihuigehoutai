@@ -1,8 +1,8 @@
 <!--
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-31 16:15:30
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-13 17:29:35
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-03-29 11:55:43
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\storeAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -382,8 +382,8 @@
     <Teleport to=".header_right">
         <div class="search">
             <div class="search_right">
-                <label>请选择起止时间：</label>
-                <el-date-picker v-model="searchData.date" :clearable="false" size="small" format="YYYY/MM/DD"
+                <label style="color: #777777;">请选择起止时间：</label>
+                <el-date-picker v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
                     value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
                     end-placeholder="结束时间" @change="timeChange" />
             </div>
@@ -1000,16 +1000,24 @@ const lineData = () => {
     height: 355px;
 }
 
-::v-deep(.el-input__wrapper) {
+::v-deep(.el-input__wrapper,.el-date-editor) {
     background: transparent !important;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 5px;
     border: 1px solid rgba(1, 229, 255, 1);
     width: 200px;
 
     .el-range-input {
-        color: #fff;
+        color: #777777;
     }
+}
+
+::v-deep(.el-radio-button__inner) {
+    color: #777777 !important;
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
 }
 
 .search {

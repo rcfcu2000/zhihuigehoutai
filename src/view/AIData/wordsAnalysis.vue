@@ -12,14 +12,10 @@
     <div class="wordsAnalysis">
         <page_header :title="pageTitle" />
         <el-form :inline="true" :model="searchData" class="goal-from">
-            <el-form-item label="请选择起止时间">
+            <el-form-item label="请选择起止时间：">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
                     value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
-                    end-placeholder="结束时间" style="
-            width: 220px;
-            background: transparent;
-            border-color: rgba(0, 98, 147, 0.5);
-          " />
+                    end-placeholder="结束时间" />
             </el-form-item>
         </el-form>
         <div class="page_words">
@@ -588,8 +584,31 @@ function renderChunk(chunk) {
     z-index: 100;
 }
 
+::v-deep(.el-input__wrapper,.el-date-editor) {
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 5px;
+    border: 1px solid rgba(1, 229, 255, 1);
+    width: 200px;
+
+    .el-range-input {
+        color: #777777;
+    }
+}
+
+::v-deep(.el-radio-button__inner) {
+    color: #777777 !important;
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
+}
+
 ::v-deep(.el-form-item__label) {
-    color: #fff !important;
+    color: rgba(1, 229, 255, 1);
+    font-size: 16px;
+    font-weight: 400;
+    padding-right: 0;
 }
 
 .box_body {

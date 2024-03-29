@@ -6,7 +6,7 @@
                 <div class="search">
                     <div class="search_left">
                         <div class="search_line">
-                            负责人
+                            负责人：
                             <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip
                                 class="select_width" placeholder="请选择" @change="getAllEcharts">
                                 <el-option v-for="item in state.responsibleList" :key="item.responsible"
@@ -1758,16 +1758,24 @@ $echarts_bg_img: url("./images/_2.png");
 
 }
 
-::v-deep(.el-input__wrapper) {
+::v-deep(.el-input__wrapper,.el-date-editor) {
     background: transparent !important;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 5px;
     border: 1px solid rgba(1, 229, 255, 1);
     width: 200px;
 
     .el-range-input {
-        color: #fff;
+        color: #777777;
     }
+}
+
+::v-deep(.el-radio-button__inner) {
+    color: #777777 !important;
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
 }
 
 ::v-deep(.el-form-item__label) {

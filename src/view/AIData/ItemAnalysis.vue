@@ -6,7 +6,7 @@
                 <div class="search">
                     <div class="search_left">
                         <div class="search_line">
-                            商品选择
+                            商品选择：
                             <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择"
                                 @change="getData" filterable remote reserve-keyword remote-show-suffix
                                 :remote-method="remoteMethod" :loading="searchData.loading">
@@ -17,7 +17,7 @@
                     </div>
                     <div class="search_right">
                         <div class="search_line">
-                            请选择起止时间
+                            请选择起止时间：
                             <el-date-picker v-model="searchData.date" @change="getData" :clearable="false"
                                 format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
                                 type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
@@ -562,6 +562,7 @@ $echarts_bg_img: url("./images/_2.png");
             .search_left {
                 display: flex;
                 flex: 0.4;
+                justify-content: space-around;
 
                 // justify-content: space-between;
                 .select_width {
@@ -572,11 +573,13 @@ $echarts_bg_img: url("./images/_2.png");
             .search_right {
                 display: flex;
                 flex: 0.35;
+                justify-content: space-around;
             }
 
             .search_line {
                 margin: 0 10px;
-                width: 100%;
+                // width: 100%;
+                color: #777777;
 
                 .line {
                     display: flex;
@@ -725,20 +728,24 @@ $echarts_bg_img: url("./images/_2.png");
 
 }
 
-::v-deep(.el-input__wrapper) {
+::v-deep(.el-input__wrapper,.el-date-editor) {
     background: transparent !important;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 5px;
     border: 1px solid rgba(1, 229, 255, 1);
     width: 200px;
 
     .el-range-input {
-        color: #fff;
+        color: #777777;
     }
+}
 
-    .el-input__inner {
-        color: #fff;
-    }
+::v-deep(.el-radio-button__inner) {
+    color: #777777 !important;
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
 }
 
 ::v-deep(.el-form-item__label) {
