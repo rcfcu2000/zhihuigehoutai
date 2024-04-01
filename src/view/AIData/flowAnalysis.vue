@@ -602,8 +602,8 @@ const searchData = reactive({
     start_date: "",
     end_date: "",
     shop_name: "蜡笔派家居旗舰店", //店铺名称
-    traffic_belong: "", //流量归属原则
-    channel: ['手淘搜索', '手淘推荐', '万相台', '引力魔方', '直通车'] as any, // 渠道
+    traffic_belong: "每一次", //流量归属原则
+    channel: ['手淘搜索', '手淘推荐', '关键词推广', '精准人群推广', '智能场景'] as any, // 渠道
 });
 
 onMounted(async () => {
@@ -1768,10 +1768,6 @@ $echarts_bg_img: url("./images/_2.png");
     .el-range-input {
         color: #777777;
     }
-}
-
-::v-deep(.el-radio-button__inner) {
-    color: #777777 !important;
 }
 
 ::v-deep(.el-input__inner) {

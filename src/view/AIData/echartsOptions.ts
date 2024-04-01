@@ -48,7 +48,7 @@ function lueNum1(num) {
     num = Number(num)
     // 格式化为千分位输出 num.toLocaleString()
     if (num > 9999) {
-        num = (num / 10000).toFixed(2); //保留小数点后两位
+        num = (num / 10000).toFixed(0); //保留小数点后两位
         if (num > 9999) {
             num = (num.toLocaleString() / 10000).toFixed(0) + "亿";
         } else {
@@ -613,7 +613,7 @@ export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, ty
                 // show: false,
                 color: '#fff',
                 formatter: function (value, index) {
-                    return lueNum(value)
+                    return lueNum1(value)
                 }
             },
             // axisTick: {
@@ -633,7 +633,7 @@ export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, ty
                 // show: false,
                 color: '#fff', 
                 formatter: function (value, index) {
-                    return lueNum(value)
+                    return lueNum1(value)
                 }
             },
             // axisTick: {

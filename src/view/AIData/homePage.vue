@@ -340,8 +340,8 @@ const disabledDate = (time: Date) => {
 };
 const searchData = reactive({
     shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
-    date: ["2024-01-01", "2024-01-25"],
-    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    // date: ["2024-01-01", "2024-01-25"],
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: "",
     end_date: "",

@@ -3,7 +3,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 14:35:35
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-29 16:44:32
+ * @LastEditTime: 2024-04-01 18:31:35
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -37,25 +37,49 @@
                 </el-col>
             </el-row>
         </div>
-        <div class="wordsTable">
+        <div class="wordsTable" style="position:relative">
             <boxHead title="关键词明细" />
-            <el-table ref="tableListRef" :data="wordsData.tableData" border v-loading="wordsLoad" class="palletGmv"
-                show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+                <div class="gmvTrend" style="top:24px;left:9.5vw;position: absolute;">
+                    <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true"
+                        @click="words_filter_R" />
+                </div>
+            <el-table ref="tableListRefwords" :data="wordsData.tableData" border v-loading="wordsLoad"
+                class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                 style="width: 100%; height: 400px" v-el-table-infinite-scroll="loadMore_words"
                 :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                :infinite-scroll-delay="2000" :lazy="load_words" :load="loadWords"
-                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" row-key="keyword"
-                @row-click="rowClick">
+                :infinite-scroll-delay="2000" @row-click="rowClick" @filter-change="wordsRowClick">
+                <el-table-column show-overflow-tooltip :label="words_filter_label" width="120" align="left"
+                        key="keyword" prop="keyword" :filters="words_filter" :filter-multiple="false"
+                        filter-class-name="words_filter">
+                    </el-table-column>
                 <el-table-column v-for="item, index in wordsData.table_head" :key="index" :prop="item.dataKey"
                     show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                     :fixed="item.fixed">
                 </el-table-column>
 
                 <template #append v-if="nomore_words">
-                    <div style="height: 40px;width: 50%;display: flex;align-items: center;justify-content: center;">
+                    <div style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
                         <el-icon>
                             <MagicStick />
                         </el-icon> <span>没有更多了</span>
+                    </div>
+                </template>
+            </el-table>
+            <el-table ref="tableListRefwords_sum" :show-header="false" :data="wordsData.sumData" border
+                :v-loading="wordsLoad" class="palletGmv" show-overflow-tooltip
+                element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+                <el-table-column show-overflow-tooltip label="合计" width="120" align="left" key="keyword"
+                    prop="keyword">
+                </el-table-column>
+                <el-table-column v-for="item, index in wordsData.table_head" :key="index" :prop="item.dataKey"
+                    show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
+                    :fixed="item.fixed">
+                </el-table-column>
+                <template #empty>
+                    <div style="height: 30px;width: 100%;display: flex;align-items: center;justify-content: center;">
+                        <el-icon>
+                            <MagicStick />
+                        </el-icon> <span>没有合计</span>
                     </div>
                 </template>
             </el-table>
@@ -65,14 +89,15 @@
 </template>
 
 <script setup lang="ts" name="wordsAnalysis">
+import { RefreshLeft, } from '@element-plus/icons-vue'
 import goHome from "./components/goHome.vue";
 import page_header from './components/page_header.vue'
 import box from './components/box.vue'
 import boxHead from "./components/box_head.vue";
 import { useUserStore } from "@/pinia/modules/user";
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, nextTick } from "vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { persentNum, floatNum, lueNum, roundNum, chunkArray } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum, roundNum, chunkArray, lueNum1 } from "@/utils/format.js";
 import {
     getIndustrywordListdata,
     getKeywordListdata,
@@ -136,7 +161,7 @@ const getData = async () => {
     words_pageNum = 1
     await getTrafficdata()
     await getKeywordList()
-    await getIndustrywordList()
+    await getwordswordList()
     await getwordMuList()
     await getScKeywordList()
 }
@@ -185,7 +210,7 @@ const getTrafficdata = async () => {
             changeData[0].data.push(item.cr)
             changeData[1].data.push(item.cr_notfree)
             changeData[2].data.push(item.cr_free)
-            changeData[3].data.push(item.cr_industry)
+            changeData[3].data.push(item.cr_words)
             date.push(item.date)
         })
 
@@ -213,7 +238,7 @@ const getTrafficdata = async () => {
     }
 }
 // 行业关键词
-const getIndustrywordList = async () => {
+const getwordswordList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
@@ -289,18 +314,19 @@ const getKeywordList = async () => {
 }
 
 // 关键词明细信息
-const tableListRef = ref()
+const tableListRefwords = ref()
+const tableListRefwords_sum = ref()
 const wordsData = reactive({
     table_head: [
-        {
-            title: "分类",
-            width: '',
-            align: "left",
-            dataKey: "keyword",
-            key: "keyword",
-            fixed: true,
-            unit: "",
-        },
+        // {
+        //     title: "分类",
+        //     width: '',
+        //     align: "left",
+        //     dataKey: "keyword",
+        //     key: "keyword",
+        //     fixed: true,
+        //     unit: "",
+        // },
         {
             title: "词数量",
             width: '',
@@ -383,55 +409,130 @@ const wordsData = reactive({
             unit: "%",
         },
     ],
-    tableData: [] as any
+    tableData: [] as any,
+    sumData: [] as any,
 })
+let words_filter_label = "分类"
 let words_pageNum = 1
 const words_pageSize = ref(20)
 let nomore_words = ref(false)
+let scroll_words = ref(false)
 let wordsLoad = ref(true)
 let load_words = ref(false)
+let words_filter = [] as any
+let words_filterData = [] as any
+let words_filterFirst = [] as any
 // 关键词明细
-const getwordMuList = async () => {
+const getwordMuList = async (filter: boolean = false, level: number = 0) => {
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = words_pageNum
     const [res] = [await getKeywordMuList(data)];
     if (res.code == 0) {
-        res.data.records.length > 0 ? chunkArrayAndRender(res.data.records, 100, 500, (chunk: any) => {
-            chunk.map((item: any, index: any) => {
-                item.count = lueNum(item.count)
+        let arr = [] as any;
+        if (res.data.records.length > 0) {
+            res.data.records.map((item: any, index: any) => {
+                item.count = lueNum1(item.count)
                 item.clicks = lueNum(item.clicks)
-                item.visitors_count_free = lueNum(item.visitors_count_free)
-                item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
-                item.industry_clicks = lueNum(item.industry_clicks)
+                item.visitors_count_free = lueNum1(item.visitors_count_free)
+                item.visitors_count_notfree = lueNum1(item.visitors_count_notfree)
+                item.industry_clicks = lueNum1(item.industry_clicks)
 
                 item.cr = lueNum(item.cr * 100) + '%'
                 item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
                 item.cr_free = lueNum(item.cr_free * 100) + '%'
-                item.cr_industry = lueNum(item.cr_industry * 100) + '%'
-                item.hasChildren = ref(true)
-                item.children = [] as any
-                item.id = wordsData.tableData.length++
-                return item
+                item.cr_industry = lueNum(item.cr_industry) + '%'
+
+                if (level == 0) {
+                    let obj = {
+                        text: item.keyword,
+                        value: item.keyword,
+                        index: index
+                    }
+                    words_filter.push(obj)
+                }
+                arr.push(item)
             })
-            wordsData.tableData = chunk
-        }) : []
+        } else {
+            nomore_words.value = true
+            scroll_words.value = true
+            searchData.pageNum--
+        }
+
+        if (res.data.sum !== null && res.data.sum !== undefined) {
+            let sum = res.data.sum
+            sum.keyword = '合计'
+            sum.count = lueNum1(sum.count)
+            sum.clicks = lueNum(sum.clicks)
+            sum.visitors_count_free = lueNum1(sum.visitors_count_free)
+            sum.visitors_count_notfree = lueNum1(sum.visitors_count_notfree)
+            sum.industry_clicks = lueNum1(sum.industry_clicks)
+            sum.cr = lueNum(sum.cr * 100) + '%'
+            sum.cr_notfree = lueNum(sum.cr_notfree * 100) + '%'
+            sum.cr_free = lueNum(sum.cr_free * 100) + '%'
+            sum.cr_industry = lueNum(sum.cr_industry) + '%'
+            wordsData.sumData = [sum]
+        }
+        if (filter) {
+            wordsData.tableData = [...words_filterData, ...arr].filter(item => item !== undefined)
+        } else {
+            wordsData.tableData = [...wordsData.tableData, ...arr].filter(item => item !== undefined)
+            words_filterFirst = [...wordsData.tableData, ...arr].filter(item => item !== undefined)
+        }
         wordsLoad.value = false
         refreshTable()
+        nextTick(() => {
+            addScrollListener();
+        });
     }
+}
+// 重置筛选
+const words_filter_R = () => {
+    searchData.keyword = ''
+    words_filter_label = "分类"
+    words_pageNum = 1
+    wordsData.tableData = words_filterFirst
+    refreshTable()
+}
+// 添加滚动监听函数
+const addScrollListener = () => {
+    const table1 = tableListRefwords.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    const table2 = tableListRefwords_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
+    tableListRefwords.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
+        table2.scrollLeft = event.target.scrollLeft
+    }
+    tableListRefwords_sum.value.scrollBarRef.wrapRef.onscroll = (event: any) => {
+        table1.scrollLeft = event.target.scrollLeft
+    }
+};
+// 筛选点击
+const wordsRowClick = async (newFilters: any) => {
+    let counter = 1;
+    const newObject = {} as any;
+
+    Object.keys(newFilters).forEach(key => {
+        newObject[`key${counter}`] = [...newFilters[key]];
+        counter++;
+    });
+    searchData.keyword = words_filter_label = newObject.key1[0]
+    const data = words_filterFirst.find(words_filterData => words_filterData.keyword === newObject.key1[0]);
+    words_filterData = [{ ...data }]
+    scroll_words.value = false
+    getwordMuList(true, 1)
 }
 /**
      * 刷新table
     */
 const refreshTable = () => {
-    let table = tableListRef.value;
+    let table = tableListRefwords.value;
+    let tables = tableListRefwords_sum.value;
     //强制刷新组件
     table.doLayout()
+    tables.doLayout()
 }
 const loadMore_words = async () => {
     words_pageNum++
-    searchData.keyword = ''
     debounce(getwordMuList(), 1000)
 }
 // 节流
@@ -462,8 +563,8 @@ interface words {
     cr_free: string
     visitors_count_notfree: string
     cr_notfree: string
-    industry_clicks: string
-    cr_industry: string
+    words_clicks: string
+    cr_words: string
     hasChildren?: boolean
     children?: words[]
 }
@@ -484,12 +585,12 @@ const loadWords = async (row: any, treeNode: TreeNode, resolve: (id: any[]) => v
                 item.clicks = lueNum(item.clicks)
                 item.visitors_count_free = lueNum(item.visitors_count_free)
                 item.visitors_count_notfree = lueNum(item.visitors_count_notfree)
-                item.industry_clicks = lueNum(item.industry_clicks)
+                item.words_clicks = lueNum(item.words_clicks)
 
                 item.cr = lueNum(item.cr * 100) + '%'
                 item.cr_notfree = lueNum(item.cr_notfree * 100) + '%'
                 item.cr_free = lueNum(item.cr_free * 100) + '%'
-                item.cr_industry = lueNum(item.cr_industry * 100) + '%'
+                item.cr_words = lueNum(item.cr_words * 100) + '%'
                 // item.hasChildren = ref(true)
                 // item.children = [] as any
                 item.id = wordsData.tableData.length++
@@ -584,7 +685,7 @@ function renderChunk(chunk) {
     z-index: 100;
 }
 
-::v-deep(.el-input__wrapper,.el-date-editor) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
     border-radius: 5px;
