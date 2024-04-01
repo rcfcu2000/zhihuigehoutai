@@ -2,7 +2,7 @@
  * @Author: dtl 603388675@.com
  * @Date: 2024-03-27 12:16:14 市场分析
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-29 18:05:44
+ * @LastEditTime: 2024-04-01 13:39:47
  * @FilePath: \zhihuigehoutai\src\view\AIData\Industry.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -180,8 +180,8 @@ const IndustryData = reactive({
             title: "本店GMV占比",
             width: '140',
             align: "center",
-            dataKey: "crowd_tgi",
-            key: "crowd_tgi",
+            dataKey: "shop_gmv_percentage",
+            key: "shop_gmv_percentage",
             fixed: false,
             unit: "",
         },
@@ -281,6 +281,7 @@ const getCategoryList = async (filter: boolean = false, level: number = 0) => {
 
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
+            sum.category2 = '合计'
             sum.category_visitors_count = lueNum(sum.category_visitors_count)
             sum.visitors_count = lueNum(sum.visitors_count)
             sum.gmv = lueNum(sum.gmv)
@@ -432,7 +433,6 @@ const getGmvTrend = async () => {
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getCategoryGmvTreadData(data)]
-    console.log(res, "getCategoryGmvTreadData")
     if (res.code == 0) {
         let date = [] as any
         let objRate = {

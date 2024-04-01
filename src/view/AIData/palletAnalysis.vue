@@ -1699,16 +1699,21 @@ $echarts_bg_img: url("./images/_2.png");
   }
 }
 
-::v-deep(.el-input__wrapper) {
-  background: transparent !important;
-  box-shadow: none;
-  border-radius: 0;
-  border: 1px solid rgba(1, 229, 255, 1);
-  width: 200px;
 
-  .el-range-input {
-    color: #fff;
-  }
+::v-deep(.el-input__wrapper, .el-date-editor) {
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 5px;
+    border: 1px solid rgba(1, 229, 255, 1);
+    width: 200px;
+
+    .el-range-input {
+        color: #777777;
+    }
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
 }
 
 ::v-deep(.el-form-item__label) {

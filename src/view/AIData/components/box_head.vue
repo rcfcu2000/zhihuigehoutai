@@ -28,6 +28,6 @@ const props = defineProps(['title'])
     height: 70px;
     display: flex;
     align-items: center;
-    padding: 0 0 0 4.5vw;
+    padding: 0 0 0 3.5vw;
 }
 </style>

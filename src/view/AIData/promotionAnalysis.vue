@@ -1119,16 +1119,20 @@ $echarts_bg_img2: url('./images/_2.png');
     text-align: right;
 }
 
-::v-deep(.el-input__wrapper) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
-    border-radius: 0;
+    border-radius: 5px;
     border: 1px solid rgba(1, 229, 255, 1);
     width: 200px;
 
     .el-range-input {
-        color: #fff;
+        color: #777777;
     }
+}
+
+::v-deep(.el-input__inner) {
+    color: #777777;
 }
 
 ::v-deep(.el-form-item__label) {
