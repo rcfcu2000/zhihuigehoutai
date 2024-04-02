@@ -189,7 +189,7 @@
             </div>
             <div class="box3_right">
                 <div class="title">推广分析</div>
-                <div class="echarts_bg">
+                <div class="echarts_bg" style="overflow-y: auto;height: 40%">
                     <div class="roduct_right_list" v-for="(ikun, index) in state.extendList" :key="index">
                         <div class="roduct_right_title">{{ ikun.scene }}</div>
                         <ul class="roduct_right_ctn">
