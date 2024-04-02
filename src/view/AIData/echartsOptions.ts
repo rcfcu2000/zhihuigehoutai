@@ -400,7 +400,7 @@ export const lineOptions = (arr: any, date: any, linetype: boolean = false, type
                 if (type == '%') {
                     return `${lueNum(value)}${type}`
                 } else {
-                    return `${lueNum(value)}`
+                    return `${lueNum1(value)}`
                 }
             }
         },

@@ -3,7 +3,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 14:35:35
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-01 18:31:35
+ * @LastEditTime: 2024-04-02 11:22:58
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -21,7 +21,7 @@
         <div class="page_words">
             <el-row :gutter="30" class="wordsRow">
                 <el-col :span="12" v-for="(item, index) in boxData" :key="index">
-                    <box :datas="item" :idx="index" />
+                    <box :datas="item" :idx="index" @wordsClick="words_click" />
                 </el-col>
                 <el-col :span="12">
                     <boxHead title="访客趋势" />
@@ -158,14 +158,27 @@ onMounted(async () => {
 })
 
 const getData = async () => {
+    searchData.keyword = ''
     words_pageNum = 1
+    wordsData.tableData = [] as any
     await getTrafficdata()
     await getKeywordList()
     await getwordswordList()
     await getwordMuList()
     await getScKeywordList()
 }
-
+const words_change = async () => {
+    words_filter_label = "分类"
+    wordsData.tableData = words_filterFirst
+    words_pageNum = 1
+    await getTrafficdata()
+    await getwordMuList()
+}
+const words_click = (params) => {
+    searchData.keyword = params.name
+    words_change()
+    console.log(params,"words_click")
+}
 // 关键词趋势
 const getTrafficdata = async () => {
     let data = searchData;
@@ -210,12 +223,13 @@ const getTrafficdata = async () => {
             changeData[0].data.push(item.cr)
             changeData[1].data.push(item.cr_notfree)
             changeData[2].data.push(item.cr_free)
-            changeData[3].data.push(item.cr_words)
+            changeData[3].data.push(item.cr_industry)
             date.push(item.date)
         })
 
         const chartDom = document.getElementById('visitor') as HTMLElement;
         const myChart = echarts.init(chartDom);
+        myChart.clear()
         const option = lineOptions(visData, date, false, '');
         option && myChart.setOption(option);
         let listener = function () {
@@ -227,7 +241,8 @@ const getTrafficdata = async () => {
 
         const chartDom1 = document.getElementById('conversion') as HTMLElement;
         const myChart1 = echarts.init(chartDom1);
-        const option1 = lineOptions(visData, date, false, '');
+        myChart1.clear()
+        const option1 = lineOptions(changeData, date, false, '');
         option1 && myChart1.setOption(option1);
         let listener1 = function () {
             if (myChart1) {
@@ -490,8 +505,8 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
 // 重置筛选
 const words_filter_R = () => {
     searchData.keyword = ''
-    words_filter_label = "分类"
     words_pageNum = 1
+    words_filter_label = "分类"
     wordsData.tableData = words_filterFirst
     refreshTable()
 }

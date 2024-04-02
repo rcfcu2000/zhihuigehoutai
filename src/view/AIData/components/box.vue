@@ -1,8 +1,8 @@
 <!--
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 17:06:13
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-19 14:37:37
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-04-02 11:16:16
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\box.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -26,11 +26,12 @@ import { wordsCloud } from "../echartsOptions";
 onMounted(async () => {
 })
 const props = defineProps(['datas', 'idx'])
+const emit = defineEmits(['wordsClick'])
 watch([props.datas, props.idx], ([newD, newE]) => {
     nextTick(() => {
         const chartDom = document.getElementById(props.idx) as HTMLElement;
         const myChart = echarts.init(chartDom);
-        if (chartDom != null && chartDom != "" && chartDom != undefined) {
+        if (chartDom != null && chartDom !== "" && chartDom != undefined) {
             myChart.clear()
         }
         const option = wordsCloud(props.datas.chartsData, '');
@@ -43,6 +44,23 @@ watch([props.datas, props.idx], ([newD, newE]) => {
             }
         };
         EleResize.on(chartDom, listener);
+
+        myChart.on("click", function (params: any) {
+            // 取消之前高亮的元素
+            myChart.dispatchAction({
+                type: 'unselect',
+                // 可以指定系列索引、数据索引来控制取消高亮的元素
+                seriesIndex: 'all',
+                dataIndex: 'all'
+            });
+            myChart.dispatchAction({
+                type: 'select',
+                // params 包含了点击事件的相关信息，包括系列索引和数据索引
+                // seriesName: params.name,
+                dataIndex: params.dataIndex
+            });
+            emit('wordsClick', params)
+        })
 
     })
 }, { deep: true, immediate: true })

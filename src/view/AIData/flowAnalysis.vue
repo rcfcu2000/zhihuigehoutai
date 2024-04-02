@@ -90,7 +90,7 @@
                                         <span> {{ scope.row.gmv }} </span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="净利润" align="center">
+                                <el-table-column label="净利润" align="center" width="120">
 
                                     <template #default="scope">
                                         <div class="alcenter">
