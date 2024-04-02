@@ -15,7 +15,10 @@
             </el-button>
             <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item v-for="item,index in pathList" :key="index" :command="{path: item.path}">{{item.meta.title}}</el-dropdown-item>
+                    <el-dropdown-item v-for="item, index in pathList" :key="index"
+                        :command="{ path: item.path }">{{ item.meta.title }}</el-dropdown-item>
+                    <el-dropdown-item :key="'0101'"
+                        :command="{ path: '/layout/dashboard' }">返回系统</el-dropdown-item>
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
@@ -31,8 +34,8 @@ const goHome = () => {
 }
 let pathList = routerStore.routeMap.AIData.children
 
-const pathGo = (params:any) => {
-    console.log(params,"pathGo")
+const pathGo = (params: any) => {
+    console.log(params, "pathGo")
     router.push(params.path)
 }
 </script>

@@ -2,7 +2,7 @@
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-03-13 17:36:40 人群分析
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 15:01:03
+ * @LastEditTime: 2024-04-02 15:19:20
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,7 +14,7 @@
             <el-form-item label="请选择起止时间">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
                     value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="monthrange" start-placeholder="开始时间"
-                    end-placeholder="结束时间"o />
+                    end-placeholder="结束时间" />
             </el-form-item>
         </el-form>
         <el-row :gutter="20">
