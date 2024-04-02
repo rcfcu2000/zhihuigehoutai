@@ -78,7 +78,7 @@ export function lueNum(num) {
   if (num > 9999) {
     num = (num / 10000).toFixed(2); //保留小数点后两位
     if (num > 9999) {
-      num = (num.toLocaleString() / 10000).toFixed(4) + "亿";
+      num = (num.toLocaleString() / 10000).toFixed(2) + "亿";
     } else {
       num = num.toLocaleString() + "万";
     }
@@ -93,7 +93,7 @@ export function lueNum1(num) {
   if (num > 9999) {
     num = (num / 10000).toFixed(2); //保留小数点后两位
     if (num > 9999) {
-      num = (num.toLocaleString() / 10000).toFixed(4) + "亿";
+      num = (num.toLocaleString() / 10000).toFixed(2) + "亿";
     } else {
       num = num.toLocaleString() + "万";
     }

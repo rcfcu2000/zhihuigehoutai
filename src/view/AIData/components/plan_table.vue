@@ -138,7 +138,6 @@ const current_inventory = reactive({
 })
 tableData = propData.Commodity_detail.data
 tableHead = propData.Commodity_detail.column
-tableDataSum = [propData.Commodity_detail.sumTrend]
 comKey.value = tableData.length
 const filterTag = (value: string, row: User) => {
     return row.promotion_type === value

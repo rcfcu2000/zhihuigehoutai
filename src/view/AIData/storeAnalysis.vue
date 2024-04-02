@@ -220,7 +220,7 @@
                                                 客户满意率
                                             </div>
                                             <div class="numS">
-                                                {{ persentNum(numS.data.customer_service.customer_satisfaction_rate) }}%
+                                                {{ lueNum(numS.data.customer_service.customer_satisfaction_rate*100) }}%
                                             </div>
                                         </div>
                                     </el-col>
@@ -232,7 +232,7 @@
                                                 询单转化率
                                             </div>
                                             <div class="numS">
-                                                {{ persentNum(numS.data.customer_service.inquiry_conversion_rate) }}%
+                                                {{ lueNum(numS.data.customer_service.inquiry_conversion_rate*100) }}%
                                             </div>
                                         </div>
                                     </el-col>
@@ -254,7 +254,7 @@
                                     <el-col :span="8">
                                         <div style="height: 140px;">
                                             <div class="numS">
-                                                {{ lueNum(numS.data.customer_analysis.total_membership_count) }}
+                                                {{ lueNum1(numS.data.customer_analysis.total_membership_count) }}
                                             </div>
                                             <div class="describe">
                                                 会员人数

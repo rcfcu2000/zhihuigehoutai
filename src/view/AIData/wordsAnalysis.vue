@@ -2,7 +2,7 @@
  * @Author: dtl 603388675@.com
  * @Date: 2024-03-25 12:26:52
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 17:01:53
+ * @LastEditTime: 2024-04-02 18:15:43
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,13 +30,13 @@
                 <el-col :span="12">
                     <boxHead title="访客趋势" />
                     <div class="box_body" id="visitor">
-
+                        <el-skeleton :rows="4" animated> </el-skeleton>
                     </div>
                 </el-col>
                 <el-col :span="12">
                     <boxHead title="转化率趋势" />
                     <div class="box_body" id="conversion">
-
+                        <el-skeleton :rows="4" animated> </el-skeleton>
                     </div>
                 </el-col>
             </el-row>
@@ -289,9 +289,9 @@ const getwordswordList = async () => {
                     let item = res.data.records[i]
                     item.name = item.keyword
                 if (dataType == 'vis') {
-                    item.value = lueNum1(item.visitors_count)
+                    item.value = (item.visitors_count)
                 } else {
-                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                    item.value = (item.payment_conversion_rate)
                 }
                     arr.push(item)
                 }
@@ -315,9 +315,9 @@ const getScKeywordList = async () => {
                 let item = res.data.records_notfree[i]
                 item.name = item.keyword
                 if (dataType == 'vis') {
-                    item.value = lueNum1(item.visitors_count)
+                    item.value = (item.visitors_count)
                 } else {
-                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                    item.value = (item.payment_conversion_rate)
                 }
                 arr1.push(item)
             }
@@ -329,9 +329,9 @@ const getScKeywordList = async () => {
                 let item = res.data.records_free[i]
                 item.name = item.keyword
                 if (dataType == 'vis') {
-                    item.value = lueNum1(item.visitors_count)
+                    item.value = (item.visitors_count)
                 } else {
-                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                    item.value = (item.payment_conversion_rate)
                 }
                 arr2.push(item)
             }
@@ -351,11 +351,11 @@ const getKeywordList = async () => {
             let arr = [] as any
             for (let i = 0; i < len; i++) {
                 let item = res.data.records[i]
-                item.name = item.keyword_filter
+                item.name = item.keyword
                 if (dataType == 'vis') {
-                    item.value = lueNum1(item.visitors_count)
+                    item.value = (item.visitors_count)
                 } else {
-                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                    item.value = (item.payment_conversion_rate)
                 }
                 arr.push(item)
             }

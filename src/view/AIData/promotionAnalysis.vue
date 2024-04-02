@@ -15,8 +15,8 @@
                         </div>
                         <div class="search_line">
                             本期货盘
-                            <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable
-                                multiple @change="getData2" class="select_width" placeholder="请选择">
+                            <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip
+                                clearable multiple @change="getData2" class="select_width" placeholder="请选择">
                                 <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
                                     :label="item.current_inventory" :value="item.current_inventory" />
                             </el-select>
@@ -34,8 +34,9 @@
                         <div class="search_line">
                             请选择起止时间
                             <el-date-picker @change="getData2()" :clearable="false" v-model="searchData.date"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                                :default-time="defaultTime" start-placeholder="开始时间" end-placeholder="结束时间" />
+                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
+                                type="daterange" :default-time="defaultTime" start-placeholder="开始时间"
+                                end-placeholder="结束时间" />
                         </div>
                     </div>
                 </div>
@@ -289,42 +290,42 @@
         <div class="detailSearch">
             <el-form :inline="true" :model="searchData" size="small" class="form-inline" label-position="right">
                 <el-form-item label="出价方式：" v-if="state.tableSearchLv === 1">
-                    <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
-                        @change="selectChange" style="width: 240px">
+                    <el-select v-model="searchData.bid_type" class="m-2" placeholder="请选择" size="small" multiple
+                        collapse-tags collapse-tags-tooltip @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.bidTypeAnalysis.records" :key="index"
                             :label="item.bid_type" :value="item.bid_type" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="货盘：" v-if="state.tableSearchLv === 1">
-                    <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
-                        @change="selectChange" style="width: 240px">
-                        <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index" :label="item.pallet"
-                            :value="item.pallet" />
+                    <el-select v-model="searchData.pallet" class="m-2" placeholder="请选择" size="small" multiple
+                        collapse-tags collapse-tags-tooltip @change="selectChange" style="width: 240px">
+                        <el-option v-for="(item, index) in all.allData.palletCost.records" :key="index"
+                            :label="item.pallet" :value="item.pallet" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="关键词：" v-if="state.tableSearchLv === 3">
-                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
-                        filterable @change="selectChange" style="width: 240px">
+                    <el-select v-model="searchData.keyword_filter" class="m-2" placeholder="请选择" size="small" multiple
+                        collapse-tags collapse-tags-tooltip filterable @change="selectChange" style="width: 240px">
                         <el-option v-for="(item, index) in all.allData.keywordCost.records" :key="index"
                             :label="item.keyword" :value="item.keyword" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="人群：" v-if="state.tableSearchLv === 4">
-                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple collapse-tags collapse-tags-tooltip
-                        filterable @change="selectChange" style="width: 240px">
-                        <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index" :label="item.crowd"
-                            :value="item.crowd" />
+                    <el-select v-model="searchData.audience_filter" class="m-2" placeholder="请选择" size="small" multiple
+                        collapse-tags collapse-tags-tooltip filterable @change="selectChange" style="width: 240px">
+                        <el-option v-for="(item, index) in all.allData.crowdSpend.records" :key="index"
+                            :label="item.crowd" :value="item.crowd" />
                     </el-select>
                 </el-form-item>
             </el-form>
         </div>
 
-        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length" @load-more="loadMore"
-            :tableCount="proCount" @row_Click="pro_row_click">
+        <product_table v-model="count" :Commodity_detail="allData[0]" :comKey="allData[0].data.length"
+            @load-more="loadMore" :tableCount="proCount" @row_Click="pro_row_click">
         </product_table>
 
-        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length" @load-more="loadMore"
-            :tableCount="planCount">
+        <plan_table v-model="count" :Commodity_detail="allData[1]" :comKey="allData[1].data.length"
+            @load-more="loadMore" :tableCount="planCount">
         </plan_table>
         <goHome />
         <!-- 明细表格 -->
@@ -601,12 +602,12 @@ const echarts2 = async () => {
     const option = pieOptions(arr);
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
-        console.log(params,"PromtionEcharts2")
+        console.log(params, "PromtionEcharts2")
         allData[0].clearData[0] = true
-        searchData.keyword_filter = [], // 关键词
-            searchData.audience_filter = [], // 人群
-            searchData.bid_type = [], // 出价方式
-            state.tableSearchLv = 1;
+        searchData.keyword_filter = [] // 关键词
+        searchData.audience_filter = [] // 人群
+        searchData.bid_type = [] // 出价方式
+        state.tableSearchLv = 1;
         searchData.pallet = [params.name]
         // searchData.current_inventory = [params.name]
         selectChange()
@@ -633,10 +634,10 @@ const echarts3 = async () => {
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
         allData[0].data = []
-        searchData.audience_filter = [], // 人群
-            searchData.bid_type = [], // 出价方式
-            searchData.pallet = [], // 货盘
-            state.tableSearchLv = 3;
+        searchData.audience_filter = [] // 人群
+        searchData.bid_type = [] // 出价方式
+        searchData.pallet = [] // 货盘
+        state.tableSearchLv = 3;
         searchData.keyword_filter = [params.name]
         selectChange()
     })

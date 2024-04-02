@@ -345,10 +345,13 @@ const disabledDate = (time: Date) => {
 };
 
 const getData = async () => {
+    managerData.tableData = []
     await getManager()
+    categoryData.tableData = []
     await getCategory()
     palletData.tableData = []
     await getPallet()
+    productData.tableData = []
     await getProduct()
 };
 
@@ -658,12 +661,13 @@ const getManager = async (filter: boolean = false, level: number = 0) => {
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
             sum.manager = '合计'
-            sum.crowd_tgi = lueNum(sum.crowd_tgi)
-            sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.gmv = lueNum(sum.gmv)
-            sum.paid_buyers = lueNum(sum.paid_buyers)
-            sum.visitors_count = lueNum(sum.visitors_count)
-            sum.payment_conversion_rate = lueNum(sum.payment_conversion_rate * 100) + '%'
+            sum.target_day_rate = lueNum(sum.target_day_rate * 100) + '%'
+            sum.target_gmv = lueNum(sum.target_gmv)
+            sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + '%'
+            sum.profit = lueNum(sum.profit)
+            sum.profit_rate = lueNum(sum.profit_rate * 100) + '%'
+            sum.profit_target_rate = lueNum(sum.profit_target_rate * 100) + '%'
             managerData.sumData = [sum]
         }
         if (filter) {
@@ -824,12 +828,10 @@ const getCategory = async (filter: boolean = false, level: number = 0) => {
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
             sum.category_lv3 = '合计'
-            sum.crowd_tgi = lueNum(sum.crowd_tgi)
-            sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.gmv = lueNum(sum.gmv)
-            sum.paid_buyers = lueNum(sum.paid_buyers)
-            sum.visitors_count = lueNum(sum.visitors_count)
-            sum.payment_conversion_rate = lueNum(sum.payment_conversion_rate * 100) + '%'
+            sum.target_day_rate = lueNum(sum.target_day_rate * 100) + '%'
+            sum.target_gmv = lueNum(sum.target_gmv)
+            sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + '%'
             categoryData.sumData = [sum]
         }
         if (filter) {
@@ -1037,6 +1039,7 @@ const getPallet = async () => {
             item.spend = lueNum(item.spend)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.profit = lueNum(item.profit)
+            item.composite_roi = lueNum(item.composite_roi)
             item.time_schedule = lueNum(item.time_schedule * 100) + "%"
             item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
@@ -1053,6 +1056,7 @@ const getPallet = async () => {
             sum.spend = lueNum(sum.spend)
             sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.profit = lueNum(sum.profit)
+            sum.composite_roi = lueNum(sum.composite_roi)
             sum.time_schedule = lueNum(sum.time_schedule * 100) + "%"
             sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + '%'
             sum.target_day_rate = lueNum(sum.target_day_rate * 100) + '%'
@@ -1128,7 +1132,7 @@ const productData = reactive({
         },
         {
             title: "GMV达成率",
-            width: '',
+            width: '100',
             align: "center",
             dataKey: "target_gmv_rate",
             key: "target_gmv_rate",
@@ -1259,6 +1263,7 @@ const getProduct = async () => {
             item.spend = lueNum(item.spend)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.profit = lueNum(item.profit)
+            item.composite_roi = lueNum(item.composite_roi)
             item.time_schedule = lueNum(item.time_schedule * 100) + "%"
             item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
             item.target_day_rate = lueNum(item.target_day_rate * 100) + '%'
@@ -1276,6 +1281,7 @@ const getProduct = async () => {
             sum.spend = lueNum(sum.spend)
             sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.profit = lueNum(sum.profit)
+            sum.composite_roi = lueNum(sum.composite_roi)
             sum.time_schedule = lueNum(sum.time_schedule * 100) + "%"
             sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + '%'
             sum.target_day_rate = lueNum(sum.target_day_rate * 100) + '%'

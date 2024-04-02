@@ -3,6 +3,7 @@
     <div class="box">
         <boxHead :title="props.datas.title" />
         <div :id="props.idx" class="box_body">
+            <el-skeleton :rows="4" animated> </el-skeleton>
         </div>
     </div>
 </template>
