@@ -30,7 +30,6 @@ const goHome = () => {
     router.push('/layout/dashboard')
 }
 let pathList = routerStore.routeMap.AIData.children
-console.log(routerStore.routeMap.AIData.children, "routerStore")
 
 const pathGo = (params:any) => {
     console.log(params,"pathGo")
