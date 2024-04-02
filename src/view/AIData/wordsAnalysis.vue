@@ -1,20 +1,24 @@
 <!--
-    关键词分析
- * @Author: dtl darksunnydong@qq.com
- * @Date: 2024-01-22 14:35:35
+ * @Author: dtl 603388675@.com
+ * @Date: 2024-03-25 12:26:52
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 11:22:58
+ * @LastEditTime: 2024-04-02 13:34:24
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
-
 <template>
     <div class="wordsAnalysis">
         <page_header :title="pageTitle" />
+        <div style="position: absolute;top:25px;left: 8vw;z-index: 100;">
+            <el-button-group class="ml-4">
+                <el-button type="primary" size="large" color="#E6A23C" @click="rateClick">支付转化率</el-button>
+                <el-button type="primary" size="large" color="#E6A23C" @click="visClick">访客数</el-button>
+            </el-button-group>
+        </div>
         <el-form :inline="true" :model="searchData" class="goal-from">
             <el-form-item label="请选择起止时间：">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
-                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                    value-format="YYYY-MM-DD" type="daterange" start-placeholder="开始时间"
                     end-placeholder="结束时间" />
             </el-form-item>
         </el-form>
@@ -39,19 +43,18 @@
         </div>
         <div class="wordsTable" style="position:relative">
             <boxHead title="关键词明细" />
-                <div class="gmvTrend" style="top:24px;left:9.5vw;position: absolute;">
-                    <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true"
-                        @click="words_filter_R" />
-                </div>
-            <el-table ref="tableListRefwords" :data="wordsData.tableData" border v-loading="wordsLoad"
-                class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+            <div class="gmvTrend" style="top:24px;left:9.5vw;position: absolute;">
+                <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true" @click="words_filter_R" />
+            </div>
+            <el-table ref="tableListRefwords" :data="wordsData.tableData" border v-loading="wordsLoad" class="palletGmv"
+                show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
                 style="width: 100%; height: 400px" v-el-table-infinite-scroll="loadMore_words"
                 :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                 :infinite-scroll-delay="2000" @row-click="rowClick" @filter-change="wordsRowClick">
                 <el-table-column show-overflow-tooltip :label="words_filter_label" width="120" align="left"
-                        key="keyword" prop="keyword" :filters="words_filter" :filter-multiple="false"
-                        filter-class-name="words_filter">
-                    </el-table-column>
+                    key="keyword" prop="keyword" :filters="words_filter" :filter-multiple="false"
+                    filter-class-name="words_filter">
+                </el-table-column>
                 <el-table-column v-for="item, index in wordsData.table_head" :key="index" :prop="item.dataKey"
                     show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
                     :fixed="item.fixed">
@@ -68,8 +71,7 @@
             <el-table ref="tableListRefwords_sum" :show-header="false" :data="wordsData.sumData" border
                 :v-loading="wordsLoad" class="palletGmv" show-overflow-tooltip
                 element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
-                <el-table-column show-overflow-tooltip label="合计" width="120" align="left" key="keyword"
-                    prop="keyword">
+                <el-table-column show-overflow-tooltip label="合计" width="120" align="left" key="keyword" prop="keyword">
                 </el-table-column>
                 <el-table-column v-for="item, index in wordsData.table_head" :key="index" :prop="item.dataKey"
                     show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align"
@@ -97,7 +99,7 @@ import boxHead from "./components/box_head.vue";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, ref, onMounted, nextTick } from "vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { persentNum, floatNum, lueNum, roundNum, chunkArray, lueNum1 } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum, mergeArr, chunkArray, lueNum1 } from "@/utils/format.js";
 import {
     getIndustrywordListdata,
     getKeywordListdata,
@@ -107,7 +109,7 @@ import {
 } from "@/api/AIdata";
 
 import * as echarts from "echarts";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import 'echarts-wordcloud';
 import { lineOptions1, lineOptions, wordsCloud } from "./echartsOptions";
 
@@ -132,7 +134,6 @@ const allData = reactive({
     ]
 })
 
-// 词云图数据
 const boxData = reactive([
     { title: '无界词', chartsData: [] as any },
     { title: '生参付费词', chartsData: [] as any },
@@ -161,25 +162,41 @@ const getData = async () => {
     searchData.keyword = ''
     words_pageNum = 1
     wordsData.tableData = [] as any
+    words_filterData = [] as any
+    words_filter = [] as any
     await getTrafficdata()
     await getKeywordList()
     await getwordswordList()
+    await getScKeywordList()
     await getwordMuList()
+}
+let dataType = 'vis'
+const visClick = () => {
+    dataType = 'vis'
+    change_words()
+}
+const rateClick = () => {
+    dataType = 'rate'
+    change_words()
+}
+const change_words = async () => {
+    await getKeywordList()
+    await getwordswordList()
     await getScKeywordList()
 }
 const words_change = async () => {
     words_filter_label = "分类"
-    wordsData.tableData = words_filterFirst
+    wordsData.tableData = []
+    words_filterFirst = []
     words_pageNum = 1
     await getTrafficdata()
     await getwordMuList()
 }
 const words_click = (params) => {
     searchData.keyword = params.name
-    words_change()
-    console.log(params,"words_click")
+    debounce(words_change(), 300)
+    console.log(params, "words_click")
 }
-// 关键词趋势
 const getTrafficdata = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -252,7 +269,6 @@ const getTrafficdata = async () => {
         EleResize.on(chartDom1, listener1);
     }
 }
-// 行业关键词
 const getwordswordList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -266,7 +282,11 @@ const getwordswordList = async () => {
                 for (let i = 0; i < len; i++) {
                     let item = res.data.records[i]
                     item.name = item.keyword
-                    item.value = item.visitors_count
+                if (dataType == 'vis') {
+                    item.value = lueNum1(item.visitors_count)
+                } else {
+                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                }
                     arr.push(item)
                 }
                 boxData[3].chartsData = arr
@@ -275,7 +295,6 @@ const getwordswordList = async () => {
     }
 }
 
-// 生意参谋收费免费关键词明细
 const getScKeywordList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -289,7 +308,11 @@ const getScKeywordList = async () => {
             for (let i = 0; i < len1; i++) {
                 let item = res.data.records_notfree[i]
                 item.name = item.keyword
-                item.value = item.visitors_count
+                if (dataType == 'vis') {
+                    item.value = lueNum1(item.visitors_count)
+                } else {
+                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                }
                 arr1.push(item)
             }
             boxData[1].chartsData = arr1
@@ -299,7 +322,11 @@ const getScKeywordList = async () => {
             for (let i = 0; i < len2; i++) {
                 let item = res.data.records_free[i]
                 item.name = item.keyword
-                item.value = item.visitors_count
+                if (dataType == 'vis') {
+                    item.value = lueNum1(item.visitors_count)
+                } else {
+                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                }
                 arr2.push(item)
             }
             boxData[2].chartsData = arr2
@@ -307,7 +334,6 @@ const getScKeywordList = async () => {
     }
 }
 
-// 无界词信息
 const getKeywordList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -319,8 +345,12 @@ const getKeywordList = async () => {
             let arr = [] as any
             for (let i = 0; i < len; i++) {
                 let item = res.data.records[i]
-                item.name = item.keyword
-                item.value = item.visitors_count
+                item.name = item.keyword_filter
+                if (dataType == 'vis') {
+                    item.value = lueNum1(item.visitors_count)
+                } else {
+                    item.value = lueNum(item.payment_conversion_rate) + '%'
+                }
                 arr.push(item)
             }
             boxData[0].chartsData = arr
@@ -328,7 +358,6 @@ const getKeywordList = async () => {
     }
 }
 
-// 关键词明细信息
 const tableListRefwords = ref()
 const tableListRefwords_sum = ref()
 const wordsData = reactive({
@@ -437,7 +466,6 @@ let load_words = ref(false)
 let words_filter = [] as any
 let words_filterData = [] as any
 let words_filterFirst = [] as any
-// 关键词明细
 const getwordMuList = async (filter: boolean = false, level: number = 0) => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -492,8 +520,8 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
         if (filter) {
             wordsData.tableData = [...words_filterData, ...arr].filter(item => item !== undefined)
         } else {
-            wordsData.tableData = [...wordsData.tableData, ...arr].filter(item => item !== undefined)
             words_filterFirst = [...wordsData.tableData, ...arr].filter(item => item !== undefined)
+            wordsData.tableData = [...wordsData.tableData, ...arr].filter(item => item !== undefined)
         }
         wordsLoad.value = false
         refreshTable()
@@ -507,7 +535,7 @@ const words_filter_R = () => {
     searchData.keyword = ''
     words_pageNum = 1
     words_filter_label = "分类"
-    wordsData.tableData = words_filterFirst
+    wordsData.tableData = mergeArr(words_filterFirst)
     refreshTable()
 }
 // 添加滚动监听函数
@@ -532,7 +560,7 @@ const wordsRowClick = async (newFilters: any) => {
     });
     searchData.keyword = words_filter_label = newObject.key1[0]
     const data = words_filterFirst.find(words_filterData => words_filterData.keyword === newObject.key1[0]);
-    words_filterData = [{ ...data }]
+    // words_filterData = [{ ...data }]
     scroll_words.value = false
     getwordMuList(true, 1)
 }
@@ -548,7 +576,7 @@ const refreshTable = () => {
 }
 const loadMore_words = async () => {
     words_pageNum++
-    debounce(getwordMuList(), 1000)
+    debounce(getwordMuList(), 300)
 }
 // 节流
 function debounce(func: any, limit = 500) {
@@ -673,6 +701,10 @@ function renderChunk(chunk) {
 </script>
 
 <style lang="scss" scoped>
+.el-button {
+    color: #fff;
+}
+
 .wordsAnalysis {
     background-image: $page_bg;
     background-size: 100% 100%;

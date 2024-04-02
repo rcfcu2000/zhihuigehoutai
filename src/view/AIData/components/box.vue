@@ -1,11 +1,3 @@
-<!--
- * @Author: dtl darksunnydong@qq.com
- * @Date: 2024-01-22 17:06:13
- * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 11:16:16
- * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\box.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 
 <template>
     <div class="box">
@@ -19,7 +11,7 @@
 import boxHead from './box_head.vue'
 import { ref, watch, onMounted, nextTick } from 'vue'
 import * as echarts from "echarts";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import 'echarts-wordcloud';
 import { wordsCloud } from "../echartsOptions";
 
@@ -44,18 +36,15 @@ watch([props.datas, props.idx], ([newD, newE]) => {
             }
         };
         EleResize.on(chartDom, listener);
-
+        myChart.off('click');
         myChart.on("click", function (params: any) {
-            // 取消之前高亮的元素
             myChart.dispatchAction({
                 type: 'unselect',
-                // 可以指定系列索引、数据索引来控制取消高亮的元素
                 seriesIndex: 'all',
                 dataIndex: 'all'
             });
             myChart.dispatchAction({
                 type: 'select',
-                // params 包含了点击事件的相关信息，包括系列索引和数据索引
                 // seriesName: params.name,
                 dataIndex: params.dataIndex
             });
