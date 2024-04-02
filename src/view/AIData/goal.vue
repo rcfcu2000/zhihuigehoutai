@@ -316,6 +316,7 @@ import {
     getManagerAlysisdata,
     getPalletListdata,
     getProductListdata,
+    postUrl,
 } from "@/api/AIdata";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 import * as echarts from "echarts";

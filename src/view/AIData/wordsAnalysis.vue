@@ -2,7 +2,7 @@
  * @Author: dtl 603388675@.com
  * @Date: 2024-03-25 12:26:52
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 13:54:13
+ * @LastEditTime: 2024-04-02 17:01:53
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -11,8 +11,8 @@
         <page_header :title="pageTitle" />
         <div style="position: absolute;top:25px;left: 8vw;z-index: 100;">
             <el-button-group class="ml-4">
-                <el-button type="primary" size="large" color="#E6A23C" @click="rateClick">支付转化率</el-button>
-                <el-button type="primary" size="large" color="#E6A23C" @click="visClick">访客数</el-button>
+                <el-button type="primary" size="large" color="#E6A23C" @click="rateClick" :autofocus="ratefocus">支付转化率</el-button>
+                <el-button type="primary" size="large" color="#E6A23C" @click="visClick" :autofocus="visfocus">访客数</el-button>
             </el-button-group>
         </div>
         <el-form :inline="true" :model="searchData" class="goal-from">
@@ -171,12 +171,18 @@ const getData = async () => {
     await getwordMuList()
 }
 let dataType = 'vis'
+let ratefocus = false
+let visfocus = true
 const visClick = () => {
     dataType = 'vis'
+    visfocus = true
+    ratefocus = false
     change_words()
 }
 const rateClick = () => {
     dataType = 'rate'
+    visfocus = false
+    ratefocus = true
     change_words()
 }
 const change_words = async () => {
@@ -558,9 +564,13 @@ const wordsRowClick = async (newFilters: any) => {
         newObject[`key${counter}`] = [...newFilters[key]];
         counter++;
     });
-    searchData.keyword = words_filter_label = newObject.key1[0]
+    console.log(newObject,'newObject')
+    searchData.keyword = newObject.key1[0]
+    if(newObject.key1.length == 0){
+        words_filter_label = '全部'
+    }
     const data = words_filterFirst.find(words_filterData => words_filterData.keyword === newObject.key1[0]);
-    // words_filterData = [{ ...data }]
+    words_filterData = [{ ...data }]
     scroll_words.value = false
     getwordMuList(true, 1)
 }

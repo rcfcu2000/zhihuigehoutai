@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-29 16:00:31
+ * @LastEditTime: 2024-04-02 15:57:32
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -563,6 +563,15 @@ export const getCategoryGmvTreadData = (data) => {
 export const getShopIndustryList = (data) => {
     return service({
         url: '/industry/getShopIndustryList',
+        method: 'post',
+        data
+    })
+}
+
+// 市场分析-店铺行业数据  
+export const postUrl = (url, data) => {
+    return service({
+        url: url,
         method: 'post',
         data
     })
