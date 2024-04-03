@@ -2,7 +2,7 @@
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-22 15:52:53
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 15:57:32
+ * @LastEditTime: 2024-04-03 10:58:58
  * @FilePath: \project\zhihuigehoutai\src\api\AIdata.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -568,10 +568,82 @@ export const getShopIndustryList = (data) => {
     })
 }
 
-// 市场分析-店铺行业数据  
+// 通用
 export const postUrl = (url, data) => {
     return service({
         url: url,
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-获取货盘目标列表  
+export const getPalletTargetList = (data) => {
+    return service({
+        url: '/targetmanager/getPalletTargetList',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-更新货盘目标
+export const updatePalletTarget = (data) => {
+    return service({
+        url: '/targetmanager/updatePalletTarget',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-删除货盘目标
+export const delPalletTarget = (data) => {
+    return service({
+        url: '/targetmanager/delPalletTarget',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-添加货盘目标
+export const addPalletTarget = (data) => {
+    return service({
+        url: '/targetmanager/addPalletTarget',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-获取产品目标列表
+export const getProductTargetList = (data) => {
+    return service({
+        url: '/targetmanager/getProductTargetList',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-更新货盘目标
+export const updateProductTarget = (data) => {
+    return service({
+        url: '/targetmanager/updateProductTarget',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-删除货盘目标
+export const delProductTarget = (data) => {
+    return service({
+        url: '/targetmanager/delProductTarget',
+        method: 'post',
+        data
+    })
+}
+
+// 目标达成-添加货盘目标
+export const addProductTarget = (data) => {
+    return service({
+        url: '/targetmanager/addProductTarget',
         method: 'post',
         data
     })

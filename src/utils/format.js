@@ -1,8 +1,8 @@
 /*
  * @Author: 603388675@qq.com 603388675@qq.com
  * @Date: 2024-01-22 15:52:53
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-03-19 18:06:57
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-04-03 10:16:19
  * @FilePath: \project\zhihuigehoutai\src\utils\format.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -82,8 +82,17 @@ export function lueNum(num) {
     } else {
       num = num.toLocaleString() + "万";
     }
+  } else if (num < 0) {
+    if (num < -9999) {
+      num = (num / 10000).toFixed(2); //保留小数点后两位
+      if (num < -9999) {
+        num = (num.toLocaleString() / 10000).toFixed(2) + "亿";
+      } else {
+        num = num.toLocaleString() + "万";
+      }
+    }
   } else {
-    num = num.toFixed(2)
+    num = num.toFixed(0)
   }
   return num;
 }
@@ -96,6 +105,15 @@ export function lueNum1(num) {
       num = (num.toLocaleString() / 10000).toFixed(2) + "亿";
     } else {
       num = num.toLocaleString() + "万";
+    }
+  } else if (num < 0) {
+    if (num < -9999) {
+      num = (num / 10000).toFixed(2); //保留小数点后两位
+      if (num < -9999) {
+        num = (num.toLocaleString() / 10000).toFixed(2) + "亿";
+      } else {
+        num = num.toLocaleString() + "万";
+      }
     }
   } else {
     num = num.toFixed(0)
@@ -137,7 +155,7 @@ export function groupBy(array, key) {
 // 异步更新大数组，要更新的数组 array，分段大小 chunkSize，以及要赋给数组元素的新值 updateValue，delay更新时间间隔
 export function updateArrayInChunksAsync(array, chunkSize, updateValue, delay) {
   let i = 0;
-  
+
   function updateChunk() {
     const end = Math.min(i + chunkSize, array.length);
     for (; i < end; i++) {
@@ -147,7 +165,7 @@ export function updateArrayInChunksAsync(array, chunkSize, updateValue, delay) {
       setTimeout(updateChunk, delay); // 延迟后再次更新下一分段
     }
   }
-  
+
   updateChunk(); // 开始更新第一个分段
 }
 
@@ -171,7 +189,7 @@ export function chunkArray(array, chunkSize, delay, callback) {
   // 创建一个副本防止修改原始数组
   let arrayCopy = [...array];
   let index = 0;
-  
+
   function process() {
     // 获取当前分段
     let chunk = arrayCopy.slice(index, index + chunkSize);
@@ -183,7 +201,7 @@ export function chunkArray(array, chunkSize, delay, callback) {
       // 否则，处理当前分段
       console.log(chunk);
       // TODO: 在此处处理分段逻辑，例如进一步处理或存储分段数据
-      
+
       // 准备处理下一个分段
       index += chunkSize;
       // 设置延迟以后继续处理

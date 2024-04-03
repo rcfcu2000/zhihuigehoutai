@@ -1,6 +1,11 @@
 <template>
     <div class="gola pageBG">
         <page_header :title="pageTitle" />
+        <div style="position: absolute;top:25px;left: 8vw;z-index: 100;">
+            <el-button-group class="ml-4">
+                <el-button type="primary" size="large" color="#E6A23C" @click="targetSet">目标设置</el-button>
+            </el-button-group>
+        </div>
         <el-form :inline="true" :model="searchData" class="goal-from">
             <el-form-item label="请选择起止时间">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
@@ -8,7 +13,6 @@
                     end-placeholder="结束时间" />
             </el-form-item>
         </el-form>
-
         <el-row :gutter="20">
             <el-col :span="10">
                 <div class="box">
@@ -102,7 +106,7 @@
                     <div class="managerA">
                         <el-table ref="tableListRefmanager" :data="managerData.tableData" border v-loading="managerLoad"
                             class="palletGmv" show-overflow-tooltip
-                            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
+                            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 370px"
                             v-el-table-infinite-scroll="loadMore_manager" :infinite-scroll-distance="100"
                             :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                             :infinite-scroll-delay="2000" @filter-change="managerRowClick">
@@ -156,7 +160,7 @@
                     <div class="managerA">
                         <el-table ref="tableListRefcategory" :data="categoryData.tableData" border
                             v-loading="categoryLoad" class="palletGmv" show-overflow-tooltip
-                            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 400px"
+                            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 370px"
                             v-el-table-infinite-scroll="loadMore_category" :infinite-scroll-distance="100"
                             :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                             :infinite-scroll-delay="2000" @filter-change="categoryRowClick">
@@ -224,8 +228,8 @@
                                 </div>
                             </template>
                         </el-table>
-                        <el-table ref="tableListRefpallet_sum" :show-header="false" :data="palletData.sumData"
-                            border :v-loading="palletLoad" class="palletGmv" show-overflow-tooltip
+                        <el-table ref="tableListRefpallet_sum" :show-header="false" :data="palletData.sumData" border
+                            :v-loading="palletLoad" class="palletGmv" show-overflow-tooltip
                             element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
                             <el-table-column v-for="item, index in palletData.table_head" :key="index"
                                 :prop="item.dataKey" show-overflow-tooltip :label="item.title" :width="item.width"
@@ -296,11 +300,127 @@
             </el-col>
         </el-row>
     </div>
+    <el-dialog v-model="targetVisible" top='10vh' width="80%" :close-on-click-modal="false" @closed="dialogClose(ruleFormRef)">
+        <template #header>
+            <div class="targetHeader">
+                目标管理
+            </div>
+        </template>
+        <el-tabs type="border-card">
+            <el-tab-pane label="产品目标">
+                <el-table ref='proTargetRef' :data="proTableData.tableData" border v-loading="proTargetLoad"
+                    class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+                    style="width: 100%">
+                    <el-table-column v-for="item, index in proTableData.table_head" :key="index" show-overflow-tooltip
+                        :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
+                        :fixed="item.fixed">
+                    </el-table-column>
+                    <el-table-column scope>
+                        <template #header>
+                            <el-button size="small" type="success" @click="proTargetEdit(false, false)"><el-icon>
+                                    <Plus />
+                                </el-icon>新增</el-button>
+                        </template>
+                        <template #default="scope">
+                            <el-button size="small" color="#071e48"
+                                @click="proTargetEdit(scope.$index, scope.row)"><el-icon>
+                                    <Edit />
+                                </el-icon>编辑</el-button>
+                            <el-popconfirm title="Are you sure to delete this?">
+                                <template #reference>
+                                    <el-button size="small" type="danger"
+                                        @click="proTargetDelete(scope.$index, scope.row)"><el-icon>
+                                            <Delete />
+                                        </el-icon>删除</el-button>
+                                </template>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                    <template #append v-if="nomore_proTarget">
+                        <div style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
+                            <el-icon>
+                                <MagicStick />
+                            </el-icon> <span>没有更多了</span>
+                        </div>
+                    </template>
+                </el-table>
+            </el-tab-pane>
+            <el-tab-pane label="货盘目标">
+                <el-table ref='proTargetRef' :data="palTableData.tableData" border v-loading="palTargetLoad"
+                    class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+                    style="width: 100%">
+                    <el-table-column v-for="item, index in palTableData.table_head" :key="index" show-overflow-tooltip
+                        :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align"
+                        :fixed="item.fixed">
+                    </el-table-column>
+                    <el-table-column scope>
+                        <template #header>
+                            <el-button size="small" type="success" @click="palTargetEdit(false, false)"><el-icon>
+                                    <Plus />
+                                </el-icon>新增</el-button>
+                        </template>
+                        <template #default="scope">
+                            <el-button size="small" color="#071e48"
+                                @click="palTargetEdit(scope.$index, scope.row)"><el-icon>
+                                    <Edit />
+                                </el-icon>编辑</el-button>
+                            <el-popconfirm title="Are you sure to delete this?">
+                                <template #reference>
+                                    <el-button size="small" type="danger"
+                                        @click="palTargetDelete(scope.$index, scope.row)"><el-icon>
+                                            <Delete />
+                                        </el-icon>删除</el-button>
+                                </template>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                    <template #append v-if="nomore_palTarget">
+                        <div style="height: 40px;width: 100%;display: flex;align-items: center;justify-content: center;">
+                            <el-icon>
+                                <MagicStick />
+                            </el-icon> <span>没有更多了</span>
+                        </div>
+                    </template>
+                </el-table>
+            </el-tab-pane>
+        </el-tabs>
+        <el-dialog v-model="proTarget_edit" width="500" title="Inner Dialog" append-to-body>
+            <el-form ref="ruleFormRef" :model="ruleForm" :label-position="labelPosition" label-width="auto">
+                <el-form-item label="商品名称">
+                    <el-input v-model="ruleForm.product_name" disabled style="width: 200px;" />
+                </el-form-item>
+                <el-form-item label="GMV目标" prop="gmv_target" :rules="[
+            { required: true, message: '这是必填项' },
+            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+        ]">
+                    <el-input v-model.number="ruleForm.gmv_target" style="width: 200px;" type="text"
+                        autocomplete="off" />
+                </el-form-item>
+                <el-form-item label="利润目标" prop="profit_target" :rules="[
+            { required: true, message: '这是必填项' },
+            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+        ]">
+                    <el-input v-model.number="ruleForm.profit_target" style="width: 200px;" type="text"
+                        autocomplete="off" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button size="small" color="#071e48" @click="resetForm(ruleFormRef)">取消</el-button>
+                    <el-button type="primary" @click="submitForm(ruleFormRef)">
+                        提交
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+    </el-dialog>
     <goHome />
 </template>
 
 <script setup lang="ts" name="goal">
 import { RefreshLeft, } from '@element-plus/icons-vue'
+import type { FormInstance, FormRules, FormProps } from 'element-plus'
+import { ElLoading } from 'element-plus'
 import { reactive, onMounted, ref, nextTick } from "vue";
 import goHome from "./components/goHome.vue";
 import page_header from "./components/page_header.vue";
@@ -317,8 +437,18 @@ import {
     getPalletListdata,
     getProductListdata,
     postUrl,
+    getPalletTargetList,
+    updatePalletTarget,
+    delPalletTarget,
+    addPalletTarget,
+    getProductTargetList,
+    updateProductTarget,
+    delProductTarget,
+    addProductTarget,
+    getProductlist,
 } from "@/api/AIdata";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
+import { getMonthFinalDay, weaklast } from "@/utils/getDate";
+import { persentNum, floatNum, lueNum, formatDate } from "@/utils/format.js";
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 
@@ -329,9 +459,9 @@ const indexData = reactive({
     data: {} as any
 })
 const searchData = reactive({
-    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     loading: false,
-    date: ["2024-01-01", "2024-01-25"],
+    // date: ["2024-01-01", "2024-01-25"],
     product_manager: [] as any,
     current_inventory: [] as any,
     lv3: "",
@@ -362,6 +492,10 @@ onMounted(async () => {
     await getIndexData();
     await getGmvTarget();
     await getGmvTrend();
+    
+    const res = await getProductlist(
+        { key: state.key }
+    )
 });
 
 // 指数信息
@@ -1039,6 +1173,7 @@ const getPallet = async () => {
             item.spend = lueNum(item.spend)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.profit = lueNum(item.profit)
+            item.promotion_diff = lueNum(item.promotion_diff)
             item.composite_roi = lueNum(item.composite_roi)
             item.time_schedule = lueNum(item.time_schedule * 100) + "%"
             item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + '%'
@@ -1056,6 +1191,7 @@ const getPallet = async () => {
             sum.spend = lueNum(sum.spend)
             sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.profit = lueNum(sum.profit)
+            sum.promotion_diff = lueNum(sum.promotion_diff)
             sum.composite_roi = lueNum(sum.composite_roi)
             sum.time_schedule = lueNum(sum.time_schedule * 100) + "%"
             sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + '%'
@@ -1331,10 +1467,302 @@ const debounce = async (func: any, delay: any) => {
 }
 
 // 
+let targetVisible = ref(false)
+const targetSet = async () => {
+    targetVisible.value = true
+    await proTargetClick()
+    await palTargetClick()
+}
+const setSearchData = reactive({
+    date: searchData.date,
+    pageNum: 0,
+    pageSize: 20,
+    product_id: '',
+    product_name: '',
+    start_date: "",
+    end_date: "",
+    shop_name: "蜡笔派家居旗舰店", //店铺名称
+    shop_id: '',
+});
+// 产品分析
+const proTableData = reactive({
+    table_head: [
+        {
+            title: "商品名称",
+            width: '',
+            align: "center",
+            dataKey: "product_name",
+            key: "product_name",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "GMV目标",
+            width: '120',
+            align: "center",
+            dataKey: "gmv_target_num",
+            key: "gmv_target_num",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "月费用",
+            width: '120',
+            align: "center",
+            dataKey: "monthly_budget_num",
+            key: "monthly_budget_num",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "利润目标",
+            width: '100',
+            align: "center",
+            dataKey: "profit_target_num",
+            key: "profit_target_num",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "店铺",
+            width: '',
+            align: "center",
+            dataKey: "shop_name",
+            key: "shop_name",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "更新时间",
+            width: '',
+            align: "center",
+            dataKey: "updatedAt",
+            key: "updatedAt",
+            fixed: false,
+            unit: "",
+        },
+    ],
+    tableData: [] as any,
+    sumData: [] as any
+})
+let nomore_proTarget = ref(false)
+let proTargetLoad = ref(true)
+let formType_pro = 'add'
+const proTargetClick = async () => {
+    proTargetLoad.value = true
+    setSearchData.pageNum++
+    let data = setSearchData;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getProductTargetList(data)]
+    if (res.code == 0) {
+        if (res.data.records.length > 0) {
+            proTableData.tableData = res.data.records.map((item: any, index: any) => {
+                item.shop_name = setSearchData.shop_name
+                item.gmv_target_num = lueNum(item.gmv_target)
+                item.monthly_budget_num = lueNum(item.monthly_budget)
+                item.profit_target_num = lueNum(item.profit_target)
+                item.updatedAt = formatDate(item.updatedAt)
+                return item
+            })
+        }
+        if (setSearchData.pageNum > 0 && res.data.records.length < setSearchData.pageSize) {
+            nomore_proTarget.value = true
+        }
+        proTargetLoad.value = false
+    }
+}
+let proTarget_edit = ref(false)
+const labelPosition = ref<FormProps['labelPosition']>('right')
+const ruleFormRef = ref<FormInstance>()
+const ruleForm = reactive({
+    gmv_target: '',
+    profit_target: '',
+    product_id: '',
+    product_name: '',
+    monthly_budget: '',
+    id: '',
+} as any)
+const proTargetEdit = (index: any, row: any) => {
+    proTarget_edit.value = true
+    row = { ...row }
+    if (index >= 0) {
+        formType_pro = 'add'
+        ruleForm.gmv_target = row.gmv_target
+        ruleForm.profit_target = row.profit_target
+        ruleForm.product_name = row.product_name
+        ruleForm.shop_name = row.shop_name
+        ruleForm.id = row.id
+        console.log(row, "proTargetEdit")
+    }else{
+        formType_pro = 'edit'
+    }
+}
+const resetForm = (formEl: FormInstance | undefined) => {
+    console.log(formEl, 'formEl')
+    if (!formEl) return
+    formEl.resetFields()
+    proTarget_edit.value = false
+}
+const submitForm = (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    formEl.validate((valid) => {
+        if (valid) {
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.5)',
+            })
+            if(formType_pro == 'edit'){
+                const upPro = updateProductTarget(ruleForm)
+            }else {
+                const upPro = addProductTarget(ruleForm)
+            }
+            loading.close()
+        } else {
+            console.log('error submit!!');
+            return false;
+        }
+    });
+};
+
+const setSearchData1 = reactive({
+    date: searchData.date,
+    pageNum: 0,
+    pageSize: 20,
+    pallet: [],
+    start_date: "",
+    end_date: "",
+    shop_name: "蜡笔派家居旗舰店", //店铺名称
+    shop_id: '',
+});
+// 产品分析
+const palTableData = reactive({
+    table_head: [
+        {
+            title: "货盘",
+            width: '',
+            align: "center",
+            dataKey: "pallet",
+            key: "pallet",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "GMV目标",
+            width: '120',
+            align: "center",
+            dataKey: "gmv_target_num",
+            key: "gmv_target_num",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "月费用",
+            width: '120',
+            align: "center",
+            dataKey: "monthly_budget_num",
+            key: "monthly_budget_num",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "利润目标",
+            width: '100',
+            align: "center",
+            dataKey: "profit_target_num",
+            key: "profit_target_num",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "店铺",
+            width: '',
+            align: "center",
+            dataKey: "shop_name",
+            key: "shop_name",
+            fixed: false,
+            unit: "",
+        },
+        {
+            title: "更新时间",
+            width: '',
+            align: "center",
+            dataKey: "updatedAt",
+            key: "updatedAt",
+            fixed: false,
+            unit: "",
+        },
+    ],
+    tableData: [] as any,
+    sumData: [] as any
+})
+let nomore_palTarget = ref(false)
+let palTargetLoad = ref(true)
+let formType_pal = 'add'
+const palTargetClick = async () => {
+    setSearchData1.pageNum++
+    let data = setSearchData1;
+    data.start_date = data.date[0];
+    data.end_date = data.date[1];
+    const [res] = [await getPalletTargetList(data)]
+    if (res.code == 0) {
+        if (res.data.records.length > 0) {
+            palTableData.tableData = res.data.records.map((item: any, index: any) => {
+                item.shop_name = setSearchData1.shop_name
+                item.gmv_target_num = lueNum(item.gmv_target)
+                item.monthly_budget_num = lueNum(item.monthly_budget)
+                item.profit_target_num = lueNum(item.profit_target)
+                item.updatedAt = formatDate(item.updatedAt)
+                return item
+            })
+        }
+        if (setSearchData1.pageNum > 0 && res.data.records.length < setSearchData1.pageSize) {
+            nomore_palTarget.value = true
+        }
+        palTargetLoad.value = false
+    }
+}
+
+const ruleForm_pal = reactive({
+    gmv_target: '',
+    profit_target: '',
+    monthly_budget: '',
+    pallet: '',
+    shop_name: '',
+    shop_id: '',
+    id: '',
+} as any)
+const dialogClose = (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    formEl.resetFields()
+    proTableData.tableData = []
+}
 </script>
 
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
+
+.el-button {
+    color: #fff;
+}
+
+::v-deep(.el-tabs__header) {
+    color: #fff !important;
+    background-color: transparent !important;
+    border-bottom: 1px solid #3375b9
+}
+
+::v-deep(.el-tabs__header .el-tabs__item.is-active) {
+    background-color: #213d5b !important;
+    border-color: #213d5b !important;
+}
+
+.el-tabs--border-card {
+    background-color: transparent !important;
+    border: none;
+    color: #fff;
+}
 
 .monthGmv {
     display: flex;
@@ -1511,6 +1939,10 @@ $echarts_bg_img: url("./images/_2.png");
 
 }
 
+::v-deep(.el-table__row:hover) {
+    background-color: rgba(#fff, 0.2) !important;
+}
+
 ::v-deep(.el-table.is-scrolling-left th.el-table-fixed-column--left) {
     background: transparent;
 }
@@ -1573,5 +2005,12 @@ $echarts_bg_img: url("./images/_2.png");
 
 ::v-deep(.el-table-fixed-column--left) {
     background-color: rgba(1, 16, 37, 1) !important;
+}
+
+.targetHeader {
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: large;
 }
 </style>
