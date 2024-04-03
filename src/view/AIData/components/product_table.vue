@@ -1,8 +1,8 @@
 <!--
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-26 14:45:29
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-04-03 09:52:08
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -91,7 +91,7 @@
                     </div>
                     <div v-else-if="head.unit == '%'">
                         <!-- {{ persentNum(scope.row) }} -->
-                        {{ persentNum(scope.row[scope.column.property]) * 100 }}{{ head.unit }}
+                        {{ lueNum(scope.row[scope.column.property] * 100) }}{{ head.unit }}
                     </div>
 
                     <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'">
@@ -198,6 +198,7 @@ watch([propData.Commodity_detail], ([newD]) => {
     tableHead = newD.column
     tableData = tableData.concat(newD.data)
     tableDataSum = [newD.sumTrend]
+    console.log(tableDataSum,'tableDataSum')
     countModel.value = tableData.length
     refreshTable()
     nextTick(() => {

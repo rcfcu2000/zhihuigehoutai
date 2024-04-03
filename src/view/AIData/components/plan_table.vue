@@ -1,8 +1,8 @@
 <!--
  * @Author: dtl darksunnydong@qq.com
  * @Date: 2024-01-23 10:19:12
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-26 14:47:11
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-04-03 10:01:35
  * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -74,10 +74,10 @@
                     </div>
                     <div
                         v-else-if="scope.column.property == 'spend' || scope.column.property == 'clicks' || scope.column.property == 'direct_transaction_count' || scope.column.property == 'indirect_transaction_count'">
-                        {{ roundNum(scope.row[scope.column.property]) }}
+                        {{ lueNum1(roundNum(scope.row[scope.column.property])) }}
                     </div>
                     <div v-else-if="head.unit == '%'">
-                        {{ persentNum(scope.row[scope.column.property]) }}{{ head.unit }}
+                        {{ lueNum(scope.row[scope.column.property]*100) }}{{ head.unit }}
                     </div>
 
                     <div v-else-if="(typeof scope.row[scope.column.property]) != 'number'" class="text_hidden"
@@ -98,7 +98,7 @@
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
+import { persentNum, floatNum, lueNum,lueNum1, roundNum } from "@/utils/format.js"
 import type { TableColumnCtx } from 'element-plus'
 
 import * as echarts from 'echarts';

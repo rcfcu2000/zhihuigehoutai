@@ -716,8 +716,9 @@ const getDetailPro = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0 && proRes.data.records) {
-        if (proRes.data.sum.length > 0) {
-            allData[0].sumTrend = proRes.data.sum[0]
+            console.log(proRes.data.sum,"proRes.data.sum")
+        if (proRes.data.sum != null && proRes.data.sum != undefined) {
+            allData[0].sumTrend = [proRes.data.sum][0]
             allData[0].sumTrend.id = "pro"
         }
         proCount.value = proRes.data.count
