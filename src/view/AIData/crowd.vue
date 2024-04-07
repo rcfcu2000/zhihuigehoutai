@@ -1,11 +1,3 @@
-<!--
- * @Author: 603388675@qq.com 603388675@qq.com
- * @Date: 2024-03-13 17:36:40 人群分析
- * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 15:19:20
- * @FilePath: \project\zhihuigehoutai\src\view\AIData\crowd.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 
 <template>
     <div class="pageBG">
@@ -212,7 +204,7 @@ import boxHeadtb from "./components/box_head_tb.vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { persentNum, floatNum, lueNum, roundNum, groupBy } from "@/utils/format.js";
 import * as echarts from "echarts";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import {
     lineOptions, pieItemOptions1, lineOptions1, lineOptions_lineAndbar
 } from "./echartsOptions";
@@ -238,7 +230,7 @@ const searchData = reactive({
     end_date: "",
     "pageNum": 1,
     "pageSize": 30,
-    shop_name: "蜡笔派家居旗舰店", //店铺名称
+    shop_name: "蜡笔派家居旗舰店",
     "secondary_source": "",
     "tertiary_source": "",
     ids: [] as any,
@@ -276,7 +268,6 @@ const selectChange = async () => {
     await getSrcListData()
 }
 
-// 人群流量来源Top20
 const get20data = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -289,7 +280,6 @@ const get20data = async () => {
 
 }
 
-// 人群GMV数据列表,人群分布饼图
 const tableListRef = ref()
 const crowdsaData = reactive({
     table_head: [
@@ -449,7 +439,6 @@ const crowdsaClick = async (row: any, column: any, cell: HTMLTableCellElement, e
     await getPro10ListData() //top10
 }
 
-// GMV趋势,人群分布
 const getTrendListData = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -457,7 +446,6 @@ const getTrendListData = async () => {
     const [res] = [await getCrowdGmvTrenddata(data)];
     if (res.code == 0) {
         const gmvTrendData = groupBy(res.data.records, 'crowd_type')
-        // 自增分组后的键
         let increment = 0;
         const incrementedKeysGroup = Object.keys(gmvTrendData).reduce((acc, key) => {
             acc[increment] = gmvTrendData[key];
@@ -500,7 +488,6 @@ const getTrendListData = async () => {
         })
         serieslineAndBarData.push(objline, objBar)
 
-        // GMV趋势
         let chartDom: any = document.getElementById('gmvTrend');
         let myChart = echarts.init(chartDom);
         let option = lineOptions1(seriesGmvData, false);
@@ -512,7 +499,6 @@ const getTrendListData = async () => {
         option && myChart.setOption(option);
         EleResize.on(chartDom, listener);
 
-        // 人群分布
         let chartDom1: any = document.getElementById('gmvTrend1');
         let myChart1 = echarts.init(chartDom1);
         let option1 = lineOptions_lineAndbar(serieslineAndBarData, date1, false, '');
@@ -527,17 +513,15 @@ const getTrendListData = async () => {
 
 }
 
-//刷新table
 const tableListRefcrowdSrc = ref()
 const tableListRefcrowdSrc_sum = ref()
 const refreshTable = () => {
     let table = tableListRefcrowdSrc.value;
     let tables = tableListRefcrowdSrc_sum.value;
-    //强制刷新组件
     table.doLayout()
     tables.doLayout()
 }
-// 人群流量来源
+
 const crowdSrcData = reactive({
     table_head: [
         {
@@ -656,7 +640,6 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
     }
 }
 
-// 添加滚动监听函数
 const addScrollListener = () => {
     const table1 = tableListRefcrowdSrc.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     const table2 = tableListRefcrowdSrc_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
@@ -667,20 +650,19 @@ const addScrollListener = () => {
         table1.scrollLeft = event.target.scrollLeft
     }
 };
-// 滚动加载更多
 const loadMore_crowdSrc = async () => {
     crowdSrc_pageNum++
     // searchData.keyword = ''
     debounce(getSrcListData(), 1000)
 }
-// 单元格点击
+
 const crowdSrcClick = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
     searchData.secondary_source = row.secondary_source
     searchData.tertiary_source = row.tertiary_source
     searchData.ids = []
     await getListData()
 }
-// 筛选点击
+
 const crowdSrcRowClick = async (newFilters: any) => {
     let counter = 1;
     const newObject = {} as any;
@@ -695,7 +677,7 @@ const crowdSrcRowClick = async (newFilters: any) => {
     scroll_crowdSrc.value = false
     getSrcListData(true, 1)
 }
-// 重置筛选
+
 const crowdSrc_filter_R = () => {
     crowdSrc_filter_label = "流量来源"
     crowdSrc_pageNum = 1
@@ -703,7 +685,6 @@ const crowdSrc_filter_R = () => {
     refreshTable()
 }
 
-// 商品crowd分类10
 const top10Data = reactive({
     table_head: [
         {
@@ -794,7 +775,7 @@ const getPro10ListData = async () => {
         top10Load.value = false
     }
 }
-// top10表格点击
+
 const top10Click = async (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
     searchData.ids = [row.product_id]
     searchData.secondary_source = ''
@@ -803,12 +784,11 @@ const top10Click = async (row: any, column: any, cell: HTMLTableCellElement, eve
     scroll_proSource.value = false
     nomore_proSource.value = false
     proSource_pageNum = 1
-    await getProSrcListData() // 商品流量来源
-    await getProTrendListData() // GMV趋势
-    await getTrendListData() //GMV趋势,人群分布
+    await getProSrcListData() 
+    await getProTrendListData() 
+    await getTrendListData() 
 }
 
-// 某一商品按人群分类数据
 const getProListData = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -821,7 +801,6 @@ const getProListData = async () => {
 
 }
 
-// 某一商品按人群分类趋势数据
 const getProTrendListData = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -846,7 +825,7 @@ const getProTrendListData = async () => {
             date.push(item.date)
         }) : []
         serieslineAndBarData.push(objline, objBar)
-        // 人群分布
+        
         let chartDom1: any = document.getElementById('gmvTrend2');
         let myChart1 = echarts.init(chartDom1);
         let option1 = lineOptions_lineAndbar(serieslineAndBarData, date, false, '');
@@ -863,16 +842,14 @@ const getProTrendListData = async () => {
 }
 
 
-//刷新table
 const tableListRef_sum = ref()
 const refreshTable1 = () => {
     let table = tableListRef.value;
     let tables = tableListRef_sum.value;
-    //强制刷新组件
     table.doLayout()
     tables.doLayout()
 }
-// 商品流量来源
+
 const proSourceData = reactive({
     table_head: [
         // {
@@ -1000,7 +977,7 @@ const getProSrcListData = async (filter: boolean = false, level: number = 0) => 
         });
     }
 }
-// 添加滚动监听函数
+
 const addScrollListener1 = () => {
     const table1 = tableListRef.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     const table2 = tableListRef_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
@@ -1011,7 +988,7 @@ const addScrollListener1 = () => {
         table1.scrollLeft = event.target.scrollLeft
     }
 };
-// 筛选点击
+
 const proSourceClick = async (newFilters: any) => {
     let counter = 1;
     const newObject = {} as any;
@@ -1026,7 +1003,7 @@ const proSourceClick = async (newFilters: any) => {
     scroll_proSource.value = false
     getProSrcListData(true, 1)
 }
-// 重置筛选
+
 const proSource_filter_R = () => {
     proSource_filter_label = "流量来源"
     proSource_pageNum = 1
@@ -1039,7 +1016,7 @@ const loadMore_proSource = async () => {
     // searchData.keyword = ''
     debounce(getProSrcListData(), 1000)
 }
-// 节流
+
 function debounce(func: any, limit = 500) {
     const inThrottle = ref(false);
     return function (...args) {
@@ -1050,7 +1027,7 @@ function debounce(func: any, limit = 500) {
         }
     };
 }
-// 防抖函数
+
 function debounce1(fn: any, delay = 500) {
     let timeoutId = null;
     return (...args) => {

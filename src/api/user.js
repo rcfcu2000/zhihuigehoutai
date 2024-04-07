@@ -23,6 +23,18 @@ export const captcha = (data) => {
   })
 }
 
+// @Summary 获取我负责的店铺
+// @Produce  application/json
+// @Param data body {username:"string",password:"string"}
+// @Router /base/captcha [post]
+export const getMyShopList = (data) => {
+  return service({
+    url: '/base/getMyShopList',
+    method: 'post',
+    data: data
+  })
+}
+
 // @Summary 用户注册
 // @Produce  application/json
 // @Param data body {username:"string",password:"string"}

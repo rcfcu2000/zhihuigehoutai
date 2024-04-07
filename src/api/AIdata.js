@@ -110,6 +110,15 @@ export const getSearchdata = (data) => {
     })
 }
 
+// 获取推广分析四个图标信息
+export const proGetPalletListdata = (data) => {
+    return service({
+        url: '/promotion/getPalletListdata',
+        method: 'post',
+        data
+    })
+}
+
 
 // 获取下一级GMV拆分 //货盘list
 export const getSubGmvList = (data) => {

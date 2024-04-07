@@ -345,7 +345,6 @@ const getTopData = async () => {
     }
 }
 
-// 关键字分析
 const getWordsList = async (arr: any) => {
     pageNum_words.value++
     arr.pageNum = pageNum_words.value
@@ -372,7 +371,7 @@ const getWordsList = async (arr: any) => {
         ElMessage.error(res.msg)
     }
 }
-// 每日明细
+
 const getDayList = async (arr: any) => {
     pageNum_day.value++
     arr.pageNum = pageNum_day.value

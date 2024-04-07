@@ -547,7 +547,7 @@ import {
     getNewOldCustomerListdata,
     getTrafficChannelsdata,
 } from "@/api/AIdata";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
@@ -589,17 +589,17 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const searchData = reactive({
-    product_manager: [] as Array<any>, //	string 商品负责人 - 负责该商品的人员或团队名称w
-    pallet: [], // 货盘
+    product_manager: [] as Array<any>, //
+    pallet: [], 
     // all: 999 as any,
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     productid: "",
     start_date: "",
     end_date: "",
-    shop_name: "蜡笔派家居旗舰店", //店铺名称
-    traffic_belong: "每一次", //流量归属原则
-    channel: ['手淘搜索', '手淘推荐', '关键词推广', '精准人群推广', '智能场景'] as any, // 渠道
+    shop_name: "蜡笔派家居旗舰店", 
+    traffic_belong: "每一次", 
+    channel: ['手淘搜索', '手淘推荐', '关键词推广', '精准人群推广', '智能场景'] as any,
     pageNum: 0,
     pageSize: 20,
 });
@@ -644,7 +644,6 @@ const getAllEcharts = async () => {
     state.loading = false;
 }
 
-// 渠道列表
 let channelsdata_key = ref(0)
 let channelsdata = []
 const getTrafficdata = async () => {
@@ -663,7 +662,6 @@ const selectChange = async () => {
     await getPieEcharts()
 }
 
-// 渠道分布
 const pieData = {} as any
 const getPieEcharts = async () => {
     let data = searchData;
@@ -724,7 +722,6 @@ const getPieEcharts = async () => {
 
 }
 
-// 重点渠道访客&GMV趋势
 const getLineEcharts = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -733,7 +730,6 @@ const getLineEcharts = async () => {
     if (res.code == 0) {
         if (res.data.records) {
             const gmvTrendData = groupBy(res.data.records, 'tertiary_source')
-            // 自增分组后的键
             let increment = 0;
             const incrementedKeysGroup = Object.keys(gmvTrendData).reduce((acc, key) => {
                 acc[increment] = gmvTrendData[key];
@@ -839,8 +835,6 @@ const sortList = (obj1, obj2, name: string) => {
     return val1 - val2
 }
 
-
-// 商品数据
 const productData = reactive({
     table_head: [
         {
@@ -994,7 +988,7 @@ let product_pageNum = 1
 const product_pageSize = ref(20)
 let nomore_product = ref(false)
 let productLoad = ref(true)
-let load_product = ref(false) //树节点加载
+let load_product = ref(false)
 const getProduct = async () => {
     productLoad.value = true
     let data = searchData;
@@ -1044,7 +1038,7 @@ const proCellClick = (row: any, column: any, cell: HTMLTableCellElement, event: 
     getFlow()
     console.log(row, column, cell, event, "row: any, column: any, cell: HTMLTableCellElement, event: Event")
 }
-// 流量分析
+
 const flowData = reactive({
     table_head: [
         {
@@ -1215,15 +1209,15 @@ const getFlow = async () => {
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.uv = lueNum(item.uv)
 
-            item.add_car_rate = lueNum(item.add_car_rate * 100)  //加购率
-            item.add_cart_conversion_rate = lueNum(item.add_cart_conversion_rate * 100)  //加购转化率
-            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100)  //支付转化率
-            item.product_buyer_percentage = lueNum(item.product_buyer_percentage * 100)  //本品买家占比
-            item.product_visitor_percentage = lueNum(item.product_visitor_percentage * 100)  // 本品访客占比
-            item.shop_add_car_rate = lueNum(item.shop_add_car_rate * 100)  // 全店加购率
-            item.shop_add_cart_conversion_rate = lueNum(item.shop_add_cart_conversion_rate * 100)  // 全店加购转化率
-            item.shop_buyer_percentage = lueNum(item.shop_buyer_percentage * 100)  // 全店买家占比
-            item.shop_visitor_percentage = lueNum(item.shop_visitor_percentage * 100)  // 全店访客占比
+            item.add_car_rate = lueNum(item.add_car_rate * 100) 
+            item.add_cart_conversion_rate = lueNum(item.add_cart_conversion_rate * 100) 
+            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100) 
+            item.product_buyer_percentage = lueNum(item.product_buyer_percentage * 100) 
+            item.product_visitor_percentage = lueNum(item.product_visitor_percentage * 100)
+            item.shop_add_car_rate = lueNum(item.shop_add_car_rate * 100) 
+            item.shop_add_cart_conversion_rate = lueNum(item.shop_add_cart_conversion_rate * 100) 
+            item.shop_buyer_percentage = lueNum(item.shop_buyer_percentage * 100) 
+            item.shop_visitor_percentage = lueNum(item.shop_visitor_percentage * 100) 
             item.children = []
             item.hasChildren = true
             return item
@@ -1238,7 +1232,6 @@ const loadMore_flow = async () => {
     debounce(getFlow(), 1000)
 }
 
-// 新老客分析
 const customerData = reactive({
     table_head: [
         {

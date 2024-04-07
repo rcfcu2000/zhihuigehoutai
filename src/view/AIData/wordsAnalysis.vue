@@ -1,11 +1,4 @@
-<!--
- * @Author: dtl 603388675@.com
- * @Date: 2024-03-25 12:26:52
- * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-07 10:18:10
- * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
+
 <template>
     <div class="wordsAnalysis">
         <page_header :title="pageTitle" />
@@ -540,7 +533,6 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
         });
     }
 }
-// 重置筛选
 const words_filter_R = () => {
     searchData.keyword = ''
     words_pageNum = 1
@@ -549,7 +541,6 @@ const words_filter_R = () => {
     wordsData.sumData = sumData
     refreshTable()
 }
-// 添加滚动监听函数
 const addScrollListener = () => {
     const table1 = tableListRefwords.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     const table2 = tableListRefwords_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
@@ -560,7 +551,6 @@ const addScrollListener = () => {
         table1.scrollLeft = event.target.scrollLeft
     }
 };
-// 筛选点击
 const wordsRowClick = async (newFilters: any) => {
     let counter = 1;
     const newObject = {} as any;
@@ -579,13 +569,9 @@ const wordsRowClick = async (newFilters: any) => {
     scroll_words.value = false
     getwordMuList(true, 1)
 }
-/**
-     * 刷新table
-    */
 const refreshTable = () => {
     let table = tableListRefwords.value;
     let tables = tableListRefwords_sum.value;
-    //强制刷新组件
     table.doLayout()
     tables.doLayout()
 }
@@ -593,7 +579,6 @@ const loadMore_words = async () => {
     words_pageNum++
     debounce(getwordMuList(), 300)
 }
-// 节流
 function debounce(func: any, limit = 500) {
     const inThrottle = ref(false);
 
@@ -606,7 +591,6 @@ function debounce(func: any, limit = 500) {
     };
 }
 
-// 表格行点击
 const rowClick = (row: any, column: any, event: Event) => {
     load_words.value = true
     // searchData.keyword = row.keyword
@@ -626,7 +610,6 @@ interface words {
     hasChildren?: boolean
     children?: words[]
 }
-// 加载子数据
 const childPageNum = 0
 const loadWords = async (row: any, treeNode: TreeNode, resolve: (id: any[]) => void) => {
     console.log(row.id, "load")

@@ -282,7 +282,7 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import "echarts-wordcloud";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import {
     pieOptionsHome,
     wordsCloud,
@@ -339,13 +339,13 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now();
 };
 const searchData = reactive({
-    shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
+    shopId: [] as any, //	
     // date: ["2024-01-01", "2024-01-25"],
     date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: "",
     end_date: "",
-    shop_name: "蜡笔派家居旗舰店", //店铺名称
+    shop_name: "蜡笔派家居旗舰店",
 });
 
 onMounted(async () => {
@@ -723,17 +723,17 @@ const GMVDismantling = () => {
         myChart.resize();
     });
 };
-// 添加数据到树形结构的函数
+
 const addDataToTree = (root: any, targetId: any, newData: any) => {
-    if (!root || !targetId) return; // 确保根节点不为空且目标ID有效
+    if (!root || !targetId) return; 
 
     if (root.key === targetId) {
         // root.lv = 999;
-        root.children = newData; // 若当前节点与目标ID匹配，则直接在该节点上添加新数据
+        root.children = newData;
         return;
     } else {
         for (let child of root.children) {
-            addDataToTree(child, targetId, newData); // 递归调用自身处理子节点
+            addDataToTree(child, targetId, newData);
         }
     }
 };

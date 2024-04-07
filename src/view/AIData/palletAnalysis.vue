@@ -551,7 +551,7 @@ import {
   getSubGmvList,
   inventorygetProductThendListdata,
 } from "@/api/AIdata";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js"; 
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
@@ -618,15 +618,14 @@ const disabledDate = (time: Date) => {
   return time.getTime() > Date.now()
 }
 const searchData = reactive({
-  product_manager: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
-  current_inventory: [] as any, // string 当期货盘
+  product_manager: [] as any, //	
+  current_inventory: [] as any, // 
   inventory_change: [],
   all: 999 as any,
   // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
   date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
 });
 
-// 调整价格区间data
 const userPriceRange = reactive<{
   priceRange: any[];
 }>({
@@ -1312,15 +1311,14 @@ const GMVDismantling = () => {
 };
 // 添加数据到树形结构的函数
 const addDataToTree = (root: any, targetId: any, newData: any) => {
-  if (!root || !targetId) return; // 确保根节点不为空且目标ID有效
+  if (!root || !targetId) return; 
 
   if (root.key === targetId) {
-    // root.lv = 999;
-    root.children = newData; // 若当前节点与目标ID匹配，则直接在该节点上添加新数据
+    root.children = newData; 
     return;
   } else {
     for (let child of root.children) {
-      addDataToTree(child, targetId, newData); // 递归调用自身处理子节点
+      addDataToTree(child, targetId, newData); 
     }
   }
 };

@@ -1,4 +1,4 @@
-import { login, getUserInfo, setSelfInfo } from '@/api/user'
+import { login, getUserInfo, setSelfInfo, getMyShopList } from '@/api/user'
 import { jsonInBlacklist } from '@/api/jwt'
 import router from '@/router/index'
 import { ElLoading, ElMessage } from 'element-plus'
@@ -16,9 +16,13 @@ export const useUserStore = defineStore('user', () => {
     authority: {},
     sideMode: 'dark',
     activeColor: 'var(--el-color-primary)',
-    baseColor: '#fff'
+    baseColor: '#fff',
   })
+  const userShop = ref([])
   const token = ref(window.localStorage.getItem('token') || '')
+  const setUserShop = (val) => {
+    userShop.value = val
+  }
   const setUserInfo = (val) => {
     userInfo.value = val
   }
@@ -48,6 +52,9 @@ export const useUserStore = defineStore('user', () => {
     }
     return res
   }
+  const GetUserShop = async() => {
+    return userShop.value
+  }
   /* 登录*/
   const LoginIn = async(loginInfo) => {
     loadingInstance.value = ElLoading.service({
@@ -67,7 +74,11 @@ export const useUserStore = defineStore('user', () => {
         })
         await router.replace({ name: userInfo.value.authority.defaultRouter })
         loadingInstance.value.close()
-
+        const shopList = await getMyShopList()
+        console.log(shopList,"getMyShopListgetMyShopList")
+        if(shopList.code == 0){
+          setUserShop(shopList.data.records)
+        }
         const isWin = ref(/windows/i.test(navigator.userAgent))
         if (isWin.value) {
           window.localStorage.setItem('osType', 'WIN')
@@ -143,6 +154,7 @@ export const useUserStore = defineStore('user', () => {
     NeedInit,
     ResetUserInfo,
     GetUserInfo,
+    GetUserShop,
     LoginIn,
     LoginOut,
     changeSideMode,

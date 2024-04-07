@@ -1,11 +1,4 @@
-<!--
- * @Author: 603388675@qq.com 603388675@qq.com
- * @Date: 2024-01-31 16:15:30
- * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-03-29 11:55:43
- * @FilePath: \project\zhihuigehoutai\src\view\AIData\storeAnalysis.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
+
 <template>
     <div class="storeAnalysis pageBG">
         <page_header :title="pageTitle" />
@@ -378,7 +371,6 @@
     </div>
 
     <goHome />
-    <!-- 头部的查询条件，追加进page_header组件 -->
     <Teleport to=".header_right">
         <div class="search">
             <div class="search_right">
@@ -402,7 +394,7 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { mergeArr } from "@/utils/format";
 import page_header from './components/page_header.vue'
 import { lineFillOptionsNum,lineFillOptionsNum_100, lineOptions1_y,lineOptions1_y_100, pieItemOptions1, lineOptionsNum } from "./echartsOptions"
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import * as echarts from 'echarts';
 
 const pageTitle = "店铺分析"
@@ -489,13 +481,13 @@ const getAllData = async (obj: any) => {
         numS.data = allData.data
     }
 }
-// 指标
+
 let shop_index_trend = {
     chatrsX: [] as Array<any>,
-    turnover_rate: [] as Array<any>, // 动销率
-    ranking: [] as Array<any>, // 店铺排行
+    turnover_rate: [] as Array<any>,
+    ranking: [] as Array<any>,
 };
-// 内容
+
 let content_trend = {
     chatrsX: [] as Array<any>,
     lineData: [
@@ -527,11 +519,11 @@ let content_trend = {
         },
     ],
 };
-// 店铺服务
+
 let shop_service_analysis_trend = {
     chatrsX: [] as Array<any>,
-    refund_rate: [] as Array<any>, //退款率
-    refund_successful_amount: [] as Array<any>, //退款成功金额
+    refund_rate: [] as Array<any>,
+    refund_successful_amount: [] as Array<any>,
     firstR_line: [
         {
             name: '本店',
@@ -561,7 +553,7 @@ let shop_service_analysis_trend = {
         },
     ],
 };
-// 会员
+
 let customer_analysis_trend = {
     chatrsX: [] as Array<any>,
     total_membership_count: [] as Array<any>,
@@ -581,14 +573,14 @@ let customer_analysis_trend = {
         },
     ],
 };
-// 流失
+
 let customer_loss_trend = {
     chatrsX: [] as Array<any>,
     amount_of_loss: [] as Array<any>,
     lost_members: [] as Array<any>,
     stores_causing_loss: [] as Array<any>,
 };
-// 客服
+
 let customer_service_trend = {
     chatrsX: [] as Array<any>,
     customer_service_sales: [] as Array<any>,
@@ -914,7 +906,7 @@ const getTrendData = async (obj: any) => {
     }
 }
 
-// mock折线数据
+
 const lineData = () => {
     let arr = []
     let max = 5000

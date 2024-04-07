@@ -518,14 +518,13 @@ const tableRwoClick = async (row, column, event) => {
     console.log(row, column, event)
     allData[0].data = []
     state.tableSearchLv = 1;
-    searchData.keyword_filter = [], // 关键词
-        searchData.audience_filter = [], // 人群
-        searchData.pallet = [], // 货盘
+    searchData.keyword_filter = [], 
+        searchData.audience_filter = [], 
+        searchData.pallet = [], 
         searchData.bid_type = [row.bid_type];
     await selectChange()
 }
 
-// 获取四个图表数据
 const getEchartsData = async () => {
     let data = {
         end_date: searchData.date[1],
@@ -544,9 +543,9 @@ const getEchartsData = async () => {
 const getData2 = async () => {
     pageNum_pro.value = 0
     pageNum_plan.value = 0
-    searchData.keyword_filter = [] // 关键词
-    searchData.audience_filter = [] // 人群
-    searchData.pallet = [] // 货盘
+    searchData.keyword_filter = [] 
+    searchData.audience_filter = [] 
+    searchData.pallet = [] 
     searchData.bid_type = [];
     allData[0].clearData[0] = true
     allData[1].clearData[0] = true
@@ -604,9 +603,9 @@ const echarts2 = async () => {
     myChart.on("click", function (params: any) {
         console.log(params, "PromtionEcharts2")
         allData[0].clearData[0] = true
-        searchData.keyword_filter = [] // 关键词
-        searchData.audience_filter = [] // 人群
-        searchData.bid_type = [] // 出价方式
+        searchData.keyword_filter = [] 
+        searchData.audience_filter = [] 
+        searchData.bid_type = [] 
         state.tableSearchLv = 1;
         searchData.pallet = [params.name]
         // searchData.current_inventory = [params.name]
@@ -634,9 +633,9 @@ const echarts3 = async () => {
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
         allData[0].data = []
-        searchData.audience_filter = [] // 人群
-        searchData.bid_type = [] // 出价方式
-        searchData.pallet = [] // 货盘
+        searchData.audience_filter = [] 
+        searchData.bid_type = [] 
+        searchData.pallet = [] // 
         state.tableSearchLv = 3;
         searchData.keyword_filter = [params.name]
         selectChange()
@@ -663,9 +662,9 @@ const echarts4 = async () => {
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
         allData[0].data = []
-        searchData.keyword_filter = [], // 关键词
-            searchData.bid_type = [], // 出价方式
-            searchData.pallet = [], // 货盘
+        searchData.keyword_filter = [],
+            searchData.bid_type = [],
+            searchData.pallet = [],
             state.tableSearchLv = 4;
         searchData.audience_filter = [params.name]
         selectChange()
@@ -707,7 +706,6 @@ const getAll = async (arr: any) => {
 
 const product_ids = [] as Array<any>;
 const count = ref(0)
-// 产品明细
 const getDetailPro = async (arr: any) => {
     pageNum_pro.value++
     arr.pageNum = pageNum_pro
@@ -728,7 +726,7 @@ const getDetailPro = async (arr: any) => {
         productThend(product_ids, proRes.data.records)
     }
 }
-// 商品趋势
+
 const productThend = async (arr: Array<any>, records: Array<any>) => {
     searchData.ids = arr
     const thendList = await getProductThendListdata(searchData)
@@ -775,7 +773,7 @@ const productThend = async (arr: Array<any>, records: Array<any>) => {
     }
     product_ids.splice(0, product_ids.length)
 }
-// 商品表格行点击
+
 const pro_row_click = (res) => {
     searchData.ids = []
     searchData.ids.push(res)
@@ -785,7 +783,6 @@ const pro_row_click = (res) => {
 }
 
 const plan_ids = [] as Array<any>
-// 计划明细
 const getDetailPlan = async (arr: any) => {
     pageNum_plan.value++
     arr.pageNum = pageNum_plan
@@ -805,7 +802,6 @@ const getDetailPlan = async (arr: any) => {
         planThend(plan_ids, planRes.data.records)
     }
 }
-// 计划趋势
 const planThend = async (arr: Array<any>, records: Array<any>) => {
     searchData.ids = arr
     const thendList = await getPlanThendListdata(searchData)
@@ -864,7 +860,6 @@ const loadMore = (at: string) => {
     }
 }
 
-// 商品表格筛选
 const changePallet = (value: Array<any>) => {
     searchData.current_inventory = value
     pageNum_pro.value = 0
@@ -876,7 +871,6 @@ const changePlan_Pallet = (value: Array<any>) => {
     searchData.scene_category = value
 }
 
-// 筛选条件改变时
 const selectChange = () => {
     allData[0].clearData[0] = true
     allData[1].clearData[0] = true

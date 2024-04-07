@@ -1,11 +1,4 @@
-<!--
- * @Author: dtl darksunnydong@qq.com
- * @Date: 2024-01-23 10:19:12
- * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-03 10:01:35
- * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
+
 <template>
     <div class="tableHead">
         {{ componentTitle }}
@@ -23,7 +16,6 @@
             <el-table-column v-for="head, index in tableHead" :key="index" :prop="head.dataKey" :label="head.title"
                 :fixed="head.fixed" :align="head.align" :width="head.width">
                 <template #default="scope">
-                    <!-- 推广分析页 趋势折线 -->
                     <div
                         v-if="scope.column.property == 'roi_trend' || scope.column.property == 'spend_trend' || scope.column.property == 'gmv_trend'">
                         <div :id="scope.row.plan_id + '_' + scope.column.property" style="width: 8dvw;height: 30px;">
@@ -97,7 +89,7 @@
 <script setup lang="ts" name="comTable">
 import { ref, reactive, watch, getCurrentInstance, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { table_lineOptions } from "../echartsOptions"
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import { persentNum, floatNum, lueNum,lueNum1, roundNum } from "@/utils/format.js"
 import type { TableColumnCtx } from 'element-plus'
 
@@ -117,7 +109,6 @@ const countModel = defineModel({
     type: Number, default: 0
 })
 
-// mock趋势折线数据
 const lineData = () => {
     let arr = []
     let max = 5000
@@ -152,17 +143,14 @@ const planTableListRefs = ref();
 const planTableListRef_sum = ref();
 const nomore = ref(false)
 
-// 添加滚动监听函数
 const addScrollListener = () => {
     const table1 = planTableListRef.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     const table2 = planTableListRef_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     planTableListRef.value.scrollBarRef.wrapRef.onscroll = (event:any) => {
-        // console.log(event,table1.scrollLeft,table2.scrollLeft,"event.target.scrollLeft")
         table2.scrollLeft = event.target.scrollLeft
     }
     planTableListRef_sum.value.scrollBarRef.wrapRef.onscroll = (event:any) => {
         table1.scrollLeft = event.target.scrollLeft
-        // console.log(event.target.scrollLeft,"event.target.scrollLeft")
     }
 };
 
@@ -170,9 +158,6 @@ const currentChange = (currentRow: any, oldCurrentRow: any) => {
     console.log(currentRow, oldCurrentRow, "currentRow, oldCurrentRow")
 }
 
-/**
-     * 刷新table,防止滚动条跑到最上面
-    */
 const refreshTable = () => {
     let table = planTableListRef.value;
     table.doLayout()
@@ -273,14 +258,12 @@ watch([propData.Commodity_detail], ([newD]) => {
             EleResize.on(chartDom3, listener);
         })
         if (tableData.length > 0 && tableDataSum.length > 0) {
-            // 确保 DOM 更新后再添加滚动事件监听
             nextTick(() => {
                 addScrollListener();
             });
         }
         refreshTable()
     })
-    // count.value++
 })
 
 const loadMore_plan = (res) => {
@@ -362,24 +345,13 @@ const getSummaries = (param: SummaryMethodProps) => {
         }
     })
 }
-
-// 不重复随机数
-/**
- * @description: 
- * @param {*} min 最小数
- * @param {*} max 最大数
- * @param {*} count 生成数量
- * @return {*}
- * 调用函数生成长度为10的随机字符串
- * console.log(generateRandomString(10));
- */
 const generateRandomString = () => {
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; // 包含所有大小写字母和数字的字符集合
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var result = '';
 
     for (var i = 0; i < 15; i++) {
-        var randomIndex = Math.floor(Math.random() * characters.length); // 获取随机索引值
-        result += characters[randomIndex]; // 根据索引从字符集合中选择对应位置的字符并添加到结果字符串中
+        var randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex]; 
     }
     randomStrings.push(result)
     return result;

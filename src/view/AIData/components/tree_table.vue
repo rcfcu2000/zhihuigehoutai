@@ -1,11 +1,4 @@
-<!--
- * @Author: dtl darksunnydong@qq.com
- * @Date: 2024-01-23 10:19:12
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-29 17:53:40
- * @FilePath: \project\zhihuigehoutai\src\view\AIData\components\table.vue
- * @Description: 单品分析——每日明细 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
+
 <template>
     <div class="tableHead">
         {{ componentTitle }}
@@ -90,12 +83,9 @@ const nomore = ref(false)
 onMounted(() => {
 
 })
-/**
-     * 刷新table,防止滚动条跑到最上面
-    */
+
 const refreshTable = () => {
     let table = tableListRef.value;
-    //强制刷新组件
     table.doLayout()
 }
 watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([newD, newE]) => {
@@ -192,23 +182,13 @@ const getSummaries = (param: SummaryMethodProps) => {
     })
 }
 
-// 不重复随机数
-/**
- * @description: 
- * @param {*} min 最小数
- * @param {*} max 最大数
- * @param {*} count 生成数量
- * @return {*}
- * 调用函数生成长度为10的随机字符串
- * console.log(generateRandomString(10));
- */
 const generateRandomString = () => {
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; // 包含所有大小写字母和数字的字符集合
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; 
     var result = '';
 
     for (var i = 0; i < 15; i++) {
-        var randomIndex = Math.floor(Math.random() * characters.length); // 获取随机索引值
-        result += characters[randomIndex]; // 根据索引从字符集合中选择对应位置的字符并添加到结果字符串中
+        var randomIndex = Math.floor(Math.random() * characters.length); 
+        result += characters[randomIndex]; 
     }
     randomStrings.push(result)
     return result;

@@ -1,11 +1,3 @@
-<!--
- * @Author: dtl 603388675@.com
- * @Date: 2024-03-27 12:16:14 市场分析
- * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-01 13:39:47
- * @FilePath: \zhihuigehoutai\src\view\AIData\Industry.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 
 <template>
     <div class="pageBG">
@@ -111,7 +103,7 @@ import boxHeadtb from "./components/box_head_tb.vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { persentNum, floatNum, lueNum, roundNum, groupBy } from "@/utils/format.js";
 import * as echarts from "echarts";
-import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
+import { EleResize } from "@/utils/echartsAuto.js";
 import {
     lineOptions, pieOptionsHome, pieItemOptions1, lineOptions1, lineOptions_lineAndbar
 } from "./echartsOptions";
@@ -142,8 +134,6 @@ const getData = async () => {
     await getGmvTrend()
     await getIndustryList()
 }
-
-// 获取类目明细
 
 const tableListRefIndustry = ref()
 const tableListRefIndustry_sum = ref()
@@ -310,12 +300,10 @@ const getCategoryList = async (filter: boolean = false, level: number = 0) => {
 const refreshTable = () => {
     let table = tableListRefIndustry.value;
     let tables = tableListRefIndustry_sum.value;
-    //强制刷新组件
     table.doLayout()
     tables.doLayout()
 }
 
-// 添加滚动监听函数
 const addScrollListener = () => {
     const table1 = tableListRefIndustry.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
     const table2 = tableListRefIndustry_sum.value?.$el.querySelector('.el-scrollbar__wrap--hidden-default');
@@ -326,13 +314,13 @@ const addScrollListener = () => {
         table1.scrollLeft = event.target.scrollLeft
     }
 };
-// 滚动加载更多
+
 const loadMore_Industry = async () => {
     Industry_pageNum++
     // searchData.keyword = ''
     debounce(getCategoryList(), 300)
 }
-// 筛选点击
+
 const IndustryRowClick = async (newFilters: any) => {
     let counter = 1;
     const newObject = {} as any;
@@ -347,7 +335,7 @@ const IndustryRowClick = async (newFilters: any) => {
     scroll_Industry.value = false
     getCategoryList(true, 1)
 }
-// 重置筛选
+
 const Industry_filter_R = () => {
     Industry_filter_label = "类目名称"
     Industry_pageNum = 1
@@ -355,7 +343,6 @@ const Industry_filter_R = () => {
     refreshTable()
 }
 
-// 选择类目
 const categoryChange = async (value) => {
     searchData.category = value.toString()
     Industry_pageNum = 1
@@ -367,7 +354,6 @@ const categoryChange = async (value) => {
     await getCategoryList()
 }
 
-// 获取类目gmv列表
 let categoryList: any
 let listKey = ref(0)
 const getGmvList = async () => {
@@ -427,7 +413,6 @@ const getGmvList = async () => {
     }
 }
 
-// 获取类目gmv趋势
 const getGmvTrend = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -511,7 +496,6 @@ const getGmvTrend = async () => {
     }
 }
 
-// 获取店铺行业数据对比
 const getIndustryList = async () => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -520,7 +504,6 @@ const getIndustryList = async () => {
     if (res.code == 0) {
         if (res.data.records.length > 0) {
             const CompareDataI = groupBy(res.data.records, 'type')
-            // 自增分组后的键
             let increment = 0;
             const incrementedKeysGroup = Object.keys(CompareDataI).reduce((acc, key) => {
                 acc[increment] = CompareDataI[key];
@@ -561,7 +544,6 @@ const getIndustryList = async () => {
     }
 }
 
-// 节流
 function debounce(func: any, limit = 500) {
     const inThrottle = ref(false);
     return function (...args) {
