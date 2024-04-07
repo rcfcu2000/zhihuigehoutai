@@ -2,7 +2,7 @@
  * @Author: dtl 603388675@.com
  * @Date: 2024-03-25 12:26:52
  * @LastEditors: dtl 603388675@.com
- * @LastEditTime: 2024-04-02 18:15:43
+ * @LastEditTime: 2024-04-07 10:18:10
  * @FilePath: \zhihuigehoutai\src\view\AIData\wordsAnalysis.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -472,6 +472,7 @@ let load_words = ref(false)
 let words_filter = [] as any
 let words_filterData = [] as any
 let words_filterFirst = [] as any
+let sumData = [] as any
 const getwordMuList = async (filter: boolean = false, level: number = 0) => {
     let data = searchData;
     data.start_date = data.date[0];
@@ -509,7 +510,7 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
             searchData.pageNum--
         }
 
-        if (res.data.sum !== null && res.data.sum !== undefined) {
+        if (res.data.sum !== null && res.data.sum !== undefined && !filter) {
             let sum = res.data.sum
             sum.keyword = '合计'
             sum.count = lueNum1(sum.count)
@@ -522,6 +523,9 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
             sum.cr_free = lueNum(sum.cr_free * 100) + '%'
             sum.cr_industry = lueNum(sum.cr_industry) + '%'
             wordsData.sumData = [sum]
+            sumData = [sum]
+        }else{
+            wordsData.sumData = words_filterData
         }
         if (filter) {
             wordsData.tableData = [...words_filterData, ...arr].filter(item => item !== undefined)
@@ -542,6 +546,7 @@ const words_filter_R = () => {
     words_pageNum = 1
     words_filter_label = "分类"
     wordsData.tableData = mergeArr(words_filterFirst)
+    wordsData.sumData = sumData
     refreshTable()
 }
 // 添加滚动监听函数

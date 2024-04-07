@@ -46,8 +46,9 @@
                 <el-col :span="16">
                     <div class="title">
                         <span>重点渠道访客&GMV趋势</span>
-                        <el-select :key="channelsdata_key" @change="selectChange" v-model="searchData.channel" multiple collapse-tags
-                            collapse-tags-tooltip placeholder="请选择渠道" style="width: 240px" class="gmvTrend">
+                        <el-select :key="channelsdata_key" @change="selectChange" v-model="searchData.channel" multiple
+                            collapse-tags collapse-tags-tooltip placeholder="请选择渠道" style="width: 240px"
+                            class="gmvTrend">
                             <el-option v-for="item in channelsdata" :key="item.channel" :label="item.channel"
                                 :value="item.channel" />
                         </el-select>
@@ -72,7 +73,8 @@
                                 v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
                                 :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
                                 :infinite-scroll-delay="2000" lazy :load="load_product"
-                                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+                                :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+                                @cell-click="proCellClick">
                                 <el-table-column label="商品ID" width="150">
                                     <template #default="scope">F
                                         <span>{{ scope.row.product_id }}</span>
@@ -132,18 +134,12 @@
                                         <span>{{ scope.row.cur_pallet }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="货盘" align="center">
+                                <!-- <el-table-column label="货盘" align="center">
 
                                     <template #default="scope">
                                         <span>{{ scope.row.pallet }}</span>
                                     </template>
-                                </el-table-column>
-                                <el-table-column label="货盘变化" align="center">
-
-                                    <template #default="scope">
-                                        <span>{{ scope.row.pallet_change }}</span>
-                                    </template>
-                                </el-table-column>
+                                </el-table-column> -->
                                 <el-table-column label="老客占比" width="130" align="center">
 
                                     <template #default="scope">
@@ -204,7 +200,7 @@
                                         <span> {{ scope.row.pay_conversion_rate }}%</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="流量归属原则" width="130" align="center">
+                                <!-- <el-table-column label="流量归属原则" width="130" align="center">
 
                                     <template #default="scope">
                                         <span> {{ scope.row.belong }}</span>
@@ -215,7 +211,7 @@
                                     <template #default="scope">
                                         <span> {{ scope.row.responsible }}</span>
                                     </template>
-                                </el-table-column>
+                                </el-table-column> -->
                                 <el-table-column label="UV价值" width="130" align="center">
 
                                     <template #default="scope">
@@ -556,7 +552,7 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { persentNum, floatNum, lueNum, roundNum, groupBy } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum,lueNum1, roundNum, groupBy } from "@/utils/format.js";
 import type { FormInstance } from "element-plus";
 import { pieOptionsHome, lineOptions1, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar, lineOptions } from "./echartsOptions";
 const userStore = useUserStore();
@@ -604,6 +600,8 @@ const searchData = reactive({
     shop_name: "蜡笔派家居旗舰店", //店铺名称
     traffic_belong: "每一次", //流量归属原则
     channel: ['手淘搜索', '手淘推荐', '关键词推广', '精准人群推广', '智能场景'] as any, // 渠道
+    pageNum: 0,
+    pageSize: 20,
 });
 
 onMounted(async () => {
@@ -662,6 +660,7 @@ const getTrafficdata = async () => {
 
 const selectChange = async () => {
     await getLineEcharts()
+    await getPieEcharts()
 }
 
 // 渠道分布
@@ -767,11 +766,11 @@ const getLineEcharts = async () => {
                 seriesVisData.push(objVis)
             })
 
-            const chartDom1:any = document.getElementById("line1") as HTMLElement;
+            const chartDom1: any = document.getElementById("line1") as HTMLElement;
             chartDom1.removeAttribute('_echarts_instance_')
             const myChart1 = echarts.init(chartDom1);
 
-            const chartDom2:any = document.getElementById("line2") as HTMLElement;
+            const chartDom2: any = document.getElementById("line2") as HTMLElement;
             chartDom2.removeAttribute('_echarts_instance_')
             const myChart2 = echarts.init(chartDom2);
 
@@ -782,8 +781,8 @@ const getLineEcharts = async () => {
                 myChart2.clear()
             }
 
-            const option1:any = lineOptions1(seriesGmvData, date);
-            const option2:any = lineOptions1(seriesVisData, date);
+            const option1: any = lineOptions1(seriesGmvData, date);
+            const option2: any = lineOptions1(seriesVisData, date);
             option1 && myChart1.setOption(option1);
             option2 && myChart2.setOption(option2);
             let listener1 = function () {
@@ -1037,7 +1036,14 @@ const loadMore_product = async () => {
     product_pageNum++
     debounce(getProduct(), 1000)
 }
-
+const proCellClick = (row: any, column: any, cell: HTMLTableCellElement, event: Event) => {
+    row = { ...row }
+    searchData.productid = row.product_id
+    searchData.pageNum = 0
+    flowData.tableData = []
+    getFlow()
+    console.log(row, column, cell, event, "row: any, column: any, cell: HTMLTableCellElement, event: Event")
+}
 // 流量分析
 const flowData = reactive({
     table_head: [
@@ -1203,11 +1209,11 @@ const getFlow = async () => {
     const [res] = [await getTrafficListdata(data)];
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
-            item.buy_tgi = lueNum(item.buy_tgi)
-            item.channel_diff = lueNum(item.channel_diff)
+            item.buy_tgi = lueNum1(item.buy_tgi)
+            item.visitor_tgi = lueNum1(item.visitor_tgi)
+            item.channel_diff = lueNum(item.channel_diff * 100)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.uv = lueNum(item.uv)
-            item.visitor_tgi = lueNum(item.visitor_tgi)
 
             item.add_car_rate = lueNum(item.add_car_rate * 100)  //加购率
             item.add_cart_conversion_rate = lueNum(item.add_cart_conversion_rate * 100)  //加购转化率
@@ -1758,7 +1764,7 @@ $echarts_bg_img: url("./images/_2.png");
 
 }
 
-::v-deep(.el-input__wrapper,.el-date-editor) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
     border-radius: 5px;
@@ -1938,7 +1944,7 @@ $echarts_bg_img: url("./images/_2.png");
     background-color: rgba(#fff, 0.2) !important;
 }
 
-::v-deep(.el-table__body tr td.el-table__cell){
+::v-deep(.el-table__body tr td.el-table__cell) {
     background-color: transparent !important;
 }
 

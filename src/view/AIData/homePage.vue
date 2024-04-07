@@ -205,8 +205,8 @@
                                 <span class="ctn_num">{{ lueNum(ikun.gmv) }}</span>
                                 <span class="ctn_tit">GMV</span>
                             </li>
-                            <li class="roduct_right_ctn_data" :title="lueNum(0)">
-                                <span class="ctn_num">{{ lueNum(0) }}</span>
+                            <li class="roduct_right_ctn_data" :title="lueNum(ikun.scene_percentage)">
+                                <span class="ctn_num">{{ lueNum(ikun.scene_percentage*100) }}%</span>
                                 <span class="ctn_tit">渠道占比</span>
                             </li>
                             <li class="roduct_right_ctn_data" :title="lueNum(ikun.roi)">
