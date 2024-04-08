@@ -477,7 +477,7 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
         if (res.data.records.length > 0) {
             res.data.records.map((item: any, index: any) => {
                 item.count = lueNum1(item.count)
-                item.clicks = lueNum(item.clicks)
+                item.clicks = lueNum1(item.clicks)
                 item.visitors_count_free = lueNum1(item.visitors_count_free)
                 item.visitors_count_notfree = lueNum1(item.visitors_count_notfree)
                 item.industry_clicks = lueNum1(item.industry_clicks)

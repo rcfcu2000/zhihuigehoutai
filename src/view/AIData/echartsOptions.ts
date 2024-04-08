@@ -471,6 +471,13 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
     return {
         tooltip: {
             trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${lueNum(value)}${type}`
+                } else {
+                    return `${lueNum1(value)}`
+                }
+            }
         },
         legend: {
             // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],

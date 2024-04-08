@@ -3,24 +3,14 @@
     <page_header :title="pageTitle" />
     <div style="position: absolute; top: 25px; left: 8vw; z-index: 100">
       <el-button-group class="ml-4">
-        <el-button type="primary" size="large" color="#E6A23C" @click="targetSet"
-          >目标设置</el-button
-        >
+        <el-button type="primary" size="large" color="#E6A23C" @click="targetSet">目标设置</el-button>
       </el-button-group>
     </div>
     <el-form :inline="true" :model="searchData" class="goal-from">
       <el-form-item label="请选择起止时间">
-        <el-date-picker
-          v-model="searchData.date"
-          @change="getData"
-          :clearable="false"
-          format="YYYY/MM/DD"
-          value-format="YYYY-MM-DD"
-          :disabled-date="disabledDate"
-          type="daterange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
-        />
+        <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
+          value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+          end-placeholder="结束时间" />
       </el-form-item>
     </el-form>
     <el-row :gutter="20">
@@ -78,10 +68,10 @@
               <div class="num">{{ persentNum(indexData.data.target_day_rate) }}%</div>
               <div class="percentage">
                 目标: {{ persentNum(indexData.data.target_gmv_rate) }}%({{
-                  persentNum(
-                    indexData.data.target_day_rate - indexData.data.target_gmv_rate
-                  )
-                }}%)
+      persentNum(
+        indexData.data.target_day_rate - indexData.data.target_gmv_rate
+      )
+    }}%)
               </div>
             </div>
           </div>
@@ -90,23 +80,10 @@
       <el-col :span="7">
         <div class="boxHead1">货盘GMV达成率</div>
         <div class="palletGmv">
-          <el-table
-            :data="palletGmvData.tableData"
-            border
-            v-loading="palletGmvload"
-            class="palletGmv"
-            element-loading-background="rgba(122, 122, 122, 0.8)"
-            style="width: 100%; height: 120px"
-          >
-            <el-table-column
-              v-for="(item, index) in palletGmvData.table_head"
-              :key="index"
-              :prop="item.dataKey"
-              :label="item.title"
-              :width="item.width"
-              :align="item.align"
-              :fixed="item.fixed"
-            >
+          <el-table :data="palletGmvData.tableData" border v-loading="palletGmvload" class="palletGmv"
+            element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 120px">
+            <el-table-column v-for="(item, index) in palletGmvData.table_head" :key="index" :prop="item.dataKey"
+              :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
             </el-table-column>
           </el-table>
         </div>
@@ -121,64 +98,29 @@
         <div class="box" style="position: relative">
           <boxHead title="责任人分析" />
           <div class="gmvTrend" style="top: 25px; left: 8.5vw; position: absolute">
-            <el-button
-              type="primary"
-              :icon="RefreshLeft"
-              size="small"
-              :circle="true"
-              @click="manager_filter_R"
-            />
+            <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true" @click="manager_filter_R" />
           </div>
           <div class="managerA">
-            <el-table
-              ref="tableListRefmanager"
-              :data="managerData.tableData"
-              border
-              v-loading="managerLoad"
-              class="palletGmv"
-              show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 370px"
-              v-el-table-infinite-scroll="loadMore_manager"
-              :infinite-scroll-distance="100"
-              :infinite-scroll-disabled="false"
-              :infinite-scroll-immediate="false"
-              :infinite-scroll-delay="2000"
-              @filter-change="managerRowClick"
-            >
-              <el-table-column
-                show-overflow-tooltip
-                :label="manager_filter_label"
-                width="100"
-                align="left"
-                key="manager"
-                prop="manager"
-                :filters="manager_filter"
-                :filter-multiple="false"
-                filter-class-name="manager_filter"
-              >
+            <el-table ref="tableListRefmanager" :data="managerData.tableData" border v-loading="managerLoad"
+              class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+              style="width: 100%; height: 370px" v-el-table-infinite-scroll="loadMore_manager"
+              :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+              :infinite-scroll-delay="2000" @filter-change="managerRowClick">
+              <el-table-column show-overflow-tooltip :label="manager_filter_label" width="100" align="left"
+                key="manager" prop="manager" :filters="manager_filter" :filter-multiple="false"
+                filter-class-name="manager_filter">
               </el-table-column>
-              <el-table-column
-                v-for="(item, index) in managerData.table_head"
-                :key="index"
-                show-overflow-tooltip
-                :prop="item.dataKey"
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+              <el-table-column v-for="(item, index) in managerData.table_head" :key="index" show-overflow-tooltip
+                :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
               <template #append v-if="nomore_manager">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -186,48 +128,23 @@
                 </div>
               </template>
             </el-table>
-            <el-table
-              ref="tableListRefmanager_sum"
-              :show-header="false"
-              :data="managerData.sumData"
-              border
-              :v-loading="managerLoad"
-              class="palletGmv"
-              show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 30px"
-            >
-              <el-table-column
-                show-overflow-tooltip
-                label="责任人"
-                width="120"
-                align="left"
-                key="manager"
-                prop="manager"
-              >
+            <el-table ref="tableListRefmanager_sum" :show-header="false" :data="managerData.sumData" border
+              :v-loading="managerLoad" class="palletGmv" show-overflow-tooltip
+              element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+              <el-table-column show-overflow-tooltip label="责任人" width="120" align="left" key="manager" prop="manager">
               </el-table-column>
-              <el-table-column
-                v-for="(item, index) in managerData.table_head"
-                :key="index"
-                :prop="item.dataKey"
-                show-overflow-tooltip
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+              <el-table-column v-for="(item, index) in managerData.table_head" :key="index" :prop="item.dataKey"
+                show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
 
               <template #append v-if="nomore_manager">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -242,65 +159,30 @@
         <div class="box" style="position: relative">
           <boxHead title="类目分析" />
           <div class="gmvTrend" style="top: 25px; left: 8vw; position: absolute">
-            <el-button
-              type="primary"
-              :icon="RefreshLeft"
-              size="small"
-              :circle="true"
-              @click="category_filter_R"
-            />
+            <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true" @click="category_filter_R" />
           </div>
           <div class="managerA">
-            <el-table
-              ref="tableListRefcategory"
-              :data="categoryData.tableData"
-              border
-              v-loading="categoryLoad"
-              class="palletGmv"
-              show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 370px"
-              v-el-table-infinite-scroll="loadMore_category"
-              :infinite-scroll-distance="100"
-              :infinite-scroll-disabled="false"
-              :infinite-scroll-immediate="false"
-              :infinite-scroll-delay="2000"
-              @filter-change="categoryRowClick"
-            >
-              <el-table-column
-                show-overflow-tooltip
-                :label="category_filter_label"
-                width="120"
-                align="left"
-                key="category_lv3"
-                prop="category_lv3"
-                :filters="category_filter"
-                :filter-multiple="false"
-                filter-class-name="category_filter"
-              >
+            <el-table ref="tableListRefcategory" :data="categoryData.tableData" border v-loading="categoryLoad"
+              class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+              style="width: 100%; height: 370px" v-el-table-infinite-scroll="loadMore_category"
+              :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+              :infinite-scroll-delay="2000" @filter-change="categoryRowClick">
+              <el-table-column show-overflow-tooltip :label="category_filter_label" width="120" align="left"
+                key="category_lv3" prop="category_lv3" :filters="category_filter" :filter-multiple="false"
+                filter-class-name="category_filter">
               </el-table-column>
-              <el-table-column
-                v-for="(item, index) in categoryData.table_head"
-                :key="index"
-                show-overflow-tooltip
-                :prop="item.dataKey"
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+              <el-table-column v-for="(item, index) in categoryData.table_head" :key="index" show-overflow-tooltip
+                :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
 
               <template #append v-if="nomore_category">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -308,48 +190,24 @@
                 </div>
               </template>
             </el-table>
-            <el-table
-              ref="tableListRefcategory_sum"
-              :show-header="false"
-              :data="categoryData.sumData"
-              border
-              :v-loading="categoryLoad"
-              class="palletGmv"
-              show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 30px"
-            >
-              <el-table-column
-                show-overflow-tooltip
-                label="流量来源"
-                width="120"
-                align="left"
-                key="category_lv3"
-                prop="category_lv3"
-              >
+            <el-table ref="tableListRefcategory_sum" :show-header="false" :data="categoryData.sumData" border
+              :v-loading="categoryLoad" class="palletGmv" show-overflow-tooltip
+              element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+              <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="category_lv3"
+                prop="category_lv3">
               </el-table-column>
-              <el-table-column
-                v-for="(item, index) in categoryData.table_head"
-                :key="index"
-                :prop="item.dataKey"
-                show-overflow-tooltip
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+              <el-table-column v-for="(item, index) in categoryData.table_head" :key="index" :prop="item.dataKey"
+                show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
 
               <template #append v-if="nomore_category">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -364,43 +222,23 @@
         <div class="box">
           <boxHead title="货盘详情" />
           <div class="managerA">
-            <el-table
-              ref="tableListRefpallet"
-              :data="palletData.tableData"
-              border
-              v-loading="palletLoad"
-              class="palletGmv"
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 200px"
-              v-el-table-infinite-scroll="loadMore_pallet"
-              :infinite-scroll-distance="100"
-              :infinite-scroll-disabled="false"
-              :infinite-scroll-immediate="false"
-              :infinite-scroll-delay="2000"
-              @cell-click="palletClick"
-            >
-              <el-table-column
-                v-for="(item, index) in palletData.table_head"
-                :key="index"
-                show-overflow-tooltip
-                :prop="item.dataKey"
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+            <el-table ref="tableListRefpallet" :data="palletData.tableData" border v-loading="palletLoad"
+              class="palletGmv" element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 200px"
+              v-el-table-infinite-scroll="loadMore_pallet" :infinite-scroll-distance="100"
+              :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000"
+              @cell-click="palletClick">
+              <el-table-column v-for="(item, index) in palletData.table_head" :key="index" show-overflow-tooltip
+                :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
 
               <template #append v-if="nomore_pallet">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -408,39 +246,21 @@
                 </div>
               </template>
             </el-table>
-            <el-table
-              ref="tableListRefpallet_sum"
-              :show-header="false"
-              :data="palletData.sumData"
-              border
-              :v-loading="palletLoad"
-              class="palletGmv"
-              show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 30px"
-            >
-              <el-table-column
-                v-for="(item, index) in palletData.table_head"
-                :key="index"
-                :prop="item.dataKey"
-                show-overflow-tooltip
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+            <el-table ref="tableListRefpallet_sum" :show-header="false" :data="palletData.sumData" border
+              :v-loading="palletLoad" class="palletGmv" show-overflow-tooltip
+              element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+              <el-table-column v-for="(item, index) in palletData.table_head" :key="index" :prop="item.dataKey"
+                show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
 
               <template #append v-if="nomore_pallet">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -455,51 +275,28 @@
         <div class="box">
           <boxHead title="商品详情" />
           <div class="managerA">
-            <el-table
-              ref="tableListRefproduct"
-              :data="productData.tableData"
-              border
-              v-loading="productLoad"
-              class="palletGmv"
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 250px"
-              v-el-table-infinite-scroll="loadMore_product"
-              :infinite-scroll-distance="100"
-              :infinite-scroll-disabled="false"
-              :infinite-scroll-immediate="false"
-              :infinite-scroll-delay="2000"
-            >
-              <el-table-column
-                v-for="(item, index) in productData.table_head"
-                :key="index"
-                show-overflow-tooltip
-                :prop="item.dataKey"
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+            <el-table ref="tableListRefproduct" :data="productData.tableData" border v-loading="productLoad"
+              class="palletGmv" element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
+              v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
+              :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000">
+              <el-table-column v-for="(item, index) in productData.table_head" :key="index" show-overflow-tooltip
+                :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
                 <template #default="scope">
-                  <div
-                    v-if="scope.column.property == 'product_name'"
-                    :title="scope.row.product_name"
-                    class="text_hidden"
-                  >
+                  <div v-if="scope.column.property == 'product_name'" :title="scope.row.product_name"
+                    class="text_hidden">
                     {{ scope.row.product_name }}
                   </div>
                 </template>
               </el-table-column>
 
               <template #append v-if="nomore_product">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -507,39 +304,21 @@
                 </div>
               </template>
             </el-table>
-            <el-table
-              ref="tableListRefproduct_sum"
-              :show-header="false"
-              :data="productData.sumData"
-              border
-              :v-loading="productLoad"
-              class="palletGmv"
-              show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 30px"
-            >
-              <el-table-column
-                v-for="(item, index) in productData.table_head"
-                :key="index"
-                :prop="item.dataKey"
-                show-overflow-tooltip
-                :label="item.title"
-                :width="item.width"
-                :align="item.align"
-                :fixed="item.fixed"
-              >
+            <el-table ref="tableListRefproduct_sum" :show-header="false" :data="productData.sumData" border
+              :v-loading="productLoad" class="palletGmv" show-overflow-tooltip
+              element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+              <el-table-column v-for="(item, index) in productData.table_head" :key="index" :prop="item.dataKey"
+                show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
 
               <template #append v-if="nomore_product">
-                <div
-                  style="
+                <div style="
                     height: 40px;
                     width: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                  "
-                >
+                  ">
                   <el-icon>
                     <MagicStick />
                   </el-icon>
@@ -552,85 +331,48 @@
       </el-col>
     </el-row>
   </div>
-  <el-dialog
-    append-to="#webcommon1"
-    v-model="targetVisible"
-    top="10vh"
-    width="80%"
-    :close-on-click-modal="false"
-    @closed="dialogClose(ruleFormRef)"
-  >
+  <el-dialog modal-class="golaDialog" append-to="#webcommon1" v-model="targetVisible" top="10vh" width="80%"
+    :close-on-click-modal="false" @closed="dialogClose(ruleFormRef)">
     <template #header>
       <div class="targetHeader">目标管理</div>
     </template>
     <el-tabs type="border-card">
       <el-tab-pane label="产品目标">
-        <el-table
-          ref="proTargetRef"
-          :data="proTableData.tableData"
-          border
-          v-loading="proTargetLoad"
-          class="palletGmv"
-          show-overflow-tooltip
-          element-loading-background="rgba(122, 122, 122, 0.8)"
-          style="width: 100%"
-          v-el-table-infinite-scroll="loadMore_proTarget"
-          :infinite-scroll-distance="100"
-          :infinite-scroll-disabled="false"
-          :infinite-scroll-immediate="false"
-          :infinite-scroll-delay="2000"
-        >
-          <el-table-column
-            v-for="(item, index) in proTableData.table_head"
-            :key="index"
-            show-overflow-tooltip
-            :prop="item.dataKey"
-            :label="item.title"
-            :width="item.width"
-            :align="item.align"
-            :fixed="item.fixed"
-          >
+        <el-table ref="proTargetRef" :data="proTableData.tableData" border v-loading="proTargetLoad" class="palletGmv"
+          show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%"
+          v-el-table-infinite-scroll="loadMore_proTarget" :infinite-scroll-distance="100"
+          :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000">
+          <el-table-column v-for="(item, index) in proTableData.table_head" :key="index" show-overflow-tooltip
+            :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
           </el-table-column>
           <el-table-column scope>
             <template #header>
-              <el-button
-                size="small"
-                type="success"
-                @click="proTargetEdit(false, false, true)"
-                ><el-icon> <Plus /> </el-icon>新增</el-button
-              >
+              <el-button size="small" type="success" @click="proTargetEdit(false, false, true)"><el-icon>
+                  <Plus />
+                </el-icon>新增</el-button>
             </template>
             <template #default="scope">
-              <el-button
-                size="small"
-                color="#071e48"
-                @click="proTargetEdit(scope.$index, scope.row, false)"
-                ><el-icon> <Edit /> </el-icon>编辑</el-button
-              >
-              <el-popconfirm
-                title="确定要删除吗?!!!!"
-                @confirm="proTargetDelete(scope.$index, scope.row)"
-                :icon="InfoFilled"
-                icon-color="#626AEF"
-              >
+              <el-button size="small" color="#071e48" @click="proTargetEdit(scope.$index, scope.row, false)"><el-icon>
+                  <Edit />
+                </el-icon>编辑</el-button>
+              <el-popconfirm title="确定要删除吗?!!!!" @confirm="proTargetDelete(scope.$index, scope.row)" :icon="InfoFilled"
+                icon-color="#626AEF">
                 <template #reference>
-                  <el-button size="small" type="danger"
-                    ><el-icon> <Delete /> </el-icon>删除</el-button
-                  >
+                  <el-button size="small" type="danger"><el-icon>
+                      <Delete />
+                    </el-icon>删除</el-button>
                 </template>
               </el-popconfirm>
             </template>
           </el-table-column>
           <template #append v-if="nomore_proTarget">
-            <div
-              style="
+            <div style="
                 height: 40px;
                 width: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-              "
-            >
+              ">
               <el-icon>
                 <MagicStick />
               </el-icon>
@@ -640,72 +382,41 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="货盘目标">
-        <el-table
-          ref="proTargetRef"
-          :data="palTableData.tableData"
-          border
-          v-loading="palTargetLoad"
-          class="palletGmv"
-          show-overflow-tooltip
-          element-loading-background="rgba(122, 122, 122, 0.8)"
-          style="width: 100%"
-          v-el-table-infinite-scroll="loadMore_palTarget"
-          :infinite-scroll-distance="100"
-          :infinite-scroll-disabled="false"
-          :infinite-scroll-immediate="false"
-          :infinite-scroll-delay="2000"
-        >
-          <el-table-column
-            v-for="(item, index) in palTableData.table_head"
-            :key="index"
-            show-overflow-tooltip
-            :prop="item.dataKey"
-            :label="item.title"
-            :width="item.width"
-            :align="item.align"
-            :fixed="item.fixed"
-          >
+        <el-table ref="proTargetRef" :data="palTableData.tableData" border v-loading="palTargetLoad" class="palletGmv"
+          show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%"
+          v-el-table-infinite-scroll="loadMore_palTarget" :infinite-scroll-distance="100"
+          :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000">
+          <el-table-column v-for="(item, index) in palTableData.table_head" :key="index" show-overflow-tooltip
+            :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
           </el-table-column>
           <el-table-column scope>
             <template #header>
-              <el-button
-                size="small"
-                type="success"
-                @click="palTargetEdit(false, false, true)"
-                ><el-icon> <Plus /> </el-icon>新增</el-button
-              >
+              <el-button size="small" type="success" @click="palTargetEdit(false, false, true)"><el-icon>
+                  <Plus />
+                </el-icon>新增</el-button>
             </template>
             <template #default="scope">
-              <el-button
-                size="small"
-                color="#071e48"
-                @click="palTargetEdit(scope.$index, scope.row, false)"
-                ><el-icon> <Edit /> </el-icon>编辑</el-button
-              >
-              <el-popconfirm
-                title="确定要删除吗?!!!!"
-                @confirm="palTargetDelete(scope.$index, scope.row)"
-                :icon="InfoFilled"
-                icon-color="#626AEF"
-              >
+              <el-button size="small" color="#071e48" @click="palTargetEdit(scope.$index, scope.row, false)"><el-icon>
+                  <Edit />
+                </el-icon>编辑</el-button>
+              <el-popconfirm title="确定要删除吗?!!!!" @confirm="palTargetDelete(scope.$index, scope.row)" :icon="InfoFilled"
+                icon-color="#626AEF">
                 <template #reference>
-                  <el-button size="small" type="danger"
-                    ><el-icon> <Delete /> </el-icon>删除</el-button
-                  >
+                  <el-button size="small" type="danger"><el-icon>
+                      <Delete />
+                    </el-icon>删除</el-button>
                 </template>
               </el-popconfirm>
             </template>
           </el-table-column>
           <template #append v-if="nomore_palTarget">
-            <div
-              style="
+            <div style="
                 height: 40px;
                 width: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-              "
-            >
+              ">
               <el-icon>
                 <MagicStick />
               </el-icon>
@@ -715,228 +426,99 @@
         </el-table>
       </el-tab-pane>
     </el-tabs>
-    <el-dialog
-      append-to="#webcommon1"
-      v-model="proTarget_edit"
-      width="500"
-      :title="InlogTitle"
-      append-to-body
-      :close-on-click-modal="false"
-      @closed="resetForm(ruleFormRef)"
-    >
+    <el-dialog append-to="#webcommon1" v-model="proTarget_edit" width="500" :title="InlogTitle" append-to-body
+      :close-on-click-modal="false" @closed="resetForm(ruleFormRef)">
       <template #header>
         <div class="targetHeader">
           {{ InlogTitle }}
         </div>
       </template>
-      <el-form
-        ref="ruleFormRef"
-        :model="ruleForm"
-        :label-position="labelPosition"
-        label-width="auto"
-      >
-        <el-form-item
-          label="商品名称"
-          prop="product_name"
-          :rules="[{ required: true, message: '这是必填项', trigger: 'change' }]"
-        >
-          <el-select
-            v-model="ruleForm.product_name"
-            class="select_width"
-            placeholder="请选择"
-            filterable
-            remote
-            reserve-keyword
-            remote-show-suffix
-            @change="proChange"
-            :remote-method="remoteMethod"
-            :loading="searchData.loading"
-            style="width: 200px"
-          >
-            <el-option
-              v-for="item in state.shopList"
-              :key="item.product_id"
-              :label="item.product_name"
-              :value="item.product_id + '_' + item.product_name"
-            />
+      <el-form ref="ruleFormRef" :model="ruleForm" :label-position="labelPosition" label-width="auto">
+        <el-form-item label="商品名称" prop="product_name"
+          :rules="[{ required: true, message: '这是必填项', trigger: 'change' }]">
+          <el-select v-model="ruleForm.product_name" class="select_width" placeholder="请选择" filterable remote
+            reserve-keyword remote-show-suffix @change="proChange" :remote-method="remoteMethod"
+            :loading="searchData.loading" style="width: 200px">
+            <el-option v-for="item in state.shopList" :key="item.product_id" :label="item.product_name"
+              :value="item.product_id + '_' + item.product_name" />
           </el-select>
           <!-- <el-input v-model="ruleForm.product_name" :disabled="nameType" style="width: 200px;" /> -->
         </el-form-item>
-        <el-form-item
-          label="GMV目标"
-          prop="gmv_target"
-          :rules="[
-            { required: true, message: '这是必填项' },
-            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-          ]"
-        >
-          <el-input
-            v-model.number="ruleForm.gmv_target"
-            style="width: 200px"
-            type="text"
-            autocomplete="off"
-          />
+        <el-form-item label="GMV目标" prop="gmv_target" :rules="[
+      { required: true, message: '这是必填项' },
+      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+    ]">
+          <el-input v-model.number="ruleForm.gmv_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item
-          label="利润目标"
-          prop="profit_target"
-          :rules="[
-            { required: true, message: '这是必填项' },
-            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-          ]"
-        >
-          <el-input
-            v-model.number="ruleForm.profit_target"
-            style="width: 200px"
-            type="text"
-            autocomplete="off"
-          />
+        <el-form-item label="利润目标" prop="profit_target" :rules="[
+      { required: true, message: '这是必填项' },
+      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+    ]">
+          <el-input v-model.number="ruleForm.profit_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item
-          label="月费用"
-          prop="monthly_budget"
-          :rules="[
-            { required: true, message: '这是必填项' },
-            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-          ]"
-        >
-          <el-input
-            v-model.number="ruleForm.monthly_budget"
-            style="width: 200px"
-            type="text"
-            autocomplete="off"
-          />
+        <el-form-item label="月费用" prop="monthly_budget" :rules="[
+      { required: true, message: '这是必填项' },
+      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+    ]">
+          <el-input v-model.number="ruleForm.monthly_budget" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item
-          label="目标月份"
-          prop="statistic_date"
-          :rules="[
-            { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
-          ]"
-        >
-          <el-date-picker
-            v-model="ruleForm.statistic_date"
-            type="month"
-            style="width: 200px"
-          />
+        <el-form-item label="目标月份" prop="statistic_date" :rules="[
+      { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
+    ]">
+          <el-date-picker v-model="ruleForm.statistic_date" type="month" style="width: 200px" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="small" color="#071e48" @click="resetForm(ruleFormRef)"
-            >取消</el-button
-          >
+          <el-button size="small" color="#071e48" @click="resetForm(ruleFormRef)">取消</el-button>
           <el-button type="primary" @click="submitForm(ruleFormRef)"> 提交 </el-button>
         </div>
       </template>
     </el-dialog>
 
-    <el-dialog
-      append-to="#webcommon1"
-      v-model="palTarget_edit"
-      width="500"
-      :title="InlogTitle"
-      append-to-body
-      :close-on-click-modal="false"
-      @closed="resetForm1(ruleFormRef1)"
-    >
+    <el-dialog append-to="#webcommon1" v-model="palTarget_edit" width="500" :title="InlogTitle" append-to-body
+      :close-on-click-modal="false" @closed="resetForm1(ruleFormRef1)">
       <template #header>
         <div class="targetHeader">
           {{ InlogTitle }}
         </div>
       </template>
-      <el-form
-        ref="ruleFormRef1"
-        :model="ruleForm_pal"
-        :label-position="labelPosition"
-        label-width="auto"
-      >
+      <el-form ref="ruleFormRef1" :model="ruleForm_pal" :label-position="labelPosition" label-width="auto">
         <el-form-item label="货盘" prop="pallet">
-          <el-select
-            v-model="ruleForm_pal.pallet"
-            class="select_width"
-            placeholder="请选择"
-            filterable
-            remote
-            reserve-keyword
-            remote-show-suffix
-            :remote-method="remoteMethod"
-            :loading="searchData.loading"
-            style="width: 200px"
-          >
-            <el-option
-              v-for="item in state.palletList"
-              :key="item.pallet"
-              :label="item.pallet"
-              :value="item.pallet"
-            />
+          <el-select v-model="ruleForm_pal.pallet" class="select_width" placeholder="请选择" filterable remote
+            reserve-keyword remote-show-suffix :remote-method="remoteMethod1" :loading="searchData.loading"
+            style="width: 200px">
+            <el-option v-for="item in state.palletList" :key="item.pallet" :label="item.pallet" :value="item.pallet" />
           </el-select>
           <!-- <el-input v-model="ruleForm_pal.product_name" :disabled="nameType" style="width: 200px;" /> -->
         </el-form-item>
-        <el-form-item
-          label="GMV目标"
-          prop="gmv_target"
-          :rules="[
-            { required: true, message: '这是必填项' },
-            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-          ]"
-        >
-          <el-input
-            v-model.number="ruleForm_pal.gmv_target"
-            style="width: 200px"
-            type="text"
-            autocomplete="off"
-          />
+        <el-form-item label="GMV目标" prop="gmv_target" :rules="[
+      { required: true, message: '这是必填项' },
+      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+    ]">
+          <el-input v-model.number="ruleForm_pal.gmv_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item
-          label="利润目标"
-          prop="profit_target"
-          :rules="[
-            { required: true, message: '这是必填项' },
-            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-          ]"
-        >
-          <el-input
-            v-model.number="ruleForm_pal.profit_target"
-            style="width: 200px"
-            type="text"
-            autocomplete="off"
-          />
+        <el-form-item label="利润目标" prop="profit_target" :rules="[
+      { required: true, message: '这是必填项' },
+      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+    ]">
+          <el-input v-model.number="ruleForm_pal.profit_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item
-          label="月费用"
-          prop="monthly_budget"
-          :rules="[
-            { required: true, message: '这是必填项' },
-            { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-          ]"
-        >
-          <el-input
-            v-model.number="ruleForm_pal.monthly_budget"
-            style="width: 200px"
-            type="text"
-            autocomplete="off"
-          />
+        <el-form-item label="月费用" prop="monthly_budget" :rules="[
+      { required: true, message: '这是必填项' },
+      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+    ]">
+          <el-input v-model.number="ruleForm_pal.monthly_budget" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
-        <el-form-item
-          label="目标月份"
-          prop="statistic_date"
-          :rules="[
-            { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
-          ]"
-        >
-          <el-date-picker
-            v-model="ruleForm_pal.statistic_date"
-            type="month"
-            style="width: 200px"
-          />
+        <el-form-item label="目标月份" prop="statistic_date" :rules="[
+      { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
+    ]">
+          <el-date-picker v-model="ruleForm_pal.statistic_date" type="month" style="width: 200px" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="small" color="#071e48" @click="resetForm1(ruleFormRef1)"
-            >取消</el-button
-          >
+          <el-button size="small" color="#071e48" @click="resetForm1(ruleFormRef1)">取消</el-button>
           <el-button type="primary" @click="submitForm1(ruleFormRef1)"> 提交 </el-button>
         </div>
       </template>
@@ -953,7 +535,7 @@ import { reactive, onMounted, ref, nextTick } from "vue";
 import goHome from "./components/goHome.vue";
 import page_header from "./components/page_header.vue";
 import boxHead from "./components/box_head.vue";
-import { lineOptions } from "./echartsOptions";
+import { lineOptions, lineOptions_lineAndbar } from "./echartsOptions";
 import {
   GetGmvTargetdata,
   GetGmvTrenddata,
@@ -1036,7 +618,6 @@ const getPalletList = async () => {
   data.end_date = data.date[1];
   const res = await proGetPalletListdata(data);
   if (res.code == 0) {
-    console.log(res.data.records, "proGetPalletListdata");
     state.palletList = res.data.records;
   }
 };
@@ -1158,14 +739,17 @@ const getGmvTrend = async () => {
     let arr2 = [
       {
         name: "GMV",
+        type: 'line',
         data: [] as any,
       },
       {
         name: "推广GMV",
+        type: 'line',
         data: [] as any,
       },
       {
         name: "推广花费",
+        type: 'line',
         data: [] as any,
       },
     ];
@@ -1179,7 +763,7 @@ const getGmvTrend = async () => {
 
     const chartDom1 = document.getElementById("gmvTrend") as HTMLElement;
     const myChart1 = echarts.init(chartDom1);
-    const option1 = lineOptions(arr2, timeX, false, "");
+    const option1 = lineOptions_lineAndbar(arr2, timeX, false, "");
     option1 && myChart1.setOption(option1);
     let listener1 = function () {
       if (myChart1) {
@@ -1739,22 +1323,22 @@ const getPallet = async () => {
   if (res.code == 0) {
     const resd = res.data.records
       ? res.data.records.map((item: any, index: any) => {
-          item.month_gmv = lueNum(item.month_gmv);
-          item.target_gmv = lueNum(item.target_gmv);
-          item.monthly_budget = lueNum(item.monthly_budget);
-          item.spend = lueNum(item.spend);
-          item.customer_unit_price = lueNum(item.customer_unit_price);
-          item.profit = lueNum(item.profit);
-          item.promotion_diff = lueNum(item.promotion_diff);
-          item.composite_roi = lueNum(item.composite_roi);
-          item.time_schedule = lueNum(item.time_schedule * 100) + "%";
-          item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + "%";
-          item.target_day_rate = lueNum(item.target_day_rate * 100) + "%";
-          item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%";
-          item.promotion_target_percentage =
-            lueNum(item.promotion_target_percentage * 100) + "%";
-          return item;
-        })
+        item.month_gmv = lueNum(item.month_gmv);
+        item.target_gmv = lueNum(item.target_gmv);
+        item.monthly_budget = lueNum(item.monthly_budget);
+        item.spend = lueNum(item.spend);
+        item.customer_unit_price = lueNum(item.customer_unit_price);
+        item.profit = lueNum(item.profit);
+        item.promotion_diff = lueNum(item.promotion_diff);
+        item.composite_roi = lueNum(item.composite_roi);
+        item.time_schedule = lueNum(item.time_schedule * 100) + "%";
+        item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + "%";
+        item.target_day_rate = lueNum(item.target_day_rate * 100) + "%";
+        item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%";
+        item.promotion_target_percentage =
+          lueNum(item.promotion_target_percentage * 100) + "%";
+        return item;
+      })
       : [];
     if (res.data.sum !== null && res.data.sum !== undefined) {
       let sum = res.data.sum;
@@ -1832,8 +1416,8 @@ const productData = reactive({
       title: "GMV",
       width: "",
       align: "center",
-      dataKey: "gmv",
-      key: "gmv",
+      dataKey: "month_gmv",
+      key: "month_gmv",
       fixed: false,
       unit: "",
     },
@@ -1974,21 +1558,21 @@ const getProduct = async () => {
   if (res.code == 0) {
     const resd = res.data.records
       ? res.data.records.map((item: any, index: any) => {
-          item.month_gmv = lueNum(item.month_gmv);
-          item.target_gmv = lueNum(item.target_gmv);
-          item.monthly_budget = lueNum(item.monthly_budget);
-          item.spend = lueNum(item.spend);
-          item.customer_unit_price = lueNum(item.customer_unit_price);
-          item.profit = lueNum(item.profit);
-          item.composite_roi = lueNum(item.composite_roi);
-          item.time_schedule = lueNum(item.time_schedule * 100) + "%";
-          item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + "%";
-          item.target_day_rate = lueNum(item.target_day_rate * 100) + "%";
-          item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%";
-          item.promotion_target_percentage =
-            lueNum(item.promotion_target_percentage * 100) + "%";
-          return item;
-        })
+        item.month_gmv = lueNum(item.month_gmv);
+        item.target_gmv = lueNum(item.target_gmv);
+        item.monthly_budget = lueNum(item.monthly_budget);
+        item.spend = lueNum(item.spend);
+        item.customer_unit_price = lueNum(item.customer_unit_price);
+        item.profit = lueNum(item.profit);
+        item.composite_roi = lueNum(item.composite_roi);
+        item.time_schedule = lueNum(item.time_schedule * 100) + "%";
+        item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + "%";
+        item.target_day_rate = lueNum(item.target_day_rate * 100) + "%";
+        item.promotion_percentage = lueNum(item.promotion_percentage * 100) + "%";
+        item.promotion_target_percentage =
+          lueNum(item.promotion_target_percentage * 100) + "%";
+        return item;
+      })
       : [];
 
     if (res.data.sum !== null && res.data.sum !== undefined) {
@@ -2110,6 +1694,15 @@ const proTableData = reactive({
       align: "center",
       dataKey: "profit_target_num",
       key: "profit_target_num",
+      fixed: false,
+      unit: "",
+    },
+    {
+      title: "目标月份",
+      width: "100",
+      align: "center",
+      dataKey: "statistic_date",
+      key: "statistic_date",
       fixed: false,
       unit: "",
     },
@@ -2287,6 +1880,7 @@ const setSearchData1 = reactive({
   end_date: "",
   shop_name: "蜡笔派家居旗舰店", //店铺名称
   shop_id: "",
+  loading: false,
 });
 // 货盘
 const palTableData = reactive({
@@ -2324,6 +1918,15 @@ const palTableData = reactive({
       align: "center",
       dataKey: "profit_target_num",
       key: "profit_target_num",
+      fixed: false,
+      unit: "",
+    },
+    {
+      title: "目标月份",
+      width: "100",
+      align: "center",
+      dataKey: "statistic_date",
+      key: "statistic_date",
       fixed: false,
       unit: "",
     },
@@ -2478,22 +2081,36 @@ const palTargetDelete = async (index: any, row: any) => {
     });
   }
 };
+
+const getSearchShopList1 = useThrottle(async () => {
+  let data = searchData;
+  data.start_date = data.date[0];
+  data.end_date = data.date[1];
+  const res = await proGetPalletListdata(data);
+  state.palletList = res.data.records;
+  searchData.loading = false;
+}, 1000);
+
+const remoteMethod1 = async (query: string) => {
+  searchData.loading = true;
+  state.key = query;
+  getSearchShopList1();
+};
 </script>
 
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
-#webcommon1 {
-  .el-overlay {
-    .el-overlay-dialog {
-      .el-dialog {
-        background: rgb(2, 20, 44) !important;
-      }
-      .el-dialog__header {
-        color: #fff !important ;
-      }
-    }
-  }
+.el-dialog__header {
+  color: #fff !important;
+}
+
+::v-deep(.el-dialog) {
+  background: rgb(2, 20, 44) !important;
+}
+
+::v-deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+  color: #fff !important;
 }
 
 .el-button {

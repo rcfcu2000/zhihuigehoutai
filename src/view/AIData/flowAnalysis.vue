@@ -7,8 +7,8 @@
                     <div class="search_left">
                         <div class="search_line">
                             负责人：
-                            <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip
-                                class="select_width" placeholder="请选择" @change="getAllEcharts">
+                            <el-select v-model="searchData.product_manager[0]" collapse-tags collapse-tags-tooltip
+                                class="select_width" placeholder="请选择" @change="managerChange">
                                 <el-option v-for="item in state.responsibleList" :key="item.responsible"
                                     :label="item.responsible" :value="item.responsible" />
                             </el-select>
@@ -122,13 +122,13 @@
                                         <div v-else>持平</div>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="上月货盘" align="center">
+                                <el-table-column label="上期货盘" align="center">
 
                                     <template #default="scope">
                                         <span>{{ scope.row.pre_pallet }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="本月货盘" align="center">
+                                <el-table-column label="本期货盘" align="center">
 
                                     <template #default="scope">
                                         <span>{{ scope.row.cur_pallet }}</span>
@@ -630,7 +630,10 @@ const getData2 = async () => {
     };
 
 };
-
+const managerChange = (e:any) => {
+    searchData.product_manager = [e]
+    getAllEcharts()
+}
 const getAllEcharts = async () => {
     state.loading = true;
 
