@@ -19,9 +19,13 @@ export const useUserStore = defineStore('user', () => {
     baseColor: '#fff',
   })
   const userShop = ref([])
+  const currentShop = ref({})
   const token = ref(window.localStorage.getItem('token') || '')
   const setUserShop = (val) => {
     userShop.value = val
+  }
+  const setCurrentShop = (val) => {
+    currentShop.value = val
   }
   const setUserInfo = (val) => {
     userInfo.value = val
@@ -45,18 +49,22 @@ export const useUserStore = defineStore('user', () => {
     }
   }
   /* 获取用户信息*/
-  const GetUserInfo = async() => {
+  const GetUserInfo = async () => {
     const res = await getUserInfo()
     if (res.code === 0) {
       setUserInfo(res.data.userInfo)
+      if (Object.keys(currentShop.value).length === 0) {
+        const shopList = await getMyShopList()
+        if (shopList.code == 0) {
+          setUserShop(shopList.data.records)
+          setCurrentShop(shopList.data.records[0])
+        }
+      }
     }
     return res
   }
-  const GetUserShop = async() => {
-    return userShop.value
-  }
   /* 登录*/
-  const LoginIn = async(loginInfo) => {
+  const LoginIn = async (loginInfo) => {
     loadingInstance.value = ElLoading.service({
       fullscreen: true,
       text: '登录中，请稍候...',
@@ -74,11 +82,6 @@ export const useUserStore = defineStore('user', () => {
         })
         await router.replace({ name: userInfo.value.authority.defaultRouter })
         loadingInstance.value.close()
-        const shopList = await getMyShopList()
-        console.log(shopList,"getMyShopListgetMyShopList")
-        if(shopList.code == 0){
-          setUserShop(shopList.data.records)
-        }
         const isWin = ref(/windows/i.test(navigator.userAgent))
         if (isWin.value) {
           window.localStorage.setItem('osType', 'WIN')
@@ -93,7 +96,7 @@ export const useUserStore = defineStore('user', () => {
     loadingInstance.value.close()
   }
   /* 登出*/
-  const LoginOut = async() => {
+  const LoginOut = async () => {
     const res = await jsonInBlacklist()
     if (res.code === 0) {
       token.value = ''
@@ -104,13 +107,13 @@ export const useUserStore = defineStore('user', () => {
     }
   }
   /* 清理数据 */
-  const ClearStorage = async() => {
+  const ClearStorage = async () => {
     token.value = ''
     sessionStorage.clear()
     localStorage.clear()
   }
   /* 设置侧边栏模式*/
-  const changeSideMode = async(data) => {
+  const changeSideMode = async (data) => {
     const res = await setSelfInfo({ sideMode: data })
     if (res.code === 0) {
       userInfo.value.sideMode = data
@@ -150,17 +153,19 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     userInfo,
+    userShop,
+    currentShop,
     token,
     NeedInit,
     ResetUserInfo,
     GetUserInfo,
-    GetUserShop,
     LoginIn,
     LoginOut,
     changeSideMode,
     mode,
     sideMode,
     setToken,
+    setCurrentShop,
     baseColor,
     activeColor,
     loadingInstance,

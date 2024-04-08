@@ -1,6 +1,6 @@
 <template>
   <div class="gola pageBG" ref="gola" id="webcommon1">
-    <page_header :title="pageTitle" />
+    <page_header :title="pageTitle" @changeShop="changeShop" />
     <div style="position: absolute; top: 25px; left: 8vw; z-index: 100">
       <el-button-group class="ml-4">
         <el-button type="primary" size="large" color="#E6A23C" @click="targetSet">目标设置</el-button>
@@ -562,7 +562,9 @@ import { persentNum, floatNum, lueNum, formatDate } from "@/utils/format.js";
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echarts自适应，多文件调用不会重复
 import { useThrottle, useDebounce } from "@/utils/throttle-debounce";
+import { useUserStore } from '@/pinia/modules/user'
 
+const userStore = useUserStore()
 const pageTitle = "目标达成";
 const gola = ref();
 // 指数信息
@@ -594,7 +596,6 @@ const getData = async () => {
   productData.tableData = [];
   await getProduct();
 };
-
 const state = reactive({
   shopList: [] as any,
   key: "",
@@ -611,7 +612,9 @@ onMounted(async () => {
     state.shopList = res.data.records;
   }
 });
-
+const changeShop = () => {
+  console.log(userStore.currentShop,"userStore.currentShop")
+}
 const getPalletList = async () => {
   let data = searchData;
   data.start_date = data.date[0];

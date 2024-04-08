@@ -1,47 +1,37 @@
 <template>
     <div class="main">
-        <el-affix :offset="0" @scroll="affixChange">
-            <div class="header">
-                <span class="titl1_h1">推广分析</span>
-                <div class="search">
-                    <div class="search_left">
-                        <div class="search_line">
-                            负责人
-                            <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip
-                                class="select_width" placeholder="请选择" @change="getData2" multiple>
-                                <el-option v-for="item in state.responsibleList" :key="item.responsible"
-                                    :label="item.responsible" :value="item.responsible" />
-                            </el-select>
-                        </div>
-                        <div class="search_line">
-                            本期货盘
-                            <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip
-                                clearable multiple @change="getData2" class="select_width" placeholder="请选择">
-                                <el-option v-for="item in state.monthPallet" :key="item.current_inventory"
-                                    :label="item.current_inventory" :value="item.current_inventory" />
-                            </el-select>
-                        </div>
-                        <div class="search_line">
-                            场景分类
-                            <el-select v-model="searchData.scene_category" collapse-tags collapse-tags-tooltip clearable
-                                multiple @change="getData2" class="select_width" placeholder="请选择">
-                                <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
-                                    :value="item.value" />
-                            </el-select>
-                        </div>
-                    </div>
-                    <div class="search_right">
-                        <div class="search_line">
-                            请选择起止时间
-                            <el-date-picker @change="getData2()" :clearable="false" v-model="searchData.date"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
-                                type="daterange" :default-time="defaultTime" start-placeholder="开始时间"
-                                end-placeholder="结束时间" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-affix>
+        <page_header :title="pageTitle" />
+
+        <el-form :inline="true" :model="searchData" class="pro-from-left">
+            <el-form-item label="负责人：">
+                <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip placeholder="请选择"
+                    @change="getData2" multiple style="width:120px">
+                    <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+                        :value="item.responsible" />
+                </el-select>
+            </el-form-item>
+            <el-form-item label="本期货盘：">
+                <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip placeholder="请选择"
+                    @change="getData2" multiple style="width:120px">
+                    <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+                        :value="item.responsible" />
+                </el-select>
+            </el-form-item>
+            <el-form-item label="场景分类：">
+                <el-select v-model="searchData.scene_category" collapse-tags collapse-tags-tooltip clearable multiple
+                    @change="getData2" placeholder="请选择" style="width:120px">
+                    <el-option v-for="(item, index) in cities" :key="item.value" :label="item.value"
+                        :value="item.value" />
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <el-form :inline="true" :model="searchData" class="pro-from-right">
+            <el-form-item label="请选择起止时间：">
+                <el-date-picker @change="getData2()" :clearable="false" v-model="searchData.date" format="YYYY/MM/DD"
+                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" :default-time="defaultTime"
+                    start-placeholder="开始时间" end-placeholder="结束时间" />
+            </el-form-item>
+        </el-form>
 
         <div class="title">
             重点指标
@@ -349,6 +339,7 @@ import {
     getPlanThendListdata,
 } from '@/api/AIdata'
 import goHome from "./components/goHome.vue";
+import page_header from "./components/page_header.vue";
 import { getMonthFinalDay, getMonday, weaklast } from '@/utils/getDate.ts'
 import { pieOptions, barOptionsX } from "./echartsOptions";
 import { reactive, onMounted, onUnmounted, ref } from 'vue'
@@ -359,6 +350,7 @@ import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
 import { lueNum, lueNumInteger } from "@/utils/format.js"
 
+const pageTitle = "推广分析";
 const pageNum_pro = ref(0)
 const pageNum_plan = ref(0)
 const pageSize = ref(20)
@@ -518,9 +510,9 @@ const tableRwoClick = async (row, column, event) => {
     console.log(row, column, event)
     allData[0].data = []
     state.tableSearchLv = 1;
-    searchData.keyword_filter = [], 
-        searchData.audience_filter = [], 
-        searchData.pallet = [], 
+    searchData.keyword_filter = [],
+        searchData.audience_filter = [],
+        searchData.pallet = [],
         searchData.bid_type = [row.bid_type];
     await selectChange()
 }
@@ -543,9 +535,9 @@ const getEchartsData = async () => {
 const getData2 = async () => {
     pageNum_pro.value = 0
     pageNum_plan.value = 0
-    searchData.keyword_filter = [] 
-    searchData.audience_filter = [] 
-    searchData.pallet = [] 
+    searchData.keyword_filter = []
+    searchData.audience_filter = []
+    searchData.pallet = []
     searchData.bid_type = [];
     allData[0].clearData[0] = true
     allData[1].clearData[0] = true
@@ -603,9 +595,9 @@ const echarts2 = async () => {
     myChart.on("click", function (params: any) {
         console.log(params, "PromtionEcharts2")
         allData[0].clearData[0] = true
-        searchData.keyword_filter = [] 
-        searchData.audience_filter = [] 
-        searchData.bid_type = [] 
+        searchData.keyword_filter = []
+        searchData.audience_filter = []
+        searchData.bid_type = []
         state.tableSearchLv = 1;
         searchData.pallet = [params.name]
         // searchData.current_inventory = [params.name]
@@ -633,8 +625,8 @@ const echarts3 = async () => {
     option && myChart.setOption(option);
     myChart.on("click", function (params: any) {
         allData[0].data = []
-        searchData.audience_filter = [] 
-        searchData.bid_type = [] 
+        searchData.audience_filter = []
+        searchData.bid_type = []
         searchData.pallet = [] // 
         state.tableSearchLv = 3;
         searchData.keyword_filter = [params.name]
@@ -714,7 +706,7 @@ const getDetailPro = async (arr: any) => {
     arr.start_date = arr.date[0]
     const [proRes] = [await getProductGetAlldata(arr)]
     if (proRes.code === 0 && proRes.data.records) {
-            console.log(proRes.data.sum,"proRes.data.sum")
+        console.log(proRes.data.sum, "proRes.data.sum")
         if (proRes.data.sum != null && proRes.data.sum != undefined) {
             allData[0].sumTrend = [proRes.data.sum][0]
             allData[0].sumTrend.id = "pro"
@@ -887,6 +879,44 @@ const selectChange = () => {
 $echarts_bg_img1: url('./images/chrats_size.png');
 $echarts_bg_img2: url('./images/_2.png');
 
+
+
+.pro-from-right {
+    text-align: right;
+    position: absolute;
+    right: 7.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+.pro-from-left {
+    text-align: left;
+    position: absolute;
+    left: 1.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+::v-deep(.el-form-item__label) {
+    color: #777777 !important;
+    font-size: 14px !important;
+}
+
+::v-deep(.el-input__wrapper, .el-date-editor) {
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 5px;
+    border: 1px solid rgba(1, 229, 255, 1);
+    width: 200px;
+
+    .el-range-input {
+        color: #777777;
+    }
+}
+
+// ::v-deep(.el-form-item__content){
+//     width: 120px !important
+// }
 
 .main {
     height: 100%;

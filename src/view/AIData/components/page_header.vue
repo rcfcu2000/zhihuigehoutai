@@ -1,37 +1,67 @@
-<!--
-    AI公共头部
- * @Author: dtl darksunnydong@qq.com
- * @Date: 2024-01-22 15:15:01
- * @LastEditors: 603388675@qq.com 603388675@qq.com
- * @LastEditTime: 2024-02-01 17:24:48
- * @FilePath: \zhihuigehoutai\src\view\AIData\components\page_header.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 <template>
-    <div class="header">
-        <el-row>
-            <el-col :span="8">
-                <div class="header_left" />
-            </el-col>
-            <el-col :span="8">
-                <div class="h_title">
-                    {{ props.title }}
-                </div>
-            </el-col>
-            <el-col :span="8">
-                <div class="header_right" />
-            </el-col>
-        </el-row>
-    </div>
+    <el-affix :offset="0" class="header">
+        <div class="header">
+            <el-row>
+                <el-col :span="8">
+                    <div class="header_left" />
+                </el-col>
+                <el-col :span="8" style="text-align: center;">
+                    <el-dropdown @command="pathGo">
+                        <div style="width: 200px;">
+                            <div class="h_title">
+                                {{ props.title }}
+                            </div>
+                            <div class="shopname">
+                                {{ currentShop.shop_name }}
+                            </div>
+                        </div>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item v-for="item, index in list" :key="index" :command="item">{{
+        item.shop_name
+                                    }}</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </el-col>
+                <el-col :span="8">
+                    <div class="header_right" />
+                </el-col>
+            </el-row>
+        </div>
+    </el-affix>
 </template>
 
 <script setup lang="ts" name="AIpage_header">
+import { useUserStore } from '@/pinia/modules/user'
+import { ref, onMounted } from 'vue'
 
+const userStore = useUserStore()
+const list = userStore.userShop
+const currentShop = ref({})
+const init = () => {
+    currentShop.value = userStore.currentShop
+}
+onMounted(() => {
+    init()
+})
 const props = defineProps(['title'])
-
+const emit = defineEmits(['changeShop'])
+const pathGo = (params: any) => {
+    params = { ...params }
+    userStore.setCurrentShop(params)
+    console.log(userStore.currentShop,"shopname")
+    emit('changeShop', params)
+    init()
+}
 </script>
 <style lang="scss" scoped>
 // $header_bg: url('../images/0.png');
+::v-deep(.el-affix--fixed) {
+    background-image: $header_bg;
+    background-size: 100%;
+}
+
 .header {
     background-image: $header_bg;
     background-size: 100%;
@@ -50,6 +80,14 @@ const props = defineProps(['title'])
     align-items: center;
 }
 
+.shopname {
+    width: 120px;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: #fff;
+}
 
 // 组件样式修改
 .el-row {
