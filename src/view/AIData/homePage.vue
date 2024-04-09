@@ -1,21 +1,14 @@
 <template>
-    <div class="main" element-loading-background="rgba(122, 122, 122, 0.8)">
-        <el-affix :offset="0">
-            <div class="header">
-                <span class="titl1_h1">首页</span>
-                <div class="search">
-                    <div class="search_left"></div>
-                    <div class="search_right">
-                        <div class="search_line">
-                            请选择起止时间
-                            <el-date-picker v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
-                                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange"
-                                start-placeholder="开始时间" end-placeholder="结束时间" @change="getData" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-affix>
+    <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+    <page_header :title="pageTitle" @changeShop="changeShop" />
+        <el-form :inline="true" :model="searchData" class="pro-from-right">
+            <el-form-item label="请选择起止时间：">
+                <el-date-picker v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
+                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                    end-placeholder="结束时间" @change="getData" />
+            </el-form-item>
+        </el-form>
+
         <div class="title">重点指标</div>
         <div class="roduct_num">
             <div class="roduct_num_box">
@@ -206,7 +199,7 @@
                                 <span class="ctn_tit">GMV</span>
                             </li>
                             <li class="roduct_right_ctn_data" :title="lueNum(ikun.scene_percentage)">
-                                <span class="ctn_num">{{ lueNum(ikun.scene_percentage*100) }}%</span>
+                                <span class="ctn_num">{{ lueNum(ikun.scene_percentage * 100) }}%</span>
                                 <span class="ctn_tit">渠道占比</span>
                             </li>
                             <li class="roduct_right_ctn_data" :title="lueNum(ikun.roi)">
@@ -266,6 +259,7 @@
 
 <script setup lang="ts" name="palletLinkAnalysis">
 import goHome from "./components/goHome.vue";
+import page_header from "./components/page_header.vue";
 import {
     getSubGmvList,
     getAlldata,
@@ -295,9 +289,13 @@ import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 // import wordsTbale from './components/words_table.vue'
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
+const pageTitle = "首页";
 const state = reactive({
+    loading: false,
     titleData: {} as any,
     tableData: [
         {
@@ -345,10 +343,12 @@ const searchData = reactive({
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: "",
     end_date: "",
-    shop_name: "蜡笔派家居旗舰店",
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
 });
 
 onMounted(async () => {
+    state.loading = true
     await getData();
 });
 
@@ -361,7 +361,18 @@ const getData = async () => {
     await getBox4();
     await cloudEcharts();
     await getbox2Echarts();
+    setTimeout(()=>{
+        state.loading = false
+    },1000)
 };
+
+const changeShop = async () => {
+    state.loading = true
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
+}
 
 const getIndexdata = async () => {
     let data = {
@@ -725,7 +736,7 @@ const GMVDismantling = () => {
 };
 
 const addDataToTree = (root: any, targetId: any, newData: any) => {
-    if (!root || !targetId) return; 
+    if (!root || !targetId) return;
 
     if (root.key === targetId) {
         // root.lv = 999;
@@ -945,6 +956,33 @@ const getBox4 = async () => {
 
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
+
+.pro-from-right {
+    text-align: right;
+    position: absolute;
+    right: 7.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+.pro-from-left {
+    text-align: left;
+    position: absolute;
+    left: 1.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+::v-deep(.el-form-item__label) {
+    color: #999 !important;
+    font-size: 14px !important;
+    padding: 0
+}
+
+::v-deep(.el-select__wrapper) {
+    background: transparent !important;
+    box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
+}
 
 .main {
     height: 100%;
@@ -1278,7 +1316,7 @@ $echarts_bg_img: url("./images/_2.png");
     }
 }
 
-::v-deep(.el-input__wrapper,.el-date-editor) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
     border-radius: 5px;

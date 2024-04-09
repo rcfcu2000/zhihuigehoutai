@@ -1,38 +1,30 @@
 <template>
-    <div class="main" v-loading="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
-        <el-affix :offset="0">
-            <div class="header">
-                <span class="titl1_h1">流量分析</span>
-                <div class="search">
-                    <div class="search_left">
-                        <div class="search_line">
-                            负责人：
-                            <el-select v-model="searchData.product_manager[0]" collapse-tags collapse-tags-tooltip
-                                class="select_width" placeholder="请选择" @change="managerChange">
-                                <el-option v-for="item in state.responsibleList" :key="item.responsible"
-                                    :label="item.responsible" :value="item.responsible" />
-                            </el-select>
-                        </div>
-                    </div>
-                    <div class="search_right">
-                        <div class="search_line">
-                            流量归属原则：
-                            <el-radio-group v-model="searchData.traffic_belong" @change="getAllEcharts" size="large">
-                                <el-radio-button label="第一次" value="第一次" />
-                                <el-radio-button label="每一次" value="每一次" />
-                                <el-radio-button label="最后一次" value="最后一次" />
-                            </el-radio-group>
-                        </div>
-                        <div class="search_line">
-                            请选择起止时间：
-                            <el-date-picker @change="getAllEcharts" v-model="searchData.date" :clearable="false"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
-                                type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-affix>
+    <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+        <page_header :title="pageTitle" @changeShop="changeShop" />
+
+        <el-form :inline="true" :model="searchData" class="pro-from-left">
+            <el-form-item label="负责人：">
+                <el-select v-model="searchData.product_manager[0]" collapse-tags collapse-tags-tooltip
+                    class="select_width" placeholder="请选择" @change="managerChange" style="width:120px">
+                    <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+                        :value="item.responsible" />
+                </el-select>
+            </el-form-item>
+            <el-form-item label="流量归属原则：">
+                <el-radio-group v-model="searchData.traffic_belong" @change="getAllEcharts" size="large">
+                    <el-radio-button label="第一次" value="第一次" />
+                    <el-radio-button label="每一次" value="每一次" />
+                    <el-radio-button label="最后一次" value="最后一次" />
+                </el-radio-group>
+            </el-form-item>
+        </el-form>
+        <el-form :inline="true" :model="searchData" class="pro-from-right">
+            <el-form-item label="请选择起止时间：">
+                <el-date-picker @change="getAllEcharts" v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
+                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                    end-placeholder="结束时间" />
+            </el-form-item>
+        </el-form>
 
         <div class="pad020">
             <el-row :gutter="20">
@@ -536,6 +528,7 @@
 <script setup lang="ts" name="palletLinkAnalysis">
 import { tableColumns } from "./table";
 import goHome from "./components/goHome.vue";
+import page_header from "./components/page_header.vue";
 import {
     getResponsibleList,
     getCategoriesList,
@@ -549,18 +542,20 @@ import {
 } from "@/api/AIdata";
 import { EleResize } from "@/utils/echartsAuto.js";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { useUserStore } from "@/pinia/modules/user";
-import { reactive, onMounted, onUnmounted, ref } from "vue";
+import { reactive, onMounted, onUnmounted, ref, nextTick } from "vue";
 import { ElMessage } from "element-plus";
-import { persentNum, floatNum, lueNum,lueNum1, roundNum, groupBy } from "@/utils/format.js";
-import type { FormInstance } from "element-plus";
+import { persentNum, floatNum, lueNum, lueNum1, roundNum, groupBy } from "@/utils/format.js";
+import type { FormInstance  } from "element-plus";
+import { ElLoading } from 'element-plus'
 import { pieOptionsHome, lineOptions1, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar, lineOptions } from "./echartsOptions";
-const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const formRef = ref<FormInstance>();
+const pageTitle = "流量分析";
 const cities = [
     {
         label: -1,
@@ -583,38 +578,46 @@ const state = reactive({
     tableData: [],
     loading: true,
     responsibleList: [] as any,
-
 });
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const searchData = reactive({
     product_manager: [] as Array<any>, //
-    pallet: [], 
+    pallet: [],
     // all: 999 as any,
     // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     productid: "",
     start_date: "",
     end_date: "",
-    shop_name: "蜡笔派家居旗舰店", 
-    traffic_belong: "每一次", 
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
+    traffic_belong: "每一次",
     channel: ['手淘搜索', '手淘推荐', '关键词推广', '精准人群推广', '智能场景'] as any,
     pageNum: 0,
     pageSize: 20,
 });
 
 onMounted(async () => {
+    state.loading = true
     await getData();
 });
 
+const changeShop = async () => {
+    state.loading = true
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
+}
 const getData = async () => {
+    state.loading = true
     const [resp1, resp2] = [await getResponsibleList(), await getCategoriesList()];
     if (resp1.code === 0 && resp2.code === 0) {
         state.responsibleList = resp1.data.records;
         searchData.product_manager = [resp1.data.records[0].responsible];
         getAllEcharts()
-        state.loading = false
     }
 };
 
@@ -630,13 +633,11 @@ const getData2 = async () => {
     };
 
 };
-const managerChange = (e:any) => {
+const managerChange = (e: any) => {
     searchData.product_manager = [e]
     getAllEcharts()
 }
 const getAllEcharts = async () => {
-    state.loading = true;
-
     await getTrafficdata()
     await getPieEcharts()
     await getLineEcharts()
@@ -644,7 +645,9 @@ const getAllEcharts = async () => {
     await getProduct()
     await getFlow()
     await getCustomer()
-    state.loading = false;
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
 }
 
 let channelsdata_key = ref(0)
@@ -1212,15 +1215,15 @@ const getFlow = async () => {
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.uv = lueNum(item.uv)
 
-            item.add_car_rate = lueNum(item.add_car_rate * 100) 
-            item.add_cart_conversion_rate = lueNum(item.add_cart_conversion_rate * 100) 
-            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100) 
-            item.product_buyer_percentage = lueNum(item.product_buyer_percentage * 100) 
+            item.add_car_rate = lueNum(item.add_car_rate * 100)
+            item.add_cart_conversion_rate = lueNum(item.add_cart_conversion_rate * 100)
+            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100)
+            item.product_buyer_percentage = lueNum(item.product_buyer_percentage * 100)
             item.product_visitor_percentage = lueNum(item.product_visitor_percentage * 100)
-            item.shop_add_car_rate = lueNum(item.shop_add_car_rate * 100) 
-            item.shop_add_cart_conversion_rate = lueNum(item.shop_add_cart_conversion_rate * 100) 
-            item.shop_buyer_percentage = lueNum(item.shop_buyer_percentage * 100) 
-            item.shop_visitor_percentage = lueNum(item.shop_visitor_percentage * 100) 
+            item.shop_add_car_rate = lueNum(item.shop_add_car_rate * 100)
+            item.shop_add_cart_conversion_rate = lueNum(item.shop_add_cart_conversion_rate * 100)
+            item.shop_buyer_percentage = lueNum(item.shop_buyer_percentage * 100)
+            item.shop_visitor_percentage = lueNum(item.shop_visitor_percentage * 100)
             item.children = []
             item.hasChildren = true
             return item
@@ -1515,6 +1518,34 @@ function debounce(func: any, limit = 500) {
 
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
+
+
+.pro-from-right {
+    text-align: right;
+    position: absolute;
+    right: 7.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+.pro-from-left {
+    text-align: left;
+    position: absolute;
+    left: 1.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+::v-deep(.el-form-item__label) {
+    color: #999 !important;
+    font-size: 14px !important;
+    padding: 0
+}
+
+::v-deep(.el-select__wrapper) {
+    background: transparent !important;
+    box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
+}
 
 .gmvTrend {
     margin: 0 0 0 20px;

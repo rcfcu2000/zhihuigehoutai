@@ -35,6 +35,54 @@ export const getMyShopList = (data) => {
   })
 }
 
+// @Summary 获取所有的店铺
+// @Produce  application/json
+// @Param data body {username:"string",password:"string"}
+// @Router /base/captcha [post]
+export const getAllShopList = (data) => {
+  return service({
+    url: '/base/getAllShopList',
+    method: 'post',
+    data: data
+  })
+}
+
+// @Summary 获取店铺用户列表
+// @Produce  application/json
+// @Param data body {username:"string",password:"string"}
+// @Router /base/captcha [post]
+export const getShopUserList = (data) => {
+  return service({
+    url: '/base/getShopUserList',
+    method: 'post',
+    data: data
+  })
+}
+
+// @Summary 关联店铺和用户
+// @Produce  application/json
+// @Param data body {username:"string",password:"string"}
+// @Router /base/captcha [post]
+export const addShop2User = (data) => {
+  return service({
+    url: '/base/addShop2User',
+    method: 'post',
+    data: data
+  })
+}
+
+// @Summary 删除店铺和用户
+// @Produce  application/json
+// @Param data body {username:"string",password:"string"}
+// @Router /base/captcha [post]
+export const delShopUser = (data) => {
+  return service({
+    url: '/base/delShopUser',
+    method: 'post',
+    data: data
+  })
+}
+
 // @Summary 用户注册
 // @Produce  application/json
 // @Param data body {username:"string",password:"string"}

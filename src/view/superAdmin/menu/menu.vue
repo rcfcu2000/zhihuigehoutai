@@ -6,7 +6,7 @@
       </div>
 
       <!-- 由于此处菜单跟左侧列表一一对应所以不需要分页 pageSize默认999 -->
-      <el-table :data="tableData" row-key="ID">
+      <el-table :data="tableData" row-key="ID" show-overflow-tooltip>
         <el-table-column align="left" label="ID" min-width="100" prop="ID" />
         <el-table-column align="left" label="展示名称" min-width="120" prop="authorityName">
           <template #default="scope">

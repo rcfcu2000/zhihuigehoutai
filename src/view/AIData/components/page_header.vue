@@ -38,7 +38,7 @@ import { ref, onMounted } from 'vue'
 
 const userStore = useUserStore()
 const list = userStore.userShop
-const currentShop = ref({})
+const currentShop = ref({} as any)
 const init = () => {
     currentShop.value = userStore.currentShop
 }
@@ -50,7 +50,6 @@ const emit = defineEmits(['changeShop'])
 const pathGo = (params: any) => {
     params = { ...params }
     userStore.setCurrentShop(params)
-    console.log(userStore.currentShop,"shopname")
     emit('changeShop', params)
     init()
 }

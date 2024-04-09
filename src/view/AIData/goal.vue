@@ -1,5 +1,6 @@
 <template>
-  <div class="gola pageBG" ref="gola" id="webcommon1">
+  <div class="gola pageBG" ref="gola" id="webcommon1" v-loading.fullscreen.lock="state.loading"
+    element-loading-background="rgba(122, 122, 122, 0.8)">
     <page_header :title="pageTitle" @changeShop="changeShop" />
     <div style="position: absolute; top: 25px; left: 8vw; z-index: 100">
       <el-button-group class="ml-4">
@@ -68,10 +69,10 @@
               <div class="num">{{ persentNum(indexData.data.target_day_rate) }}%</div>
               <div class="percentage">
                 目标: {{ persentNum(indexData.data.target_gmv_rate) }}%({{
-      persentNum(
-        indexData.data.target_day_rate - indexData.data.target_gmv_rate
-      )
-    }}%)
+    persentNum(
+      indexData.data.target_day_rate - indexData.data.target_gmv_rate
+    )
+  }}%)
               </div>
             </div>
           </div>
@@ -445,26 +446,26 @@
           <!-- <el-input v-model="ruleForm.product_name" :disabled="nameType" style="width: 200px;" /> -->
         </el-form-item>
         <el-form-item label="GMV目标" prop="gmv_target" :rules="[
-      { required: true, message: '这是必填项' },
-      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-    ]">
+    { required: true, message: '这是必填项' },
+    { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+  ]">
           <el-input v-model.number="ruleForm.gmv_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="利润目标" prop="profit_target" :rules="[
-      { required: true, message: '这是必填项' },
-      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-    ]">
+    { required: true, message: '这是必填项' },
+    { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+  ]">
           <el-input v-model.number="ruleForm.profit_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="月费用" prop="monthly_budget" :rules="[
-      { required: true, message: '这是必填项' },
-      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-    ]">
+    { required: true, message: '这是必填项' },
+    { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+  ]">
           <el-input v-model.number="ruleForm.monthly_budget" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="目标月份" prop="statistic_date" :rules="[
-      { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
-    ]">
+    { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
+  ]">
           <el-date-picker v-model="ruleForm.statistic_date" type="month" style="width: 200px" />
         </el-form-item>
       </el-form>
@@ -493,26 +494,26 @@
           <!-- <el-input v-model="ruleForm_pal.product_name" :disabled="nameType" style="width: 200px;" /> -->
         </el-form-item>
         <el-form-item label="GMV目标" prop="gmv_target" :rules="[
-      { required: true, message: '这是必填项' },
-      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-    ]">
+    { required: true, message: '这是必填项' },
+    { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+  ]">
           <el-input v-model.number="ruleForm_pal.gmv_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="利润目标" prop="profit_target" :rules="[
-      { required: true, message: '这是必填项' },
-      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-    ]">
+    { required: true, message: '这是必填项' },
+    { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+  ]">
           <el-input v-model.number="ruleForm_pal.profit_target" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="月费用" prop="monthly_budget" :rules="[
-      { required: true, message: '这是必填项' },
-      { type: 'number', max: 10000000000, message: '不能超过10000000000' },
-    ]">
+    { required: true, message: '这是必填项' },
+    { type: 'number', max: 10000000000, message: '不能超过10000000000' },
+  ]">
           <el-input v-model.number="ruleForm_pal.monthly_budget" style="width: 200px" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="目标月份" prop="statistic_date" :rules="[
-      { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
-    ]">
+    { type: 'date', required: true, message: '这是必填项', trigger: 'change' },
+  ]">
           <el-date-picker v-model="ruleForm_pal.statistic_date" type="month" style="width: 200px" />
         </el-form-item>
       </el-form>
@@ -581,7 +582,8 @@ const searchData = reactive({
   product_id: "",
   start_date: "",
   end_date: "",
-  shop_name: "蜡笔派家居旗舰店", //店铺名称
+  shop_name: userStore.currentShop.shop_name, //店铺名称
+  shop_id: userStore.currentShop.shop_id,
 });
 const disabledDate = (time: Date) => {
   return time.getTime() > Date.now();
@@ -600,8 +602,13 @@ const state = reactive({
   shopList: [] as any,
   key: "",
   palletList: [] as any,
+  loading: false,
 });
 onMounted(async () => {
+  state.loading = true
+  await getAll()
+});
+const getAll = async () => {
   await getData();
   await getIndexData();
   await getGmvTarget();
@@ -611,9 +618,16 @@ onMounted(async () => {
   if (res.code == 0) {
     state.shopList = res.data.records;
   }
-});
-const changeShop = () => {
-  console.log(userStore.currentShop,"userStore.currentShop")
+  setTimeout(() => {
+    state.loading = false
+  }, 1000)
+}
+const changeShop = async () => {
+  state.loading = true
+  const currentShop = { ...userStore.currentShop }
+  searchData.shop_name = currentShop.shop_name
+  searchData.shop_id = currentShop.shop_id
+  await getAll()
 }
 const getPalletList = async () => {
   let data = searchData;
@@ -1657,8 +1671,8 @@ const setSearchData = reactive({
   product_name: "",
   start_date: "",
   end_date: "",
-  shop_name: "蜡笔派家居旗舰店", //店铺名称
-  shop_id: "",
+  shop_name: userStore.currentShop.shop_name, //店铺名称
+  shop_id: userStore.currentShop.shop_id,
 });
 let goalSetKey = ref(0);
 // 产品分析
@@ -1774,6 +1788,8 @@ const ruleForm = reactive({
   product_name: "",
   monthly_budget: "",
   statistic_date: "",
+  shop_name: userStore.currentShop.shop_name, //店铺名称
+  shop_id: userStore.currentShop.shop_id,
 } as any);
 let InlogTitle = ref("新增");
 let nameType = ref(true);
@@ -1992,8 +2008,8 @@ const ruleForm_pal = reactive({
   profit_target: "",
   monthly_budget: "",
   pallet: "",
-  shop_name: "蜡笔派家居旗舰店",
-  shop_id: "",
+  shop_name: userStore.currentShop.shop_name, //店铺名称
+  shop_id: userStore.currentShop.shop_id,
   id: "",
   statistic_date: "",
 } as any);

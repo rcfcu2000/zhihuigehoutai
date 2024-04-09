@@ -1,7 +1,7 @@
 
 <template>
-    <div class="wordsAnalysis">
-        <page_header :title="pageTitle" />
+    <div class="wordsAnalysis" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+        <page_header :title="pageTitle" @changeShop="changeShop" />
         <div style="position: absolute;top:25px;left: 8vw;z-index: 100;">
             <el-button-group class="ml-4">
                 <el-button type="primary" size="large" color="#E6A23C" @click="rateClick" :autofocus="ratefocus">支付转化率</el-button>
@@ -89,7 +89,6 @@ import goHome from "./components/goHome.vue";
 import page_header from './components/page_header.vue'
 import box from './components/box.vue'
 import boxHead from "./components/box_head.vue";
-import { useUserStore } from "@/pinia/modules/user";
 import { reactive, ref, onMounted, nextTick } from "vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { persentNum, floatNum, lueNum, mergeArr, chunkArray, lueNum1 } from "@/utils/format.js";
@@ -105,12 +104,16 @@ import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js";
 import 'echarts-wordcloud';
 import { lineOptions1, lineOptions, wordsCloud } from "./echartsOptions";
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
 
 const pageTitle = "关键词分析"
-const userStore = useUserStore();
 const userid = {
     id: userStore.userInfo.nickName
 };
+const state = reactive({
+    loading: true,
+});
 const allData = reactive({
     componentTitle: '商品明细',
     data: [],
@@ -141,15 +144,25 @@ const searchData = reactive({
     date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     start_date: "",
     end_date: "",
-    shop_name: "蜡笔派家居旗舰店", //店铺名称
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
     "pageNum": 0,
     "pageSize": 30,
 });
 //     getKeywordListdata,
 
 onMounted(async () => {
+    state.loading = true
     getData()
 })
+
+const changeShop = async () => {
+    state.loading = true
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
+}
 
 const getData = async () => {
     searchData.keyword = ''
@@ -162,6 +175,9 @@ const getData = async () => {
     await getwordswordList()
     await getScKeywordList()
     await getwordMuList()
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
 }
 let dataType = 'vis'
 let ratefocus = false

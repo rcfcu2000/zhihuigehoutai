@@ -1,8 +1,7 @@
 
 <template>
-    <div class="storeAnalysis pageBG">
-        <page_header :title="pageTitle" />
-
+    <div class="storeAnalysis pageBG" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+        <page_header :title="pageTitle" @changeShop="changeShop" />
 
         <el-row :gutter="20" class="pageBody">
             <el-col :span="12">
@@ -396,11 +395,16 @@ import page_header from './components/page_header.vue'
 import { lineFillOptionsNum,lineFillOptionsNum_100, lineOptions1_y,lineOptions1_y_100, pieItemOptions1, lineOptionsNum } from "./echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js";
 import * as echarts from 'echarts';
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
 
 const pageTitle = "店铺分析"
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
+const state = reactive({
+    loading: true,
+});
 const pageSize = ref(20)
 const searchData = reactive({
     // shopId: [] as any, //	string 商品负责人 - 负责该商品的人员或团队名称w
@@ -411,17 +415,33 @@ const searchData = reactive({
     page_size: pageSize,
     start_date: '',
     end_date: '',
-    shop_name: '蜡笔派家居旗舰店',
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
 });
 
 onMounted(async () => {
+    state.loading = true
     await getAllData(searchData)
     await getTrendData(searchData)
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
 })
+
+const changeShop = async () => {
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    state.loading = true
+    await getAllData(searchData)
+    await getTrendData(searchData)
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
+}
 
 const timeChange = (val: any) => {
     searchData.date = val
-    console.log(searchData, "timeChangetimeChange")
     getAllData(searchData)
     getTrendData(searchData)
 }

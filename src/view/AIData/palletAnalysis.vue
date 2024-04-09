@@ -1,46 +1,37 @@
 <template>
   <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
-    <el-affix :offset="0">
-      <div class="header">
-        <span class="titl1_h1">货盘分析</span>
-        <div class="search">
-          <div class="search_left">
-            <div class="search_line">
-              负责人
-              <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip class="select_width"
-                placeholder="请选择" @change="getData2">
-                <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
-                  :value="item.responsible" />
-              </el-select>
-            </div>
-            <div class="search_line">
-              本月货盘
-              <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable multiple
-                @change="getData2" class="select_width" placeholder="全部">
-                <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
-                  :value="item.current_inventory" />
-              </el-select>
-            </div>
-            <div class="search_line">
-              货盘变化
-              <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable multiple
-                @change="getData2" class="select_width" placeholder="全部">
-                <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="search_right">
-            <div class="search_line">
-              请选择起止时间
-              <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
-                end-placeholder="结束时间" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </el-affix>
+
+    <page_header :title="pageTitle" @changeShop="changeShop" />
+    <el-form :inline="true" :model="searchData" class="pro-from-left">
+      <el-form-item label="负责人：">
+        <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip class="select_width"
+          placeholder="请选择" @change="getData2" style="width:120px">
+          <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
+            :value="item.responsible" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="本期货盘：">
+        <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip clearable multiple
+          @change="getData2" class="select_width" placeholder="全部" style="width:120px">
+          <el-option v-for="item in state.monthPallet" :key="item.current_inventory" :label="item.current_inventory"
+            :value="item.current_inventory" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="货盘变化：">
+        <el-select v-model="searchData.inventory_change" collapse-tags collapse-tags-tooltip clearable multiple
+          @change="getData2" class="select_width" placeholder="全部" style="width:120px">
+          <el-option v-for="(item, index) in cities" :key="index" :label="item.value" :value="item.label">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <el-form :inline="true" :model="searchData" class="pro-from-right">
+      <el-form-item label="请选择起止时间：">
+        <el-date-picker @change="getData2" v-model="searchData.date" :clearable="false" format="YYYY/MM/DD"
+          value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+          end-placeholder="结束时间" />
+      </el-form-item>
+    </el-form>
 
     <div class="title">重点指标</div>
     <div class="roduct_num">
@@ -239,11 +230,11 @@
           width="150" align="center">
           <template #default="scope">
             <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
-              parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
+    parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
           </template>
         </el-table-column>
-        <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')" width="150"
-          align="center">
+        <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')"
+          width="150" align="center">
           <template #default="scope">
             <span> {{ parseFloat((scope.row.search_gmv_ratio * 100).toFixed(2)) }}%</span>
           </template>
@@ -340,23 +331,24 @@
           <div v-for="(item, index) in userPriceRange.priceRange" :key="index">
             <div class="item_line dp-flex">
               <el-form-item :prop="'priceRange.' + index + '.priceMin'" :rules="{
-                required: true,
-                message: '填写价格区间',
-                trigger: 'blur',
-              }">
+    required: true,
+    message: '填写价格区间',
+    trigger: 'blur',
+  }">
                 <el-input-number v-model="item.priceMin" class="input_width input_style" :controls="false"
                   @blur="checkNum(item.priceMin, index, 'priceMin')" />
                 -
               </el-form-item>
 
               <el-form-item v-if="index <= 4" :prop="'priceRange.' + index + '.priceMax'" :rules="{
-                required: true,
-                message: '填写价格区间',
-                type: 'number',
-                trigger: 'blur',
-              }">
+    required: true,
+    message: '填写价格区间',
+    type: 'number',
+    trigger: 'blur',
+  }">
                 <el-input-number v-model="item.priceMax" class="input_width input_style" :disabled="item.disabled"
-                  :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')" :placeholder="item.placeholder" />
+                  :controls="false" @blur="checkNum(item.priceMax, index, 'priceMax')"
+                  :placeholder="item.placeholder" />
                 <span style="flex: 1">元</span>
               </el-form-item>
               <el-form-item v-else>
@@ -442,7 +434,7 @@
               width="150" align="center">
               <template #default="scope">
                 <div :class="scope.row.search_visitor_ratio > 0.3 ? 'backgroundBlue' : ''"> {{
-                  parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
+    parseFloat((scope.row.search_visitor_ratio * 100).toFixed(2)) }} %</div>
               </template>
             </el-table-column>
             <el-table-column label="搜索GMV占比" sortable :sort-method="(a, b) => sortList(a, b, 'search_gmv_ratio')"
@@ -499,8 +491,8 @@
                 <span> {{ parseFloat((scope.row.collection_rate * 100).toFixed(2)) }} %</span>
               </template>
             </el-table-column>
-            <el-table-column label="加购率" sortable :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')" width="100"
-              align="center">
+            <el-table-column label="加购率" sortable :sort-method="(a, b) => sortList(a, b, 'add_to_cart_rate')"
+              width="100" align="center">
               <template #default="scope">
                 <span> {{ parseFloat((scope.row.add_to_cart_rate * 100).toFixed(2)) }}%</span>
               </template>
@@ -541,6 +533,7 @@
 <script setup lang="ts" name="palletLinkAnalysis">
 import { tableColumns } from "./table";
 import goHome from "./components/goHome.vue";
+import page_header from "./components/page_header.vue";
 import {
   getAlldata,
   getPriceRangedata,
@@ -551,17 +544,18 @@ import {
   getSubGmvList,
   inventorygetProductThendListdata,
 } from "@/api/AIdata";
-import { EleResize } from "@/utils/echartsAuto.js"; 
+import { EleResize } from "@/utils/echartsAuto.js";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, onUnmounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 import { XYlineOptionspalletAnalysis1, XYlineOptionspalletAnalysis2, barOptions, lineOptions1 } from "./echartsOptions";
 import { lueNum } from "@/utils/format.js"
-const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
+const pageTitle = "货盘分析";
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const formRef = ref<FormInstance>();
@@ -624,6 +618,8 @@ const searchData = reactive({
   all: 999 as any,
   // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
   date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+  shop_name: userStore.currentShop.shop_name, //店铺名称
+  shop_id: userStore.currentShop.shop_id,
 });
 
 const userPriceRange = reactive<{
@@ -631,6 +627,13 @@ const userPriceRange = reactive<{
 }>({
   priceRange: [],
 });
+
+const changeShop = async () => {
+  const currentShop = { ...userStore.currentShop }
+  searchData.shop_name = currentShop.shop_name
+  searchData.shop_id = currentShop.shop_id
+  await getData()
+}
 
 
 const removeLine = (item: any) => {
@@ -795,7 +798,7 @@ const getTree = async () => {
   const resp3 = await getSubGmvList(data);
   if (resp3.code === 0) {
     if (!findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory)) {
-      searchData.current_inventory = []
+      // searchData.current_inventory = []
     }
     state.monthPallet = resp3.data.records;
     // console.log(findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory))
@@ -873,16 +876,17 @@ const getData = async () => {
 //   }
 // }
 
-const getData2 = async () => {
+const getData2 = async (value: any) => {
   state.loading = true;
+  // return
   let data = {
     end_date: searchData.date[1],
     start_date: searchData.date[0],
     product_manager: searchData.product_manager,
-    inventory_change: searchData.inventory_change,
-    current_inventory: searchData.current_inventory,
-  };
-  data.price_range_list = userPriceRange.priceRange
+    inventory_change: [...searchData.inventory_change],
+    current_inventory: [...searchData.current_inventory],
+    price_range_list: [...userPriceRange.priceRange]
+  } as any;
   getTree()
   await getData2Copy(data)
 
@@ -907,6 +911,7 @@ const getPriceRangedatas = async () => {
 }
 
 const getData2Copy = async (data: any) => {
+  console.log(data,"saaaaaaaaaaaaaaaaaaaa")
   state.loading = true;
   const [res] = [await getAlldata(data)];
   if (res.code === 0) {
@@ -1311,14 +1316,14 @@ const GMVDismantling = () => {
 };
 // 添加数据到树形结构的函数
 const addDataToTree = (root: any, targetId: any, newData: any) => {
-  if (!root || !targetId) return; 
+  if (!root || !targetId) return;
 
   if (root.key === targetId) {
-    root.children = newData; 
+    root.children = newData;
     return;
   } else {
     for (let child of root.children) {
-      addDataToTree(child, targetId, newData); 
+      addDataToTree(child, targetId, newData);
     }
   }
 };
@@ -1342,6 +1347,32 @@ const getLevel = (arr) => {
 </script>
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
+.pro-from-right {
+    text-align: right;
+    position: absolute;
+    right: 7.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+.pro-from-left {
+    text-align: left;
+    position: absolute;
+    left: 1.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+::v-deep(.el-form-item__label) {
+    color: #999 !important;
+    font-size: 14px !important;
+    padding: 0
+}
+
+::v-deep( .el-select__wrapper){
+    background: transparent !important;
+    box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
+}
 
 .main {
   height: 100%;
@@ -1699,19 +1730,19 @@ $echarts_bg_img: url("./images/_2.png");
 
 
 ::v-deep(.el-input__wrapper, .el-date-editor) {
-    background: transparent !important;
-    box-shadow: none;
-    border-radius: 5px;
-    border: 1px solid rgba(1, 229, 255, 1);
-    width: 200px;
+  background: transparent !important;
+  box-shadow: none;
+  border-radius: 5px;
+  border: 1px solid rgba(1, 229, 255, 1);
+  width: 200px;
 
-    .el-range-input {
-        color: #777777;
-    }
+  .el-range-input {
+    color: #777777;
+  }
 }
 
 ::v-deep(.el-input__inner) {
-    color: #777777;
+  color: #777777;
 }
 
 ::v-deep(.el-form-item__label) {

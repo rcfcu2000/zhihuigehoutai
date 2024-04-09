@@ -1,6 +1,7 @@
+
 <template>
-    <div class="main">
-        <page_header :title="pageTitle" />
+    <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+        <page_header :title="pageTitle" @changeShop="changeShop" />
 
         <el-form :inline="true" :model="searchData" class="pro-from-left">
             <el-form-item label="负责人：">
@@ -349,6 +350,8 @@ import comtable from './components/table.vue'
 import product_table from './components/product_table.vue'
 import plan_table from './components/plan_table.vue'
 import { lueNum, lueNumInteger } from "@/utils/format.js"
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
 
 const pageTitle = "推广分析";
 const pageNum_pro = ref(0)
@@ -384,6 +387,8 @@ const searchData = reactive({
     // date: [getMonthFinalDay("7").beginDate, weaklast(-8)[0]],
     ids: [] as Array<any>,
 
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
     // 明细表格
     end_date: '',
     start_date: '',
@@ -396,6 +401,7 @@ const searchData = reactive({
 })
 
 const state = reactive({
+    loading:false,
     titleData: {
         cost_percentage: 0, // 花费占比
         overall_add_to_cart_rate: 0, // 全店加购率
@@ -501,11 +507,26 @@ const all = reactive({
 })
 
 onMounted(async () => {
+    state.loading = true
     await getData()
     await getData2()
     // await getAll(searchData)
-
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
 })
+
+const changeShop = async () => {
+    state.loading = true
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
+    await getData2()
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
+}
 const tableRwoClick = async (row, column, event) => {
     console.log(row, column, event)
     allData[0].data = []
@@ -898,20 +919,14 @@ $echarts_bg_img2: url('./images/_2.png');
 }
 
 ::v-deep(.el-form-item__label) {
-    color: #777777 !important;
+    color: #999 !important;
     font-size: 14px !important;
+    padding: 0
 }
 
-::v-deep(.el-input__wrapper, .el-date-editor) {
+::v-deep( .el-select__wrapper){
     background: transparent !important;
-    box-shadow: none;
-    border-radius: 5px;
-    border: 1px solid rgba(1, 229, 255, 1);
-    width: 200px;
-
-    .el-range-input {
-        color: #777777;
-    }
+    box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
 }
 
 // ::v-deep(.el-form-item__content){
@@ -1159,12 +1174,5 @@ $echarts_bg_img2: url('./images/_2.png');
 
 ::v-deep(.el-input__inner) {
     color: #777777;
-}
-
-::v-deep(.el-form-item__label) {
-    color: rgba(1, 229, 255, 1);
-    font-size: 16px;
-    font-weight: 400;
-    padding-right: 0;
 }
 </style>

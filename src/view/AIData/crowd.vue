@@ -1,7 +1,6 @@
-
 <template>
     <div class="pageBG">
-        <page_header :title="pageTitle" />
+        <page_header :title="pageTitle" @changeShop="changeShop" />
         <el-form :inline="true" :model="searchData" class="goal-from">
             <el-form-item label="请选择起止时间">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
@@ -218,6 +217,9 @@ import {
     getProductCrowdsTrendListdata,
     getProductSrcListdata,
 } from "@/api/AIdata";
+import { useUserStore } from '@/pinia/modules/user'
+
+const userStore = useUserStore()
 const pageTitle = "人群分析";
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now();
@@ -230,7 +232,8 @@ const searchData = reactive({
     end_date: "",
     "pageNum": 1,
     "pageSize": 30,
-    shop_name: "蜡笔派家居旗舰店",
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
     "secondary_source": "",
     "tertiary_source": "",
     ids: [] as any,
@@ -241,6 +244,12 @@ onMounted(() => {
     getData()
 })
 
+const changeShop = async () => {
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
+}
 const getData = async () => {
     searchData.secondary_source = ''
     searchData.tertiary_source = ''
@@ -784,9 +793,9 @@ const top10Click = async (row: any, column: any, cell: HTMLTableCellElement, eve
     scroll_proSource.value = false
     nomore_proSource.value = false
     proSource_pageNum = 1
-    await getProSrcListData() 
-    await getProTrendListData() 
-    await getTrendListData() 
+    await getProSrcListData()
+    await getProTrendListData()
+    await getTrendListData()
 }
 
 const getProListData = async () => {
@@ -825,7 +834,7 @@ const getProTrendListData = async () => {
             date.push(item.date)
         }) : []
         serieslineAndBarData.push(objline, objBar)
-        
+
         let chartDom1: any = document.getElementById('gmvTrend2');
         let myChart1 = echarts.init(chartDom1);
         let option1 = lineOptions_lineAndbar(serieslineAndBarData, date, false, '');
@@ -1075,7 +1084,7 @@ function debounce1(fn: any, delay = 500) {
     background: rgb(14, 58, 121) !important;
 }
 
-::v-deep(.el-input__wrapper,.el-date-editor) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
     border-radius: 5px;

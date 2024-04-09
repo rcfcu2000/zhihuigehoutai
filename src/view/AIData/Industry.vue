@@ -1,7 +1,6 @@
-
 <template>
     <div class="pageBG">
-        <page_header :title="pageTitle" />
+        <page_header :title="pageTitle" @changeShop="changeShop" />
         <el-form :inline="true" :model="searchData" class="goal-from">
             <el-form-item label="类目选择">
                 <el-cascader :key="listKey" v-model="searchData.category" :options="categoryList"
@@ -109,6 +108,9 @@ import {
 } from "./echartsOptions";
 import { getCategoryGmvDetailList, getCategoryGmvList, getCategoryGmvTreadData, getShopIndustryList, } from "@/api/AIdata";
 
+import { useUserStore } from '@/pinia/modules/user'
+
+const userStore = useUserStore()
 const pageTitle = "市场分析";
 
 const disabledDate = (time: Date) => {
@@ -121,7 +123,8 @@ const searchData = reactive({
     end_date: "",
     "pageNum": 1,
     "pageSize": 30,
-    shop_name: "蜡笔派家居旗舰店", //店铺名称
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
     "category": "",
 });
 
@@ -133,6 +136,12 @@ const getData = async () => {
     await getGmvList()
     await getGmvTrend()
     await getIndustryList()
+}
+const changeShop = async () => {
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
 }
 
 const tableListRefIndustry = ref()

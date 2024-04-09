@@ -1,31 +1,32 @@
+<!--
+ * @Author: dtl 603388675@.com
+ * @Date: 2024-03-25 12:26:52
+ * @LastEditors: dtl 603388675@.com
+ * @LastEditTime: 2024-04-09 17:30:27
+ * @FilePath: \zhihuigehoutai\src\view\AIData\ItemAnalysis.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
     <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
-        <el-affix :offset="0">
-            <div class="header">
-                <span class="titl1_h1">单品分析</span>
-                <div class="search">
-                    <div class="search_left">
-                        <div class="search_line">
-                            商品选择：
-                            <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择"
-                                @change="getData" filterable remote reserve-keyword remote-show-suffix
-                                :remote-method="remoteMethod" :loading="searchData.loading">
-                                <el-option v-for="item in state.shopList" :key="item.product_id"
-                                    :label="item.product_name" :value="item.product_id" />
-                            </el-select>
-                        </div>
-                    </div>
-                    <div class="search_right">
-                        <div class="search_line">
-                            请选择起止时间：
-                            <el-date-picker v-model="searchData.date" @change="getData" :clearable="false"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :disabled-date="disabledDate"
-                                type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-affix>
+        <page_header :title="pageTitle" @changeShop="changeShop" />
+        <el-form :inline="true" :model="searchData" class="pro-from-left">
+            <el-form-item label="商品选择：">
+                <el-select v-model="searchData.product_id" class="select_width" placeholder="请选择" @change="getData"
+                    filterable remote reserve-keyword remote-show-suffix :remote-method="remoteMethod"
+                    :loading="searchData.loading" style="width:120px">
+                    <el-option v-for="item in state.shopList" :key="item.product_id" :label="item.product_name"
+                        :value="item.product_id" />
+                </el-select>
+            </el-form-item>
+        </el-form>
+
+        <el-form :inline="true" :model="searchData" class="pro-from-right">
+            <el-form-item label="请选择起止时间：">
+                <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
+                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                    end-placeholder="结束时间" />
+            </el-form-item>
+        </el-form>
 
         <div class="box">
             <div class="child" style="flex: 0.58;">
@@ -157,6 +158,7 @@
 
 <script setup lang="ts" name="palletLinkAnalysis">
 import goHome from "./components/goHome.vue";
+import page_header from "./components/page_header.vue";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
 import {
     getProductDayList,
@@ -167,7 +169,6 @@ import {
     getProductlist
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { useUserStore } from "@/pinia/modules/user";
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import 'echarts-wordcloud'
@@ -175,10 +176,13 @@ import { lineOptionsNum, XYlineOptions, pieItemOptions, wordsCloud } from "./ech
 import { useThrottle, useDebounce } from '@/utils/throttle-debounce';
 import dayListTbale from './components/dayList_table.vue'
 import wordsTbale from './components/words_table.vue'
-const userStore = useUserStore();
 import * as echarts from "echarts";
 import "echarts/extension/bmap/bmap";
 import { fa } from "element-plus/es/locale";
+import { useUserStore } from "@/pinia/modules/user";
+const userStore = useUserStore();
+
+const pageTitle = "单品分析";
 type EChartsOption = echarts.EChartsOption;
 var option: EChartsOption;
 const state = reactive({
@@ -217,6 +221,8 @@ const searchData = reactive({
     product_id: '',
     start_date: '',
     end_date: '',
+    shop_name: userStore.currentShop.shop_name, //店铺名称
+    shop_id: userStore.currentShop.shop_id,
 });
 
 onMounted(async () => {
@@ -236,6 +242,14 @@ onMounted(async () => {
     // await getData()
     // }, 3000)
 })
+
+const changeShop = async () => {
+    state.loading = true
+    const currentShop = { ...userStore.currentShop }
+    searchData.shop_name = currentShop.shop_name
+    searchData.shop_id = currentShop.shop_id
+    await getData()
+}
 
 const getSearchShopList = useThrottle(async () => {
     const res = await getProductlist(
@@ -258,9 +272,9 @@ const getData = async () => {
     await getTopData()
     await getWordsList(searchData)
     await getDayList(searchData)
-    // setTimeout(() => {
-    //     state.loading = false
-    // }, 1000)
+    setTimeout(() => {
+        state.loading = false
+    }, 1000)
 }
 
 const allData = reactive([{
@@ -536,6 +550,33 @@ const loadMore = (at: string) => {
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
 
+.pro-from-right {
+    text-align: right;
+    position: absolute;
+    right: 7.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+.pro-from-left {
+    text-align: left;
+    position: absolute;
+    left: 1.5vw;
+    top: 2.5vh;
+    z-index: 100;
+}
+
+::v-deep(.el-form-item__label) {
+    color: #999 !important;
+    font-size: 14px !important;
+    padding: 0
+}
+
+::v-deep(.el-select__wrapper) {
+    background: transparent !important;
+    box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
+}
+
 .main {
     height: 100%;
     width: 100%;
@@ -727,7 +768,7 @@ $echarts_bg_img: url("./images/_2.png");
 
 }
 
-::v-deep(.el-input__wrapper,.el-date-editor) {
+::v-deep(.el-input__wrapper, .el-date-editor) {
     background: transparent !important;
     box-shadow: none;
     border-radius: 5px;
@@ -774,4 +815,9 @@ $echarts_bg_img: url("./images/_2.png");
     background-color: rgb(33, 183, 206);
     /* 滑块悬停状态颜色 */
 }
+
+::v-deep(.el-table__footer-wrapper tfoot td.el-table__cell){
+    color: #fff !important
+}
+
 </style>
