@@ -152,7 +152,8 @@ import {
   getUserList,
   setUserAuthorities,
   register,
-  deleteUser
+  deleteUser,
+  getAllShopList,
 } from '@/api/user'
 
 import { getAuthorityList } from '@/api/authority'
@@ -211,13 +212,22 @@ const getTableData = async() => {
     pageSize.value = table.data.pageSize
   }
 }
+// 所有店铺
+const shopList = ref([])
+const getShopList = async () => {
+  const res = await getAllShopList()
+  if(res.code === 0){
+    shopList.value = res.data.records
+  }
+}
 
 watch(() => tableData.value, () => {
   setAuthorityIds()
 })
 
 const initPage = async() => {
-  getTableData()
+  await getShopList()
+  await getTableData()
   const res = await getAuthorityList({ page: 1, pageSize: 999 })
   setOptions(res.data.list)
 }

@@ -1,7 +1,7 @@
 <template>
-    <el-affix :offset="0" class="header">
-        <div class="header">
-            <el-row>
+    <el-affix :offset="0">
+        <div>
+            <el-row class="header">
                 <el-col :span="8">
                     <div class="header_left" />
                 </el-col>
@@ -56,10 +56,10 @@ const pathGo = (params: any) => {
 </script>
 <style lang="scss" scoped>
 // $header_bg: url('../images/0.png');
-::v-deep(.el-affix--fixed) {
-    background-image: $header_bg;
-    background-size: 100%;
-}
+// ::v-deep(.el-affix--fixed) {
+//     background-image: $header_bg;
+//     background-size: 100%;
+// }
 
 .header {
     background-image: $header_bg;
