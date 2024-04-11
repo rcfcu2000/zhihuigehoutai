@@ -784,7 +784,10 @@ const clearSelect = async () => {
   await getData()
 };
 
-const findValueInObjects = (array:any, propertyName:string, value:any) => {
+const findValueInObjects = (array:Array<any> = [], propertyName:string, value:any) => {
+  if(array.length === 0){
+    return false
+  }
   return array.some(obj => obj.hasOwnProperty(propertyName) && obj[propertyName] === value);
 }
 
@@ -795,9 +798,9 @@ const getTree = async () => {
   data.start_date = data.date[0]
   const resp3 = await getSubGmvList(data);
   if (resp3.code === 0) {
-    if (!findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory)) {
-      // searchData.current_inventory = []
-    }
+    // if (!findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory)) {
+    //   // searchData.current_inventory = []
+    // }
     state.monthPallet = resp3.data.records;
     // console.log(findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory))
 
