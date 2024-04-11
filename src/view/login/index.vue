@@ -6,7 +6,7 @@
           <img class="login_panel_form_title_logo" :src="$GIN_VUE_ADMIN.appLogo" alt>
           <p class="login_panel_form_title_p">{{ $GIN_VUE_ADMIN.appName }}</p>
         </div>
-        <TransitionGroup>
+        <TransitionGroup name="logAndRe" tag="div">
           <el-form ref="loginForm" :model="loginFormData" :rules="rules" :validate-on-rule-change="false"
             @keyup.enter="submitForm" v-if="formType=='login'">
             <el-form-item prop="username">
@@ -34,7 +34,7 @@
             >前往初始化</el-button> -->
               <el-button type="primary" size="large" style="width: 46%; margin-right: 5%" @enter="submitForm"
                 @click="submitForm">登 录</el-button>
-              <el-button type="primary" size="large" style="width: 46%;"
+              <el-button type="primary" size="large" style="width: 46%;" @click="goRegister('register')"
                 text>注册</el-button>
             </el-form-item>
             <el-form-item>
@@ -43,7 +43,10 @@
           <el-form ref="loginForm" :model="loginFormData" :rules="rules" :validate-on-rule-change="false"
             @keyup.enter="submitForm" v-if="formType=='register'">
             <el-form-item prop="username">
-              <el-input v-model="loginFormData.username" size="large" placeholder="请输入用户名" suffix-icon="user" />
+              <el-input v-model="loginFormData.username" size="large" placeholder="账号名称" suffix-icon="user" />
+            </el-form-item>
+            <el-form-item prop="username">
+              <el-input v-model="loginFormData.username" size="large" placeholder="手机" suffix-icon="user" />
             </el-form-item>
             <el-form-item prop="password">
               <el-input v-model="loginFormData.password" show-password size="large" type="password"
@@ -66,9 +69,9 @@
               @click="checkInit"
             >前往初始化</el-button> -->
               <el-button type="primary" size="large" style="width: 46%; margin-right: 5%" @enter="submitForm"
-                @click="submitForm">登 录</el-button>
-              <el-button type="primary" size="large" style="width: 46%;"
-                text>注册</el-button>
+                @click="submitForm">提 交</el-button>
+              <el-button type="primary" size="large" style="width: 46%;" @click="goRegister('login')"
+                text>返 回</el-button>
             </el-form-item>
             <el-form-item>
             </el-form-item>
@@ -191,6 +194,11 @@ const submitForm = () => {
   })
 }
 
+const goRegister = (e) => {
+  console.log("transform: scaleY111(1101111,0);")
+  formType.value = e
+}
+
 // 跳转初始化
 const checkInit = async () => {
   const res = await checkDB()
@@ -211,4 +219,14 @@ const checkInit = async () => {
 
 <style lang="scss" scoped>
 @import "@/style/newLogin.scss";
+.logAndRe-enter-active,
+.logAndRe-leave-active {
+  transition: all 0.5s ease;
+  // transform: translateZ(0px);
+}
+.logAndRe-enter-from,
+.logAndRe-leave-to {
+  opacity: 0;
+  // transform: translateZ(-500px) rotateY(-90deg);
+}
 </style>

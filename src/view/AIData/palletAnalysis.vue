@@ -629,6 +629,7 @@ const userPriceRange = reactive<{
 });
 
 const changeShop = async () => {
+  state.loading = true
   const currentShop = { ...userStore.currentShop }
   searchData.shop_name = currentShop.shop_name
   searchData.shop_id = currentShop.shop_id
@@ -1168,19 +1169,17 @@ const GMVDismantling = () => {
   option && myChart.setOption(option);
   myChart.off('click');
   myChart.on("click", function (params: any) {
-    // console.log(123123)
+    console.log(123123)
     state.treeLevel = params.data.name
-    let data = {
-      end_date: searchData.date[1],
-      start_date: searchData.date[0],
-      product_manager: searchData.product_manager,
-      inventory_change: searchData.inventory_change,
-      current_inventory: [params.data.name],
-      primary_category: "",
-      secondary_category: "",
-      tertiary_category: "",
-      leve: 0,
-    };
+    let data = searchData
+    data.price_range_list = [...userPriceRange.priceRange]
+    data.end_date = data.date[1]
+    data.start_date = data.date[0]
+    data.current_inventory = [params.data.name]
+    data.primary_category = ''
+    data.secondary_category = ''
+    data.tertiary_category = ''
+    data.leve = 0
     // console.log(params.data.lv === 0, params.data.name)
     if (params.data.lv === 0) {
       // debugger;
