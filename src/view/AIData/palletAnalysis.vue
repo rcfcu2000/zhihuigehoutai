@@ -875,30 +875,21 @@ const getData = async () => {
 
 const getData2 = async (value: any) => {
   state.loading = true;
-  // return
-  let data = {
-    end_date: searchData.date[1],
-    start_date: searchData.date[0],
-    product_manager: searchData.product_manager,
-    inventory_change: [...searchData.inventory_change],
-    current_inventory: [...searchData.current_inventory],
-    price_range_list: [...userPriceRange.priceRange]
-  } as any;
+  let data = searchData
+  data.price_range_list = [...userPriceRange.priceRange]
+  data.end_date = data.date[1]
+  data.start_date = data.date[0]
   getTree()
   await getData2Copy(data)
 
 };
 
 const getPriceRangedatas = async () => {
-  let obj = {
-    end_date: searchData.date[1],
-    start_date: searchData.date[0],
-    product_manager: searchData.product_manager,
-    inventory_change: searchData.inventory_change,
-    current_inventory: searchData.current_inventory,
-    price_range_list: userPriceRange.priceRange,
-  }
-  const res = await getPriceRangedata(obj)
+  let data = searchData
+  data.price_range_list = [...userPriceRange.priceRange]
+  data.end_date = data.date[1]
+  data.start_date = data.date[0]
+  const res = await getPriceRangedata(data)
   if (res.code === 0) {
     state.priceRangedata = res.data.records;
     unitPriceGMV();
@@ -908,7 +899,6 @@ const getPriceRangedatas = async () => {
 }
 
 const getData2Copy = async (data: any) => {
-  console.log(data,"saaaaaaaaaaaaaaaaaaaa")
   state.loading = true;
   const [res] = [await getAlldata(data)];
   if (res.code === 0) {
