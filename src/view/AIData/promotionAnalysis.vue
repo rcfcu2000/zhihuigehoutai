@@ -569,7 +569,7 @@ const getData2 = async () => {
 };
 
 const getData = async () => {
-    const resp1 = await getResponsibleList();
+    const resp1 = await getResponsibleList(searchData);
     if (resp1.code === 0) {
         state.responsibleList = resp1.data.records;
         searchData.product_manager = [resp1.data.records[0].responsible];

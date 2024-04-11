@@ -613,7 +613,7 @@ const changeShop = async () => {
 }
 const getData = async () => {
     state.loading = true
-    const [resp1, resp2] = [await getResponsibleList(), await getCategoriesList()];
+    const [resp1, resp2] = [await getResponsibleList(searchData), await getCategoriesList()];
     if (resp1.code === 0 && resp2.code === 0) {
         state.responsibleList = resp1.data.records;
         searchData.product_manager = [resp1.data.records[0].responsible];
