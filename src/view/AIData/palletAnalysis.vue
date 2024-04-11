@@ -620,7 +620,7 @@ const searchData = reactive({
   date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
   shop_name: userStore.currentShop.shop_name, //店铺名称
   shop_id: userStore.currentShop.shop_id,
-});
+} as any);
 
 const userPriceRange = reactive<{
   priceRange: any[];
@@ -783,18 +783,15 @@ const clearSelect = async () => {
   await getData()
 };
 
-const findValueInObjects = (array, propertyName, value) => {
+const findValueInObjects = (array:any, propertyName:string, value:any) => {
   return array.some(obj => obj.hasOwnProperty(propertyName) && obj[propertyName] === value);
 }
 
 const getTree = async () => {
-  let data = {
-    end_date: searchData.date[1],
-    start_date: searchData.date[0],
-    current_inventory: [],
-    product_manager: searchData.product_manager,
-    inventory_change: searchData.inventory_change,
-  };
+  let data = searchData
+  data.current_inventory = []
+  data.end_date = data.date[1]
+  data.start_date = data.date[0]
   const resp3 = await getSubGmvList(data);
   if (resp3.code === 0) {
     if (!findValueInObjects(state.monthPallet, 'current_inventory', searchData.current_inventory)) {
