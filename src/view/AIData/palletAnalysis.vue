@@ -833,7 +833,7 @@ const getTree = async () => {
 }
 
 const getData = async () => {
-  const [resp1, resp2, res4] = [await getResponsibleList(), await getCategoriesList(), await getUserPriceRange({ uid: userStore.userInfo.ID, })];
+  const [resp1, resp2, res4] = [await getResponsibleList(searchData), await getCategoriesList(), await getUserPriceRange({ uid: userStore.userInfo.ID, })];
   if (resp1.code === 0 && resp2.code === 0) {
     state.responsibleList = resp1.data.records;
     // console.log([resp1.data.records[0].responsible])
