@@ -545,7 +545,7 @@ import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, onUnmounted, ref, nextTick } from "vue";
 import { ElMessage } from "element-plus";
 import { persentNum, floatNum, lueNum, lueNum1, roundNum, groupBy } from "@/utils/format.js";
-import type { FormInstance  } from "element-plus";
+import type { FormInstance } from "element-plus";
 import { ElLoading } from 'element-plus'
 import { pieOptionsHome, lineOptions1, XbarOptions, XYlineFlowOptions, XlineFlowOptions, lineOptions_lineAndbar, lineOptions } from "./echartsOptions";
 import * as echarts from "echarts";
