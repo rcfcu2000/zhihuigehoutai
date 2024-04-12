@@ -331,6 +331,8 @@ const getScKeywordList = async () => {
                 arr1.push(item)
             }
             boxData[1].chartsData = arr1
+        }else{
+            boxData[1].chartsData = []
         }
         if (len2 > 0) {
             let arr2 = [] as any
@@ -345,6 +347,8 @@ const getScKeywordList = async () => {
                 arr2.push(item)
             }
             boxData[2].chartsData = arr2
+        }else{
+            boxData[2].chartsData = []
         }
     }
 }
