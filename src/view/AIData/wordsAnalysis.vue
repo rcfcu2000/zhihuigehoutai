@@ -306,6 +306,8 @@ const getwordswordList = async () => {
                 }
                 boxData[3].chartsData = arr
             }
+        }else{
+            boxData[3].chartsData = []
         }
     }
 }
@@ -373,6 +375,8 @@ const getKeywordList = async () => {
                 arr.push(item)
             }
             boxData[0].chartsData = arr
+        }else{
+            boxData[0].chartsData = []
         }
     }
 }
