@@ -1,4 +1,4 @@
-import { login, getUserInfo, setSelfInfo, getMyShopList } from '@/api/user'
+import { login, getUserInfo, setSelfInfo, getMyShopList, register_2 } from '@/api/user'
 import { jsonInBlacklist } from '@/api/jwt'
 import router from '@/router/index'
 import { ElLoading, ElMessage } from 'element-plus'
@@ -107,6 +107,43 @@ export const useUserStore = defineStore('user', () => {
       window.location.reload()
     }
   }
+/* 注册*/
+const register2 = async (data) => {
+  console.log(data,"register")
+  loadingInstance.value = ElLoading.service({
+    fullscreen: true,
+    text: '注册中，请稍候...',
+  })
+  try {
+    const res = await register_2(data)
+    if (res.code === 0) {
+      loadingInstance.value.close()
+      setUserInfo(res.data.user)
+      return true
+      // setToken(res.data.token)
+      // GetUserInfo()
+      // const routerStore = useRouterStore()
+      // await routerStore.SetAsyncRouter()
+      // const asyncRouters = routerStore.asyncRouters
+      // asyncRouters.forEach(asyncRouter => {
+      //   router.addRoute(asyncRouter)
+      // })
+      // await router.replace({ name: userInfo.value.authority.defaultRouter })
+      // loadingInstance.value.close()
+      // const isWin = ref(/windows/i.test(navigator.userAgent))
+      // if (isWin.value) {
+      //   window.localStorage.setItem('osType', 'WIN')
+      // } else {
+      //   window.localStorage.setItem('osType', 'MAC')
+      // }
+      // return true
+    }
+  } catch (e) {
+    loadingInstance.value.close()
+  }
+  loadingInstance.value.close()
+}
+
   /* 清理数据 */
   const ClearStorage = async () => {
     token.value = ''
@@ -162,6 +199,7 @@ export const useUserStore = defineStore('user', () => {
     GetUserInfo,
     LoginIn,
     LoginOut,
+    register2,
     changeSideMode,
     mode,
     sideMode,

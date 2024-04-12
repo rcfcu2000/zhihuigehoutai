@@ -1,7 +1,7 @@
 <template>
   <div id="userLayout">
     <div class="login_panel">
-      <div class="login_panel_form" :class="{ register_panel_form: flipped,lo_panel_form:!flipped }">
+      <div class="login_panel_form" :class="{ register_panel_form: flipped, lo_panel_form: !flipped }">
         <div class="login_panel_form_title">
           <img class="login_panel_form_title_logo" :src="$GIN_VUE_ADMIN.appLogo" alt>
           <p class="login_panel_form_title_p">{{ $GIN_VUE_ADMIN.appName }}</p>
@@ -12,15 +12,16 @@
             @keyup.enter="submitForm" key="1" class="front">
             <div ref="front">
               <el-form-item prop="username">
-                <el-input v-model="loginFormData.username" size="large" placeholder="请输入用户名" suffix-icon="user" />
+                <el-input v-model="loginFormData.username" name="username" size="large" placeholder="请输入用户名"
+                  suffix-icon="user" />
               </el-form-item>
               <el-form-item prop="password">
-                <el-input v-model="loginFormData.password" show-password size="large" type="password"
+                <el-input v-model="loginFormData.password" name="password" show-password size="large" type="password"
                   placeholder="请输入密码" />
               </el-form-item>
               <el-form-item v-if="loginFormData.openCaptcha" prop="captcha">
                 <div class="vPicBox">
-                  <el-input v-model="loginFormData.captcha" placeholder="请输入验证码" size="large"
+                  <el-input v-model="loginFormData.captcha" name="captcha" placeholder="请输入验证码" size="large"
                     style="flex:1;padding-right: 20px;" />
                   <div class="vPic">
                     <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
@@ -43,20 +44,29 @@
           <el-form ref="registerForm" :model="registerFormData" :rules="register_rules" :validate-on-rule-change="false"
             @keyup.enter="submitForm_register" key="2" class="back" label-position="right" label-width="auto">
             <div ref="back">
-              <el-form-item label="账号名称" prop="username">
-                <el-input v-model="registerFormData.username" size="large" placeholder="账号名称" suffix-icon="user" clearable />
+              <el-form-item label="昵称" prop="nickName">
+                <el-input v-model="registerFormData.nickName" name="nickName" size="large" placeholder="昵称"
+                  suffix-icon="user" clearable />
+              </el-form-item>
+              <el-form-item label="账号名称" prop="userName">
+                <el-input v-model="registerFormData.userName" name="userName" size="large" placeholder="账号名称"
+                  suffix-icon="user" clearable />
               </el-form-item>
               <el-form-item label="手机" prop="phone">
-                <el-input v-model.number="registerFormData.phone" size="large" placeholder="手机" suffix-icon="phone" clearable />
+                <el-input v-model="registerFormData.phone" name="phone" size="large" placeholder="手机"
+                  suffix-icon="phone" clearable />
               </el-form-item>
-              <el-form-item label="密码" prop="password">
-                <el-input v-model="registerFormData.password" show-password size="large" type="password"
+              <el-form-item label="密码" prop="passWord">
+                <el-input v-model="registerFormData.passWord" name="passWord" show-password size="large" type="password"
                   placeholder="请输入密码" clearable />
               </el-form-item>
               <el-form-item>
-                <el-table :data="registerFormData.accountList" style="width: 100%">
+                <el-table :data="registerFormData.shops" style="width: 100%;">
                   <el-table-column type="index" align="center" />
                   <el-table-column prop="shopName" label="店铺名称">
+                    <template #header>
+                      <span style="color: red;font-size:16px;">*</span><span>店铺名称</span>
+                    </template>
                     <template #default="{ row, column }">
                       <el-input v-model="row.shopName" clearable />
                     </template>
@@ -73,8 +83,10 @@
                   </el-table-column>
                   <el-table-column width="80">
                     <template #default="{ row, column, $index }">
-                      <el-button v-if="$index>0" type="danger" size="small" text @click="delAcc(row,column,$index)" icon="delete">删 除</el-button>
-                      <el-button v-else type="primary" size="small" text @click="addAcc(row,column,$index)" icon="plus">添 加</el-button>
+                      <el-button v-if="$index > 0" type="danger" size="small" text @click="delAcc(row, column, $index)"
+                        icon="delete">删 除</el-button>
+                      <el-button v-else type="primary" size="small" text @click="addAcc(row, column, $index)"
+                        icon="plus">添 加</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -82,10 +94,10 @@
 
               <el-form-item v-if="registerFormData.openCaptcha" prop="captcha">
                 <div class="vPicBox">
-                  <el-input v-model="registerFormData.captcha" placeholder="请输入验证码" size="large"
+                  <el-input v-model="registerFormData.captcha" name="captcha1" placeholder="请输入验证码" size="large"
                     style="flex:1;padding-right: 20px;" />
-                  <div class="vPic">
-                    <img v-if="register_picPath" :src="register_picPath" alt="请输入验证码" @click="loginVerify1()">
+                  <div class="vPic" style="height: 50px;">
+                    <img v-if="register_picPath" :src="register_picPath" alt="请输入验证码" @click="registerVerify()">
                   </div>
                 </div>
               </el-form-item>
@@ -93,7 +105,7 @@
                 <el-button type="primary" size="large" style="width: 46%; margin-right: 5%" @enter="submitForm_register"
                   @click="submitForm_register">提 交 注 册</el-button>
                 <el-button type="primary" size="large" style="width: 46%;" @click="toggleDiv" text>返
-                  回</el-button>
+                  回 登 录</el-button>
               </el-form-item>
             </div>
           </el-form>
@@ -169,7 +181,7 @@ function toggleDiv() {
 }
 // 验证函数
 const checkUsername = (rule, value, callback) => {
-  if (value.length < 5) {
+  if (value.length < 5 || value.length > 30) {
     return callback(new Error('请输入正确的用户名'))
   } else {
     callback()
@@ -178,6 +190,14 @@ const checkUsername = (rule, value, callback) => {
 const checkPassword = (rule, value, callback) => {
   if (value.length < 6) {
     return callback(new Error('请输入正确的密码'))
+  } else {
+    callback()
+  }
+}
+const checkPhone = (rule, value, callback) => {
+  const regex = /^1[3-9]\d{9}$/;
+  if (!regex.test(value)) {
+    return callback(new Error('请输入正确的手机号'))
   } else {
     callback()
   }
@@ -217,7 +237,7 @@ const rules = reactive({
     {
       message: '验证码格式不正确',
       trigger: 'blur',
-    },
+    },{ required: true, trigger: 'blur', message: '验证码必填' }
   ],
 })
 
@@ -246,9 +266,9 @@ const submitForm = () => {
 
 
 // 获取注册验证码
-const loginVerify1 = () => {
+const registerVerify = () => {
   captcha({}).then(async (ele) => {
-    rules.captcha.push({
+    register_rules.captcha.push({
       max: ele.data.captchaLength,
       min: ele.data.captchaLength,
       message: `请输入${ele.data.captchaLength}位验证码`,
@@ -259,57 +279,79 @@ const loginVerify1 = () => {
     registerFormData.openCaptcha = ele.data.openCaptcha
   })
 }
-loginVerify1()
-// 注册相关操作
-const registerForm = ref(null)
-const register_picPath = ref('')
-const accountItem = {
-  shopName: '0',
-  qianniuAcc: '0',
-  qianniuPwd: '0',
-}
-const registerFormData = reactive({
-  username: '',
-  phone: '',
-  password: '',
-  captcha: '',
-  captchaId: '',
-  openCaptcha: false,
-  accountList: [accountItem,accountItem],
-})
+registerVerify()
 const register_rules = reactive({
-  username: [{ validator: checkUsername, trigger: 'blur' }],
-  password: [{ validator: checkPassword, trigger: 'blur' }],
-  phone: [{ validator: checkPassword, trigger: 'blur' }],
+  nickName: [{ required: true, message: '请填写昵称', trigger: 'blur' }, { min: 3, max: 15, message: '长度3到15', trigger: 'blur' },],
+  userName: [{ validator: checkUsername, trigger: 'blur' },{ required: true, trigger: 'blur' }],
+  passWord: [{ validator: checkPassword, trigger: 'blur' },{ required: true, trigger: 'blur' }],
+  phone: [{ validator: checkPhone, trigger: 'blur' },{ required: true, trigger: 'blur' }],
   captcha: [
     {
       message: '验证码格式不正确',
       trigger: 'blur',
-    },
+    },{ required: true, trigger: 'blur', message: '验证码必填' }
   ],
 })
-const delAcc = (row,column,index) => {
-  registerFormData.accountList.splice(index,1)
+// 注册相关操作
+const registerForm = ref(null)
+const register_picPath = ref('')
+const accountItem = {
+  shopName: '',
+  qianniuAcc: '',
+  qianniuPwd: '',
+}
+const registerFormData = reactive({
+  nickName: '',
+  userName: '',
+  phone: '',
+  passWord: '',
+  captcha: '',
+  captchaId: '',
+  openCaptcha: false,
+  shops: [accountItem],
+})
+const delAcc = (row, column, index) => {
+  registerFormData.shops.splice(index, 1)
   setTimeout(setFlipperHeight, 50);
 }
 const addAcc = () => {
-  registerFormData.accountList.push(accountItem)
+  registerFormData.shops.push(accountItem)
   setTimeout(setFlipperHeight, 50);
 }
+const register = async () => {
+  return await userStore.register2(registerFormData)
+}
 const submitForm_register = () => {
-  loginForm.value.validate(async (v) => {
+  registerForm.value.validate(async (v) => {
     if (v) {
-      const flag = await login()
-      if (!flag) {
-        loginVerify()
+      const capt = registerFormData.shops.every(shop => shop.shopName != '');
+      if (capt) {
+        const flag = await register()
+        if (flag) {
+          ElMessage({
+            type: 'success',
+            message: '注册成功，等待管理员审核',
+            showClose: true,
+          })
+          toggleDiv()
+        } else {
+          registerVerify()
+        }
+      } else {
+        ElMessage({
+          type: 'error',
+          message: '请填写店铺名称！',
+          showClose: true,
+        })
+        registerVerify()
       }
     } else {
       ElMessage({
         type: 'error',
-        message: '请正确填写登录信息',
+        message: '请正确填写注册信息',
         showClose: true,
       })
-      loginVerify()
+      registerVerify()
       return false
     }
   })
@@ -337,12 +379,12 @@ const checkInit = async () => {
 <style lang="scss" scoped>
 @import "@/style/newLogin.scss";
 
-.register_panel_form{
+.register_panel_form {
   width: 30% !important;
   transition: 0.6s;
 }
 
-.lo_panel_form{
+.lo_panel_form {
   width: 420px !important;
   transition: 0.6s;
 }

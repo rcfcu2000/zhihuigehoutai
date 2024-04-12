@@ -95,6 +95,18 @@ export const register = (data) => {
   })
 }
 
+// @Summary 用户注册
+// @Produce  application/json
+// @Param data body {username:"string",password:"string"}
+// @Router /base/resige [post]
+export const register_2 = (data) => {
+  return service({
+    url: '/user/register2',
+    method: 'post',
+    data: data
+  })
+}
+
 // @Summary 修改密码
 // @Produce  application/json
 // @Param data body {username:"string",password:"string",newPassword:"string"}
