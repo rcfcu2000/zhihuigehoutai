@@ -73,11 +73,43 @@ export const addShop2User = (data) => {
 
 // @Summary 删除店铺和用户
 // @Produce  application/json
-// @Param data body {username:"string",password:"string"}
 // @Router /base/captcha [post]
 export const delShopUser = (data) => {
   return service({
     url: '/base/delShopUser',
+    method: 'post',
+    data: data
+  })
+}
+
+// @Summary 获取用户申请店铺列表
+// @Produce  application/json
+// @Router /base/captcha [post]
+export const getShopRegList = (data) => {
+  return service({
+    url: '/base/getShopRegList',
+    method: 'post',
+    data: data
+  })
+}
+
+// @Summary 删除用户申请店铺
+// @Produce  application/json
+// @Router /base/captcha [post]
+export const delShopRegist = (data) => {
+  return service({
+    url: '/base/delShopRegist',
+    method: 'post',
+    data: data
+  })
+}
+
+// @Summary 设置用户申请店铺状态
+// @Produce  application/json
+// @Router /base/captcha [post]
+export const SetShopRegSstatus = (data) => {
+  return service({
+    url: '/base/SetShopRegSstatus',
     method: 'post',
     data: data
   })
