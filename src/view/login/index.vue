@@ -61,34 +61,53 @@
                   placeholder="请输入密码" clearable />
               </el-form-item>
               <el-form-item>
-                <el-table :data="registerFormData.shops" style="width: 100%;">
+                <el-table :data="registerFormData.shops" style="width: 100%;" :key="registerFormData.shops.length">
                   <el-table-column type="index" align="center" />
-                  <el-table-column prop="shopName" label="店铺名称">
-                    <template #header>
+
+                  <el-table-column v-for="item, index in registerFormHead.table_head" :key="index" :prop="item.dataKey"
+                    show-overflow-tooltip :label="item.title">
+                    <template #header v-if="item.dataKey=='shopName'">
                       <span style="color: red;font-size:16px;">*</span><span>店铺名称</span>
                     </template>
-                    <template #default="{ row, column }">
-                      <el-input v-model="row.shopName" clearable />
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="qianniuAcc" label="千牛账号">
-                    <template #default="{ row, column }">
-                      <el-input v-model="row.qianniuAcc" clearable />
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="qianniuPwd" label="千牛密码">
-                    <template #default="{ row, column }">
-                      <el-input v-model="row.qianniuPwd" clearable />
+                    <template #default="scope">
+                      <el-input v-model="registerFormData.shops[scope.$index][item.dataKey]" :key="scope.$index" clearable />
                     </template>
                   </el-table-column>
                   <el-table-column width="80">
-                    <template #default="{ row, column, $index }">
-                      <el-button v-if="$index > 0" type="danger" size="small" text @click="delAcc(row, column, $index)"
-                        icon="delete">删 除</el-button>
-                      <el-button v-else type="primary" size="small" text @click="addAcc(row, column, $index)"
-                        icon="plus">添 加</el-button>
+                    <template #default="scope">
+                      <el-button v-if="scope.$index > 0" type="danger" size="small" text
+                        @click="delAcc(scope.row, scope.column, scope.$index)" icon="delete">删 除</el-button>
+                      <el-button v-else type="primary" size="small" text
+                        @click="addAcc()" icon="plus">添 加</el-button>
                     </template>
                   </el-table-column>
+
+                  <!-- <el-table-column prop="shopName" label="店铺名称">
+                    <template #header>
+                      <span style="color: red;font-size:16px;">*</span><span>店铺名称</span>
+                    </template>
+                    <template #default="scope">
+                      <el-input v-model="scope.row.shopName" :key="'shopName' + scope.$index" clearable />
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="qianniuAcc" label="千牛账号">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.qianniuAcc" :key="'qianniuAcc' + scope.$index" clearable />
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="qianniuPwd" label="千牛密码">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.qianniuPwd" :key="'qianniuPwd' + scope.$index" clearable />
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="80">
+                    <template #default="scope">
+                      <el-button v-if="scope.$index > 0" type="danger" size="small" text
+                        @click="delAcc(scope.row, scope.column, scope.$index)" icon="delete">删 除</el-button>
+                      <el-button v-else type="primary" size="small" text
+                        @click="addAcc(scope.row, scope.column, scope.$index)" icon="plus">添 加</el-button>
+                    </template>
+                  </el-table-column> -->
                 </el-table>
               </el-form-item>
 
@@ -237,7 +256,7 @@ const rules = reactive({
     {
       message: '验证码格式不正确',
       trigger: 'blur',
-    },{ required: true, trigger: 'blur', message: '验证码必填' }
+    }, { required: true, trigger: 'blur', message: '验证码必填' }
   ],
 })
 
@@ -282,14 +301,14 @@ const registerVerify = () => {
 registerVerify()
 const register_rules = reactive({
   nickName: [{ required: true, message: '请填写昵称', trigger: 'blur' }, { min: 3, max: 15, message: '长度3到15', trigger: 'blur' },],
-  userName: [{ validator: checkUsername, trigger: 'blur' },{ required: true, trigger: 'blur' }],
-  passWord: [{ validator: checkPassword, trigger: 'blur' },{ required: true, trigger: 'blur' }],
-  phone: [{ validator: checkPhone, trigger: 'blur' },{ required: true, trigger: 'blur' }],
+  userName: [{ validator: checkUsername, trigger: 'blur' }, { required: true, trigger: 'blur' }],
+  passWord: [{ validator: checkPassword, trigger: 'blur' }, { required: true, trigger: 'blur' }],
+  phone: [{ validator: checkPhone, trigger: 'blur' }, { required: true, trigger: 'blur' }],
   captcha: [
     {
       message: '验证码格式不正确',
       trigger: 'blur',
-    },{ required: true, trigger: 'blur', message: '验证码必填' }
+    }, { required: true, trigger: 'blur', message: '验证码必填' }
   ],
 })
 // 注册相关操作
@@ -300,6 +319,37 @@ const accountItem = {
   qianniuAcc: '',
   qianniuPwd: '',
 }
+const registerFormHead = reactive({
+  table_head: [
+    {
+      title: "店铺名称",
+      width: '140',
+      align: "center",
+      dataKey: "shopName",
+      key: "shopName",
+      fixed: false,
+      unit: "",
+    },
+    {
+      title: "千牛账号",
+      width: '',
+      align: "center",
+      dataKey: "qianniuAcc",
+      key: "qianniuAcc",
+      fixed: false,
+      unit: "",
+    },
+    {
+      title: "千牛密码",
+      width: '',
+      align: "center",
+      dataKey: "qianniuPwd",
+      key: "qianniuPwd",
+      fixed: false,
+      unit: "",
+    },
+  ],
+})
 const registerFormData = reactive({
   nickName: '',
   userName: '',
