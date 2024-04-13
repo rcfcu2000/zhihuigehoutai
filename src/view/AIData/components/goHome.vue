@@ -9,9 +9,13 @@
             <template #dropdown>
                 <el-dropdown-menu>
                     <el-dropdown-item v-for="item, index in pathList" :key="index"
-                        :command="{ path: item.path }">{{ item.meta.title }}</el-dropdown-item>
+                        :command="{ path: item.path }" class="dropItem">{{ item.meta.title }}</el-dropdown-item>
                     <el-dropdown-item :key="'0101'"
-                        :command="{ path: '/layout/dashboard' }">返回系统</el-dropdown-item>
+                        :command="{ path: '/layout/dashboard' }">
+                        <el-button type="primary" plain>
+                            返回系统
+                        </el-button>
+                        </el-dropdown-item>
                 </el-dropdown-menu>
             </template>
         </el-dropdown>
@@ -42,5 +46,9 @@ const pathGo = (params: any) => {
     background-image: url('../images/gohome.png');
     background-size: 100% 100%;
     cursor: pointer;
+}
+
+.dropItem:hover{
+    background-color: aqua !important;
 }
 </style>

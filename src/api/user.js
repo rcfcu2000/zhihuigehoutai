@@ -107,9 +107,9 @@ export const delShopRegist = (data) => {
 // @Summary 设置用户申请店铺状态
 // @Produce  application/json
 // @Router /base/captcha [post]
-export const SetShopRegSstatus = (data) => {
+export const setShopRegStatus = (data) => {
   return service({
-    url: '/base/SetShopRegSstatus',
+    url: '/base/setShopRegStatus',
     method: 'post',
     data: data
   })
