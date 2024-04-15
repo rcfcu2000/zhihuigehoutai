@@ -66,19 +66,19 @@
 
                   <el-table-column v-for="item, index in registerFormHead.table_head" :key="index" :prop="item.dataKey"
                     show-overflow-tooltip :label="item.title">
-                    <template #header v-if="item.dataKey=='shopName'">
+                    <template #header v-if="item.dataKey == 'shopName'">
                       <span style="color: red;font-size:16px;">*</span><span>店铺名称</span>
                     </template>
                     <template #default="scope">
-                      <el-input v-model="registerFormData.shops[scope.$index][item.dataKey]" :key="scope.$index" clearable />
+                      <el-input v-model="registerFormData.shops[scope.$index][item.dataKey]" :id="scope.$index"
+                        :key="scope.$index" clearable />
                     </template>
                   </el-table-column>
                   <el-table-column width="80">
                     <template #default="scope">
                       <el-button v-if="scope.$index > 0" type="danger" size="small" text
                         @click="delAcc(scope.row, scope.column, scope.$index)" icon="delete">删 除</el-button>
-                      <el-button v-else type="primary" size="small" text
-                        @click="addAcc()" icon="plus">添 加</el-button>
+                      <el-button v-else type="primary" size="small" text @click="addAcc()" icon="plus">添 加</el-button>
                     </template>
                   </el-table-column>
 
@@ -195,6 +195,14 @@ watch(flipped, () => {
 });
 
 function toggleDiv() {
+  if (registerFormData.shops.length == 0) {
+    let accountItem = {
+      shopName: '',
+      qianniuAcc: '',
+      qianniuPwd: '',
+    }
+    registerFormData.shops.push(accountItem)
+  }
   cutNu.value++
   flipped.value = !flipped.value;
 }
@@ -314,11 +322,6 @@ const register_rules = reactive({
 // 注册相关操作
 const registerForm = ref(null)
 const register_picPath = ref('')
-const accountItem = {
-  shopName: '',
-  qianniuAcc: '',
-  qianniuPwd: '',
-}
 const registerFormHead = reactive({
   table_head: [
     {
@@ -358,15 +361,21 @@ const registerFormData = reactive({
   captcha: '',
   captchaId: '',
   openCaptcha: false,
-  shops: [accountItem],
+  shops: [],
 })
 const delAcc = (row, column, index) => {
   registerFormData.shops.splice(index, 1)
   setTimeout(setFlipperHeight, 50);
 }
 const addAcc = () => {
+  let accountItem = {
+    shopName: '',
+    qianniuAcc: '',
+    qianniuPwd: '',
+  }
   registerFormData.shops.push(accountItem)
   setTimeout(setFlipperHeight, 50);
+  console.log(registerFormData.shops, "registerFormData.shops")
 }
 const register = async () => {
   return await userStore.register2(registerFormData)
