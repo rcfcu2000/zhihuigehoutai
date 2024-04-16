@@ -10,7 +10,7 @@
                         注册申请
                         <el-badge class="mark" :value="regisNum" />
                     </template>
-                    <el-table :data="tableData1" style="width: 100%" show-overflow-tooltip @cell-click="dbC">
+                    <el-table :data="tableData1" style="width: 100%" show-overflow-tooltip>
                         <el-table-column prop="shop_id" label="ID" width="80" align="center" column-key="shop_id" />
                         <el-table-column prop="nickName" label="昵称" min-width="100" align="center">
                             <template #default="{ row, column }">
@@ -99,7 +99,7 @@
                     <!-- <div class="gva-btn-list">
                         <el-button type="primary" icon="plus" @click="addShop('0')">新增店铺</el-button>
                     </div> -->
-                    <el-table :data="bindTable" style="width: 100%" show-overflow-tooltip @cell-click="dbC">
+                    <el-table :data="bindTable" style="width: 100%" show-overflow-tooltip>
                         <el-table-column prop="id" label="ID" min-width="100" column-key="shop_id" />
                         <el-table-column prop="shop_id" label="店铺ID" min-width="100" column-key="shop_id" />
                         <el-table-column prop="shop_name" label="店铺名称" min-width="100">
@@ -214,7 +214,7 @@ const bindData = ref({
     "desc": true,
     "orderKey": "",
     "pageNum": 1,
-    "pageSize": 20,
+    "pageSize": 5,
     "shop_name": "",
     "username": ""
 })

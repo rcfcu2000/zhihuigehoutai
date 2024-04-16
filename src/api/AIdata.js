@@ -10,6 +10,14 @@ export const getAlldata = (data) => {
         data
     })
 }
+// 货盘分析获取所有数据
+export const getPalletProductList = (data) => {
+    return service({
+        url: '/inventory/getProductList',
+        method: 'post',
+        data
+    })
+}
 
 // 获取根据客单价GMV和访客对比
 export const inventorygetProductThendListdata = (data) => {

@@ -187,7 +187,10 @@
       </span>
     </div>
     <div class="aiData_table table">
-      <el-table :data="state.tableData" max-height="450">
+      <el-table :data="state.tableData" max-height="450" v-loading="loadMore_pro"
+        element-loading-background="rgba(122, 122, 122, 0.8)" v-el-table-infinite-scroll="loadMore_product"
+        :infinite-scroll-distance="300" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+        :infinite-scroll-delay="2000">
         <el-table-column label="商品ID" width="150">
           <template #default="scope">
             <span>{{ scope.row.product_id }}</span>
@@ -390,7 +393,10 @@
     <el-dialog v-model="state.tableDialogType" width="100%" title="商品明细" align-center>
       <div class="dialog-content">
         <div class="aiData_table" style="height:600px; overflow: hidden;">
-          <el-table :data="state.tableData" max-height="600">
+          <el-table :data="state.tableData" max-height="600" v-loading="loadMore_pro"
+            element-loading-background="rgba(122, 122, 122, 0.8)" v-el-table-infinite-scroll="loadMore_product"
+            :infinite-scroll-distance="300" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+            :infinite-scroll-delay="2000">
             <el-table-column label="商品ID" width="150">
               <template #default="scope">
                 <span>{{ scope.row.product_id }}</span>
@@ -542,6 +548,7 @@ import {
   getResponsibleList,
   getCategoriesList,
   getSubGmvList,
+  getPalletProductList,
   inventorygetProductThendListdata,
 } from "@/api/AIdata";
 import { EleResize } from "@/utils/echartsAuto.js";
@@ -579,7 +586,7 @@ const cities = [
 ];
 const state = reactive({
   tree: [] as any,
-  tableData: [],
+  tableData: [] as any,
   tableDialogType: false,
   titleData: {
     attachment_rate: 0,
@@ -620,6 +627,8 @@ const searchData = reactive({
   date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
   shop_name: userStore.currentShop.shop_name, //店铺名称
   shop_id: userStore.currentShop.shop_id,
+  "pageNum": 0,
+  "pageSize": 50,
 } as any);
 
 const userPriceRange = reactive<{
@@ -627,12 +636,16 @@ const userPriceRange = reactive<{
 }>({
   priceRange: [],
 });
+const loadMore_pro = ref(false)
 
 const changeShop = async () => {
   state.loading = true
   const currentShop = { ...userStore.currentShop }
   searchData.shop_name = currentShop.shop_name
   searchData.shop_id = currentShop.shop_id
+  searchData.pageNum = 0
+  state.tableData = []
+  // loadMore_pro.value = true
   await getData()
 }
 
@@ -784,8 +797,8 @@ const clearSelect = async () => {
   await getData()
 };
 
-const findValueInObjects = (array:Array<any> = [], propertyName:string, value:any) => {
-  if(array.length === 0){
+const findValueInObjects = (array: Array<any> = [], propertyName: string, value: any) => {
+  if (array.length === 0) {
     return false
   }
   return array.some(obj => obj.hasOwnProperty(propertyName) && obj[propertyName] === value);
@@ -884,6 +897,7 @@ const getData2 = async (value: any) => {
   data.end_date = data.date[1]
   data.start_date = data.date[0]
   getTree()
+  await getProduct()
   await getData2Copy(data)
 
 };
@@ -906,7 +920,6 @@ const getData2Copy = async (data: any) => {
   state.loading = true;
   const [res] = [await getAlldata(data)];
   if (res.code === 0) {
-    state.tableData = res.data.prductInfoList.records || [];
     state.titleData = res.data.index;
     state.gmvIndustryList = res.data.gmvIndustryList.records || [];
     state.gmvPrductList = res.data.gmvPrductList.records || [];
@@ -918,6 +931,32 @@ const getData2Copy = async (data: any) => {
     state.loading = false;
   }
 };
+
+const getProduct = async () => {
+  // loadMore_pro.value = true
+  let data = searchData
+  data.end_date = data.date[1]
+  data.start_date = data.date[0]
+  data.pageNum++
+  const res = await getPalletProductList(data)
+  if (res.code == 0) {
+    state.tableData = [...state.tableData, ...res.data.records]
+  }
+  loadMore_pro.value = false
+}
+const loadMore_product = async () => {
+  debounce(getProduct(), 300)
+}
+function debounce(func: any, limit = 500) {
+  const inThrottle = ref(false);
+  return function (...args) {
+    if (!inThrottle.value) {
+      func(...args);
+      inThrottle.value = true;
+      setTimeout(() => (inThrottle.value = false), limit);
+    }
+  };
+}
 
 const getEchartsData = () => {
   contrastGMV();
@@ -1336,31 +1375,32 @@ const getLevel = (arr) => {
 </script>
 <style lang="scss" scoped>
 $echarts_bg_img: url("./images/_2.png");
+
 .pro-from-right {
-    text-align: right;
-    position: absolute;
-    right: 7.5vw;
-    top: 2.5vh;
-    z-index: 100;
+  text-align: right;
+  position: absolute;
+  right: 7.5vw;
+  top: 2.5vh;
+  z-index: 100;
 }
 
 .pro-from-left {
-    text-align: left;
-    position: absolute;
-    left: 1.5vw;
-    top: 2.5vh;
-    z-index: 100;
+  text-align: left;
+  position: absolute;
+  left: 1.5vw;
+  top: 2.5vh;
+  z-index: 100;
 }
 
 ::v-deep(.el-form-item__label) {
-    color: #999 !important;
-    font-size: 14px !important;
-    padding: 0
+  color: #999 !important;
+  font-size: 14px !important;
+  padding: 0
 }
 
-::v-deep( .el-select__wrapper){
-    background: transparent !important;
-    box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
+::v-deep(.el-select__wrapper) {
+  background: transparent !important;
+  box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
 }
 
 .main {
