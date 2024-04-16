@@ -341,7 +341,7 @@
       <el-tab-pane label="产品目标">
         <el-table ref="proTargetRef" :data="proTableData.tableData" border v-loading="proTargetLoad" class="palletGmv"
           show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%"
-          v-el-table-infinite-scroll="loadMore_proTarget" :infinite-scroll-distance="100"
+          v-el-table-infinite-scroll="loadMore_proTarget" :infinite-scroll-distance="300"
           :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000">
           <el-table-column v-for="(item, index) in proTableData.table_head" :key="index" show-overflow-tooltip
             :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
@@ -385,7 +385,7 @@
       <el-tab-pane label="货盘目标">
         <el-table ref="proTargetRef" :data="palTableData.tableData" border v-loading="palTargetLoad" class="palletGmv"
           show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%"
-          v-el-table-infinite-scroll="loadMore_palTarget" :infinite-scroll-distance="100"
+          v-el-table-infinite-scroll="loadMore_palTarget" :infinite-scroll-distance="300"
           :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000">
           <el-table-column v-for="(item, index) in palTableData.table_head" :key="index" show-overflow-tooltip
             :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
@@ -627,6 +627,13 @@ const changeShop = async () => {
   const currentShop = { ...userStore.currentShop }
   searchData.shop_name = currentShop.shop_name
   searchData.shop_id = currentShop.shop_id
+  ruleForm.shop_name = currentShop.shop_name
+  ruleForm.shop_id = currentShop.shop_id
+  setSearchData1.shop_name = currentShop.shop_name
+  setSearchData1.shop_id = currentShop.shop_id
+  goalSetKey.value = 0
+  proTableData.tableData = []
+  palTableData.tableData = []
   await getAll()
 }
 const getPalletList = async () => {
@@ -1826,7 +1833,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
   ruleForm.profit_target = "";
   ruleForm.product_id = "";
   ruleForm.product_name = "";
-  ruleForm.shop_name = "";
+  // ruleForm.shop_name = "";
   ruleForm.monthly_budget = "";
   ruleForm.statistic_date = "";
 };
@@ -1897,8 +1904,8 @@ const setSearchData1 = reactive({
   pallet: [],
   start_date: "",
   end_date: "",
-  shop_name: "蜡笔派家居旗舰店", //店铺名称
-  shop_id: "",
+  shop_name: userStore.currentShop.shop_name, //店铺名称
+  shop_id: userStore.currentShop.shop_id,
   loading: false,
 });
 // 货盘
@@ -2026,7 +2033,7 @@ const resetForm1 = (formEl: FormInstance | undefined) => {
   ruleForm_pal.gmv_target = "";
   ruleForm_pal.profit_target = "";
   ruleForm_pal.pallet = "";
-  ruleForm_pal.shop_name = "";
+  // ruleForm_pal.shop_name = "";
   ruleForm_pal.monthly_budget = "";
   ruleForm_pal.statistic_date = "";
 };

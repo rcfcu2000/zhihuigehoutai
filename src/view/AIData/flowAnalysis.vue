@@ -638,6 +638,7 @@ const managerChange = (e: any) => {
     getAllEcharts()
 }
 const getAllEcharts = async () => {
+    state.loading = true
     await getTrafficdata()
     await getPieEcharts()
     await getLineEcharts()

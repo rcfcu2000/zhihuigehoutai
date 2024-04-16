@@ -206,9 +206,9 @@ const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
 const searchData = reactive({
-    // date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
     loading: false,
-    date: ['2024-01-01', '2024-01-11'],
+    // date: ['2024-01-01', '2024-01-11'],
     pageNum: 0,
     pageSize: pageSize,
     product_id: '',
@@ -216,13 +216,15 @@ const searchData = reactive({
     end_date: '',
     shop_name: userStore.currentShop.shop_name, //店铺名称
     shop_id: userStore.currentShop.shop_id,
+    key: state.key,
 });
 
 onMounted(async () => {
     state.loading = true
-    const res = await getProductlist(
-        { key: state.key }
-    )
+    let arr = searchData
+    arr.start_date = arr.date[0]
+    arr.end_date = arr.date[1]
+    const res = await getProductlist(arr)
     if (res.code === 0) {
         state.shopList = res.data.records
         searchData.product_id = state.shopList[0]?.product_id
@@ -241,12 +243,22 @@ const changeShop = async () => {
     const currentShop = { ...userStore.currentShop }
     searchData.shop_name = currentShop.shop_name
     searchData.shop_id = currentShop.shop_id
+    let arr = searchData
+    arr.start_date = arr.date[0]
+    arr.end_date = arr.date[1]
+    const res = await getProductlist(arr)
+    if (res.code === 0) {
+        state.shopList = res.data.records
+        searchData.product_id = state.shopList[0]?.product_id
+        await getData()
+        searchData.loading = false
+    }
     await getData()
 }
 
 const getSearchShopList = useThrottle(async () => {
     const res = await getProductlist(
-        { key: state.key }
+        searchData
     )
     state.shopList = res.data.records
     searchData.loading = false
@@ -259,6 +271,7 @@ const remoteMethod = async (query: string) => {
 }
 
 const getData = async () => {
+    state.loading = true
     pageNum_day.value = 0
     pageNum_words.value = 0
     clearData[0] = true
@@ -333,11 +346,9 @@ let clearData = reactive([false])
 const current_inventory = reactive([])
 
 const getTopData = async () => {
-    const data = {
-        end_date: searchData.date[1],
-        start_date: searchData.date[0],
-        product_id: searchData.product_id,
-    }
+    const data = searchData
+    data.end_date = searchData.date[1]
+    data.start_date = searchData.date[0]
     const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
     if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
         state.itemChart3data = { ...res1.data }
