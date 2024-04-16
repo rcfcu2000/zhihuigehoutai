@@ -1,4 +1,3 @@
-
 <template>
     <div class="main" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
         <page_header :title="pageTitle" @changeShop="changeShop" />
@@ -12,10 +11,10 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="本期货盘：">
-                <el-select v-model="searchData.product_manager" collapse-tags collapse-tags-tooltip placeholder="请选择"
+                <el-select v-model="searchData.current_inventory" collapse-tags collapse-tags-tooltip placeholder="请选择"
                     @change="getData2" multiple style="width:120px">
-                    <el-option v-for="item in state.responsibleList" :key="item.responsible" :label="item.responsible"
-                        :value="item.responsible" />
+                    <el-option v-for="item in state.monthPallet" :key="item.pallet" :label="item.pallet"
+                        :value="item.pallet" />
                 </el-select>
             </el-form-item>
             <el-form-item label="场景分类：">
@@ -338,6 +337,7 @@ import {
     getSearchdata,
     getProductThendListdata,
     getPlanThendListdata,
+    proGetPalletListdata,
 } from '@/api/AIdata'
 import goHome from "./components/goHome.vue";
 import page_header from "./components/page_header.vue";
@@ -401,7 +401,7 @@ const searchData = reactive({
 })
 
 const state = reactive({
-    loading:false,
+    loading: false,
     titleData: {
         cost_percentage: 0, // 花费占比
         overall_add_to_cart_rate: 0, // 全店加购率
@@ -508,6 +508,11 @@ const all = reactive({
 
 onMounted(async () => {
     state.loading = true
+
+    const res = await proGetPalletListdata();
+    if (res.code == 0) {
+        state.monthPallet = res.data.records;
+    }
     await getData()
     await getData2()
     // await getAll(searchData)
@@ -580,11 +585,11 @@ const getData = async () => {
             product_manager: String(searchData.product_manager),
             scene_category: searchData.scene_category,
         };
-        const resp2 = await getSubGmvList(data);
-        if (resp2.code === 0) {
-            state.monthPallet = resp2.data.records;
-            count.value++
-        }
+        // const resp2 = await getSubGmvList(data);
+        // if (resp2.code === 0) {
+        //     state.monthPallet = resp2.data.records;
+        //     count.value++
+        // }
     }
 }
 
@@ -924,7 +929,7 @@ $echarts_bg_img2: url('./images/_2.png');
     padding: 0
 }
 
-::v-deep( .el-select__wrapper){
+::v-deep(.el-select__wrapper) {
     background: transparent !important;
     box-shadow: 0 0 0 1px rgba(1, 229, 255, 1) inset;
 }

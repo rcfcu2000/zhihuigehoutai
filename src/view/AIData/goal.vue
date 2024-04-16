@@ -1833,7 +1833,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
   ruleForm.profit_target = "";
   ruleForm.product_id = "";
   ruleForm.product_name = "";
-  // ruleForm.shop_name = "";
   ruleForm.monthly_budget = "";
   ruleForm.statistic_date = "";
 };
@@ -1875,8 +1874,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
           message: InlogTitle.value + "成功",
           type: "success",
         });
-        loading.close();
       }
+      loading.close();
     } else {
       console.log("error submit!!");
       return false;
@@ -2033,7 +2032,6 @@ const resetForm1 = (formEl: FormInstance | undefined) => {
   ruleForm_pal.gmv_target = "";
   ruleForm_pal.profit_target = "";
   ruleForm_pal.pallet = "";
-  // ruleForm_pal.shop_name = "";
   ruleForm_pal.monthly_budget = "";
   ruleForm_pal.statistic_date = "";
 };
@@ -2086,8 +2084,8 @@ const submitForm1 = (formEl: FormInstance | undefined) => {
           message: InlogTitle.value + "成功",
           type: "success",
         });
-        loading.close();
       }
+      loading.close();
     } else {
       console.log("error submit!!");
       return false;

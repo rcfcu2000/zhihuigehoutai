@@ -113,11 +113,17 @@ export const getSearchdata = (data) => {
 
 // 获取推广分析四个图标信息
 export const proGetPalletListdata = (data) => {
-    return service({
-        url: '/promotion/getPalletListdata',
-        method: 'post',
-        data
-    })
+    // return service({
+    //     url: '/promotion/getPalletListdata',
+    //     method: 'post',
+    //     data
+    // })
+    return {
+        code: 0,
+        data: {
+            records: [{pallet:'S'},{pallet:'A'},{pallet:'B'},{pallet:'C'},{pallet:'D'}]
+        }
+    }
 }
 
 
