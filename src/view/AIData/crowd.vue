@@ -504,7 +504,7 @@ const getTrendListData = async () => {
 
         let chartDom: any = document.getElementById('gmvTrend');
         let myChart = echarts.init(chartDom);
-        let option = lineOptions1(seriesGmvData,date, false);
+        let option = lineOptions1(seriesGmvData,date);
         let listener = function () {
             if (myChart) {
                 myChart.resize();
@@ -860,7 +860,7 @@ const getProTrendListData = async () => {
             data: [] as any
         }
         let objBar = {
-            name: '购买偏好TGI总和',
+            name: '购买偏好TGI',
             type: 'line',
             data: [] as any
         }
