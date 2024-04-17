@@ -10,7 +10,7 @@
 
             <el-input v-model="searchData.keyword" disabled style="max-width: 200px" placeholder="选中关键词" class="input-with-select">
                 <template #append>
-                    <el-button :icon="RefreshLeft" @click="searchData.keyword = ''" text="重置" />
+                    <el-button :icon="RefreshLeft" @click="searchData.keyword = '';words_click('')" text="重置" />
                 </template>
             </el-input>
         </div>
