@@ -1,18 +1,23 @@
-
 <template>
-    <div class="wordsAnalysis" v-loading.fullscreen.lock="state.loading" element-loading-background="rgba(122, 122, 122, 0.8)">
+    <div class="wordsAnalysis" v-loading.fullscreen.lock="state.loading"
+        element-loading-background="rgba(122, 122, 122, 0.8)">
         <page_header :title="pageTitle" @changeShop="changeShop" />
-        <div style="position: absolute;top:25px;left: 8vw;z-index: 100;">
-            <el-button-group class="ml-4">
-                <el-button type="primary" size="large" color="#E6A23C" @click="rateClick" :autofocus="ratefocus">支付转化率</el-button>
-                <el-button type="primary" size="large" color="#E6A23C" @click="visClick" :autofocus="visfocus">访客数</el-button>
-            </el-button-group>
+        <div style="position: absolute;top:25px;left: 8vw;z-index: 100;display:flex;align-items:center">
+            <el-radio-group v-model="dataType" @change="rateClick" size="large">
+                <el-radio-button label="支付转化率" value="rate" />
+                <el-radio-button label="访客数" value="vis" />
+            </el-radio-group>
+
+            <el-input v-model="searchData.keyword" disabled style="max-width: 200px" placeholder="选中关键词" class="input-with-select">
+                <template #append>
+                    <el-button :icon="RefreshLeft" @click="searchData.keyword = ''" text="重置" />
+                </template>
+            </el-input>
         </div>
         <el-form :inline="true" :model="searchData" class="goal-from">
             <el-form-item label="请选择起止时间：">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
-                    value-format="YYYY-MM-DD" type="daterange" start-placeholder="开始时间"
-                    end-placeholder="结束时间" />
+                    value-format="YYYY-MM-DD" type="daterange" start-placeholder="开始时间" end-placeholder="结束时间" />
             </el-form-item>
         </el-form>
         <div class="page_words">
@@ -179,19 +184,17 @@ const getData = async () => {
         state.loading = false
     }, 1000)
 }
-let dataType = 'vis'
-let ratefocus = false
-let visfocus = true
-const visClick = () => {
-    dataType = 'vis'
-    visfocus = true
-    ratefocus = false
-    change_words()
-}
+let dataType = ref('vis')
+// let ratefocus = false
+// let visfocus = true
+// const visClick = () => {
+//     visfocus = true
+//     ratefocus = false
+//     change_words()
+// }
 const rateClick = () => {
-    dataType = 'rate'
-    visfocus = false
-    ratefocus = true
+    // visfocus = false
+    // ratefocus = true
     change_words()
 }
 const change_words = async () => {
@@ -252,10 +255,10 @@ const getTrafficdata = async () => {
             visData[1].data.push(item.visitors_count_notfree)
             visData[2].data.push(item.visitors_count_free)
             visData[3].data.push(item.industry_clicks)
-            changeData[0].data.push(item.cr*100)
-            changeData[1].data.push(item.cr_notfree*100)
-            changeData[2].data.push(item.cr_free*100)
-            changeData[3].data.push(item.cr_industry*100)
+            changeData[0].data.push(item.cr * 100)
+            changeData[1].data.push(item.cr_notfree * 100)
+            changeData[2].data.push(item.cr_free * 100)
+            changeData[3].data.push(item.cr_industry * 100)
             date.push(item.date)
         })
 
@@ -297,16 +300,16 @@ const getwordswordList = async () => {
                 for (let i = 0; i < len; i++) {
                     let item = res.data.records[i]
                     item.name = item.keyword
-                if (dataType == 'vis') {
-                    item.value = (item.visitors_count)
-                } else {
-                    item.value = (item.payment_conversion_rate)
-                }
+                    if (dataType.value == 'vis') {
+                        item.value = (item.visitors_count)
+                    } else {
+                        item.value = (item.payment_conversion_rate)
+                    }
                     arr.push(item)
                 }
                 boxData[3].chartsData = arr
             }
-        }else{
+        } else {
             boxData[3].chartsData = []
         }
     }
@@ -325,7 +328,7 @@ const getScKeywordList = async () => {
             for (let i = 0; i < len1; i++) {
                 let item = res.data.records_notfree[i]
                 item.name = item.keyword
-                if (dataType == 'vis') {
+                if (dataType.value == 'vis') {
                     item.value = (item.visitors_count)
                 } else {
                     item.value = (item.payment_conversion_rate)
@@ -333,7 +336,7 @@ const getScKeywordList = async () => {
                 arr1.push(item)
             }
             boxData[1].chartsData = arr1
-        }else{
+        } else {
             boxData[1].chartsData = []
         }
         if (len2 > 0) {
@@ -341,7 +344,7 @@ const getScKeywordList = async () => {
             for (let i = 0; i < len2; i++) {
                 let item = res.data.records_free[i]
                 item.name = item.keyword
-                if (dataType == 'vis') {
+                if (dataType.value == 'vis') {
                     item.value = (item.visitors_count)
                 } else {
                     item.value = (item.payment_conversion_rate)
@@ -349,7 +352,7 @@ const getScKeywordList = async () => {
                 arr2.push(item)
             }
             boxData[2].chartsData = arr2
-        }else{
+        } else {
             boxData[2].chartsData = []
         }
     }
@@ -367,7 +370,7 @@ const getKeywordList = async () => {
             for (let i = 0; i < len; i++) {
                 let item = res.data.records[i]
                 item.name = item.keyword
-                if (dataType == 'vis') {
+                if (dataType.value == 'vis') {
                     item.value = (item.visitors_count)
                 } else {
                     item.value = (item.payment_conversion_rate)
@@ -375,7 +378,7 @@ const getKeywordList = async () => {
                 arr.push(item)
             }
             boxData[0].chartsData = arr
-        }else{
+        } else {
             boxData[0].chartsData = []
         }
     }
@@ -541,7 +544,7 @@ const getwordMuList = async (filter: boolean = false, level: number = 0) => {
             sum.cr_industry = lueNum(sum.cr_industry) + '%'
             wordsData.sumData = [sum]
             sumData = [sum]
-        }else{
+        } else {
             wordsData.sumData = words_filterData
         }
         if (filter) {
@@ -583,9 +586,9 @@ const wordsRowClick = async (newFilters: any) => {
         newObject[`key${counter}`] = [...newFilters[key]];
         counter++;
     });
-    console.log(newObject,'newObject')
+    console.log(newObject, 'newObject')
     searchData.keyword = newObject.key1[0]
-    if(newObject.key1.length == 0){
+    if (newObject.key1.length == 0) {
         words_filter_label = '全部'
     }
     const data = words_filterFirst.find(words_filterData => words_filterData.keyword === newObject.key1[0]);
@@ -723,6 +726,24 @@ function renderChunk(chunk) {
 </script>
 
 <style lang="scss" scoped>
+::v-deep(.el-radio-button__inner) {
+    background: transparent;
+    border-color: rgb(1, 229, 255) !important;
+    color: #fff;
+}
+::v-deep(.el-input.is-disabled .el-input__wrapper){
+    box-shadow: none !important;
+}
+::v-deep(.el-input-group__append){
+    background-color: rgb(16, 117, 184) !important;
+    box-shadow: none !important;
+    color: #fff;
+}
+::v-deep(.el-radio) {
+    margin: 0 10px;
+    color: #fff;
+}
+
 .el-button {
     color: #fff;
 }
@@ -766,9 +787,9 @@ function renderChunk(chunk) {
     }
 }
 
-::v-deep(.el-radio-button__inner) {
-    color: #777777 !important;
-}
+// ::v-deep(.el-radio-button__inner) {
+//     color: #777777 !important;
+// }
 
 ::v-deep(.el-input__inner) {
     color: #777777;

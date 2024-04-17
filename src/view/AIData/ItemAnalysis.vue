@@ -275,6 +275,8 @@ const getData = async () => {
     pageNum_day.value = 0
     pageNum_words.value = 0
     clearData[0] = true
+    allData[0].data = []
+    allData[1].data = []
     await getTopData()
     await getWordsList(searchData)
     await getDayList(searchData)

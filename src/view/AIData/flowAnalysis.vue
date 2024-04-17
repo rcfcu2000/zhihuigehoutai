@@ -1556,7 +1556,7 @@ $echarts_bg_img: url("./images/_2.png");
 ::v-deep(.el-radio-button__inner) {
     background: transparent;
     border-color: rgb(1, 229, 255) !important;
-    color: #fff;
+    color: #fff !important;
 }
 
 .echarts_title {

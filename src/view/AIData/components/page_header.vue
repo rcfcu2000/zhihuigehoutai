@@ -65,6 +65,7 @@ const pathGo = (params: any) => {
     background-image: $header_bg;
     background-size: 100%;
     height: 5%;
+    background-color: rgb(1, 17, 40);
 }
 
 .h_title {
