@@ -70,7 +70,7 @@
                       <span style="color: red;font-size:16px;">*</span><span>店铺名称</span>
                     </template>
                     <template #default="scope">
-                      <el-input v-model="registerFormData.shops[scope.$index][item.dataKey]" :id="scope.$index"
+                      <el-input v-model="registerFormData.shops[scope.$index][item.dataKey]" :id="scope.$index" :type="(item.dataKey == 'qianniuPwd')?'password':'text'"
                         :key="scope.$index" clearable />
                     </template>
                   </el-table-column>

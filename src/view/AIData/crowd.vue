@@ -254,12 +254,12 @@ const getData = async () => {
     searchData.secondary_source = ''
     searchData.tertiary_source = ''
     searchData.ids = []
-    // await get20data();
+    await get20data();
     await getListData();
     await getTrendListData()
     await getSrcListData()
     await getPro10ListData()
-    // await getProListData()
+    await getProListData()
     await getProTrendListData()
     await getProSrcListData()
 }
@@ -284,7 +284,29 @@ const get20data = async () => {
     const [res] = [await getCrowdGmv20Listdata(data)];
     console.log(res, 'getCrowdGmv20Listdata')
     if (res.code == 0) {
+        let arr1 = [] as any;
+        if (res.data.records.length > 0) {
+            res.data.records.map((item: any, index: any) => {
+                let obj1 = {
+                    name: item.crowd_type,
+                    value: item.gmv
+                }
+                arr1.push(obj1)
+            })
+        }else{
+            return
+        }
 
+        let chartDom1: any = document.getElementById('popDis');
+        let myChart1 = echarts.init(chartDom1);
+        let option1 = pieItemOptions1(arr1, false);
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        option1 && myChart1.setOption(option1);
+        EleResize.on(chartDom1, listener1);
     }
 
 }
@@ -420,17 +442,6 @@ const getListData = async () => {
             getProTrendListData() // GMV趋势
             getPro10ListData() //top10
         });
-
-        let chartDom1: any = document.getElementById('popDis');
-        let myChart1 = echarts.init(chartDom1);
-        let option1 = pieItemOptions1(arr1, false);
-        let listener1 = function () {
-            if (myChart1) {
-                myChart1.resize();
-            }
-        };
-        option1 && myChart1.setOption(option1);
-        EleResize.on(chartDom1, listener1);
     }
 }
 
@@ -463,9 +474,7 @@ const getTrendListData = async () => {
         }, {});
         const arr = Object.values(incrementedKeysGroup)
         let seriesGmvData = [] as any
-        let serieslineAndBarData = [] as any
         let date = [] as any
-        let date1 = [] as any
         let objline = {
             name: '支付金额',
             type: 'bar',
@@ -487,15 +496,11 @@ const getTrendListData = async () => {
                 if (index == 0) {
                     date.push(itm.date)
                 }
-                if (idx == 0) {
-                    date1.push(itm.crowd_type)
-                }
                 objline.data.push(itm.crowd_tgi)
                 objBar.data.push(itm.customer_unit_price)
             })
             seriesGmvData.push(objGmv)
         })
-        serieslineAndBarData.push(objline, objBar)
 
         let chartDom: any = document.getElementById('gmvTrend');
         let myChart = echarts.init(chartDom);
@@ -507,19 +512,7 @@ const getTrendListData = async () => {
         };
         option && myChart.setOption(option);
         EleResize.on(chartDom, listener);
-
-        let chartDom1: any = document.getElementById('gmvTrend1');
-        let myChart1 = echarts.init(chartDom1);
-        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date1, false, '');
-        let listener1 = function () {
-            if (myChart1) {
-                myChart1.resize();
-            }
-        };
-        option1 && myChart1.setOption(option1);
-        EleResize.on(chartDom1, listener1);
     }
-
 }
 
 const tableListRefcrowdSrc = ref()
@@ -803,11 +796,54 @@ const getProListData = async () => {
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     const [res] = [await getProductCrowdsListdata(data)];
-    console.log(res, 'getProductCrowdsListdata')
     if (res.code == 0) {
-
+        const gmvTrendData = groupBy(res.data.records, 'crowd_type')
+        let increment = 0;
+        const incrementedKeysGroup = Object.keys(gmvTrendData).reduce((acc, key) => {
+            acc[increment] = gmvTrendData[key];
+            increment++;
+            return acc;
+        }, {});
+        const arr = Object.values(incrementedKeysGroup)
+        let serieslineAndBarData = [] as any
+        let date1 = [] as any
+        let objline = {
+            name: '支付金额',
+            type: 'bar',
+            data: [] as any
+        }
+        let objBar = {
+            name: '购买偏好TGI',
+            type: 'line',
+            data: [] as any
+        }
+        arr.map((item: any, index: any) => {
+            let objGmv = {
+                name: '',
+                data: [] as any
+            }
+            item.map((itm: any, idx: any) => {
+                objGmv.name = itm.crowd_type
+                objGmv.data.push(itm.gmv)
+                if (idx == 0) {
+                    date1.push(itm.crowd_type)
+                }
+                objline.data.push(itm.crowd_tgi)
+                objBar.data.push(itm.customer_unit_price)
+            })
+        })
+        serieslineAndBarData.push(objline, objBar)
+        let chartDom1: any = document.getElementById('gmvTrend1');
+        let myChart1 = echarts.init(chartDom1);
+        let option1 = lineOptions_lineAndbar(serieslineAndBarData, date1, false, '');
+        let listener1 = function () {
+            if (myChart1) {
+                myChart1.resize();
+            }
+        };
+        option1 && myChart1.setOption(option1);
+        EleResize.on(chartDom1, listener1);
     }
-
 }
 
 const getProTrendListData = async () => {
