@@ -504,7 +504,7 @@ const getTrendListData = async () => {
 
         let chartDom: any = document.getElementById('gmvTrend');
         let myChart = echarts.init(chartDom);
-        let option = lineOptions1(seriesGmvData, false);
+        let option = lineOptions1(seriesGmvData,date, false);
         let listener = function () {
             if (myChart) {
                 myChart.resize();

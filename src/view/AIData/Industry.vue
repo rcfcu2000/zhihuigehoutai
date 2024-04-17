@@ -9,7 +9,7 @@
             </el-form-item>
             <el-form-item label="请选择起止时间">
                 <el-date-picker v-model="searchData.date" @change="getData" :clearable="false" format="YYYY/MM/DD"
-                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="daterange" start-placeholder="开始时间"
+                    value-format="YYYY-MM-DD" :disabled-date="disabledDate" type="monthrange" start-placeholder="开始时间"
                     end-placeholder="结束时间" />
             </el-form-item>
         </el-form>
