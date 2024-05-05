@@ -108,8 +108,9 @@ import {
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js";
 import 'echarts-wordcloud';
-import { lineOptions1, lineOptions, wordsCloud } from "./echartsOptions";
+import { lineOptions1, lineOptions,  currencyLineOptions, wordsCloud } from "./echartsOptions";
 import { useUserStore } from "@/pinia/modules/user";
+import { dayjs } from 'element-plus';
 const userStore = useUserStore();
 
 const pageTitle = "关键词分析"
@@ -221,33 +222,46 @@ const getTrafficdata = async () => {
     data.end_date = data.date[1];
     const [res] = [await getKeywordTrendList(data)];
     if (res.code == 0) {
-        let visData = [{
-            name: '无界词-点击量',
-            data: [] as any
-        }, {
-            name: '生参付费词访客数',
-            data: [] as any
-        }, {
-            name: '生参免费词访客数',
-            data: [] as any
-        }, {
-            name: '行业-点击数',
-            data: [] as any
-        }
+        let visData = [
+            {
+                name: '无界词-点击量',
+                data: [] as any,
+                yAxisIndex: 0
+            },
+            {
+                name: '生参付费词访客数',
+                data: [] as any,
+                yAxisIndex: 0
+            },
+            {
+                name: '生参免费词访客数',
+                data: [] as any,
+                yAxisIndex: 0
+            },
+            {
+                name: '行业-点击数',
+                data: [] as any,
+                yAxisIndex: 1
+            }
         ]
-        let changeData = [{
-            name: '无界词转化率',
-            data: [] as any
-        }, {
-            name: '生参付费词转化率',
-            data: [] as any
-        }, {
-            name: '生参免费词转化率',
-            data: [] as any
-        }, {
-            name: '行业转化率',
-            data: [] as any
-        }
+
+        let changeData = [
+            {
+                name: '无界词转化率',
+                data: [] as any
+            }, 
+            {
+                name: '生参付费词转化率',
+                data: [] as any
+            }, 
+            {
+                name: '生参免费词转化率',
+                data: [] as any
+            }, 
+            {
+                name: '行业转化率',
+                data: [] as any
+            }
         ]
         let date = [] as any
         res.data.records?.map((item: any, index: any) => {
@@ -255,17 +269,24 @@ const getTrafficdata = async () => {
             visData[1].data.push(item.visitors_count_notfree)
             visData[2].data.push(item.visitors_count_free)
             visData[3].data.push(item.industry_clicks)
+
             changeData[0].data.push(item.cr * 100)
             changeData[1].data.push(item.cr_notfree * 100)
             changeData[2].data.push(item.cr_free * 100)
             changeData[3].data.push(item.cr_industry * 100)
+
             date.push(item.date)
         })
 
         const chartDom = document.getElementById('visitor') as HTMLElement;
         const myChart = echarts.init(chartDom);
         myChart.clear()
-        const option = lineOptions(visData, date, false, '');
+        
+        const dayDate = date.map(it => `2024-${it}`)
+            .sort((cur, per) => cur > per ? 1 : -1)
+            .map(it => dayjs(it).format("MM-DD"))
+        
+        const option = currencyLineOptions(visData, dayDate, false, '');
         option && myChart.setOption(option);
         let listener = function () {
             if (myChart) {
@@ -277,7 +298,7 @@ const getTrafficdata = async () => {
         const chartDom1 = document.getElementById('conversion') as HTMLElement;
         const myChart1 = echarts.init(chartDom1);
         myChart1.clear()
-        const option1 = lineOptions(changeData, date, false, '%');
+        const option1 = lineOptions(changeData, dayDate, false, '%');
         option1 && myChart1.setOption(option1);
         let listener1 = function () {
             if (myChart1) {

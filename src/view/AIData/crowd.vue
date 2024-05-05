@@ -201,7 +201,7 @@ import boxHead from "./components/box_head.vue";
 import boxHead1 from "./components/box_head1.vue";
 import boxHeadtb from "./components/box_head_tb.vue";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { persentNum, floatNum, lueNum, roundNum, groupBy } from "@/utils/format.js";
+import { persentNum, floatNum, lueNum, lueNum1, roundNum, groupBy } from "@/utils/format.js";
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js";
 import {
@@ -407,10 +407,10 @@ const getListData = async () => {
             if (item.tertiary_source) {
                 item.secondary_source = item.secondary_source + '_' + item.tertiary_source
             }
-            item.crowd_tgi = lueNum(item.crowd_tgi)
+            item.crowd_tgi = lueNum1(item.crowd_tgi)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.gmv = lueNum(item.gmv)
-            item.visitors_count = lueNum(item.visitors_count)
+            item.visitors_count = lueNum1(item.visitors_count)
 
             item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
             item.add_car_rate = lueNum(item.add_car_rate * 100) + '%'
@@ -594,11 +594,11 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
         let arr = [] as any
         if (res.data.records.length > 0) {
             res.data.records.map((item: any, index: any) => {
-                item.crowd_tgi = lueNum(item.crowd_tgi)
+                item.crowd_tgi = lueNum1(item.crowd_tgi)
                 item.customer_unit_price = lueNum(item.customer_unit_price)
                 item.gmv = lueNum(item.gmv)
-                item.paid_buyers = lueNum(item.paid_buyers)
-                item.visitors_count = lueNum(item.visitors_count)
+                item.paid_buyers = lueNum1(item.paid_buyers)
+                item.visitors_count = lueNum1(item.visitors_count)
 
                 item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
                 if (item.tertiary_source) {
@@ -620,11 +620,11 @@ const getSrcListData = async (filter: boolean = false, level: number = 0) => {
         }
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
-            sum.crowd_tgi = lueNum(sum.crowd_tgi)
+            sum.crowd_tgi = lueNum1(sum.crowd_tgi)
             sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.gmv = lueNum(sum.gmv)
-            sum.paid_buyers = lueNum(sum.paid_buyers)
-            sum.visitors_count = lueNum(sum.visitors_count)
+            sum.paid_buyers = lueNum1(sum.paid_buyers)
+            sum.visitors_count = lueNum1(sum.visitors_count)
             sum.payment_conversion_rate = lueNum(sum.payment_conversion_rate * 100) + '%'
             crowdSrcData.sumData = [sum]
         }
@@ -765,11 +765,11 @@ const getPro10ListData = async () => {
     const [res] = [await getProductCrowd10Listdata(data)];
     if (res.code == 0) {
         top10Data.tableData = res.data.records.length > 0 ? res.data.records.map((item: any, index: any) => {
-            item.crowd_tgi = lueNum(item.crowd_tgi)
+            item.crowd_tgi = lueNum1(item.crowd_tgi)
             item.customer_unit_price = lueNum(item.customer_unit_price)
             item.gmv = lueNum(item.gmv)
-            item.paid_buyers = lueNum(item.paid_buyers)
-            item.visitors_count = lueNum(item.visitors_count)
+            item.paid_buyers = lueNum1(item.paid_buyers)
+            item.visitors_count = lueNum1(item.visitors_count)
 
             item.payment_conversion_rate = lueNum(item.payment_conversion_rate * 100) + '%'
             return item
@@ -974,11 +974,11 @@ const getProSrcListData = async (filter: boolean = false, level: number = 0) => 
         let arr = [] as any
         if (res.data.records.length > 0) {
             res.data.records.map((item: any, index: any) => {
-                item.crowd_tgi = lueNum(item.crowd_tgi)
+                item.crowd_tgi = lueNum1(item.crowd_tgi)
                 item.customer_unit_price = lueNum(item.customer_unit_price)
                 item.gmv = lueNum(item.gmv)
-                item.paid_buyers = lueNum(item.paid_buyers)
-                item.visitors_count = lueNum(item.visitors_count)
+                item.paid_buyers = lueNum1(item.paid_buyers)
+                item.visitors_count = lueNum1(item.visitors_count)
                 if (item.tertiary_source) {
                     item.secondary_source = item.tertiary_source
                 }
@@ -1000,11 +1000,11 @@ const getProSrcListData = async (filter: boolean = false, level: number = 0) => 
         }
         if (res.data.sum !== null && res.data.sum !== undefined) {
             let sum = res.data.sum
-            sum.crowd_tgi = lueNum(sum.crowd_tgi)
+            sum.crowd_tgi = lueNum1(sum.crowd_tgi)
             sum.customer_unit_price = lueNum(sum.customer_unit_price)
             sum.gmv = lueNum(sum.gmv)
-            sum.paid_buyers = lueNum(sum.paid_buyers)
-            sum.visitors_count = lueNum(sum.visitors_count)
+            sum.paid_buyers = lueNum1(sum.paid_buyers)
+            sum.visitors_count = lueNum1(sum.visitors_count)
             sum.payment_conversion_rate = lueNum(sum.payment_conversion_rate * 100) + '%'
             proSourceData.sumData = [sum]
         }

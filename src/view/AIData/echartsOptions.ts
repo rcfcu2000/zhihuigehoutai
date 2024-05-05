@@ -561,6 +561,106 @@ export const lineOptions_lineAndbar = (arr: any, date: any, linetype: boolean = 
         }),
     }
 }
+
+export const currencyLineOptions = (arr: any, date: any, linetype: boolean = false, type: any) => {
+    // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+    return {
+        tooltip: {
+            trigger: 'axis',
+            valueFormatter: (value: number | string, dataIndex: number) => {
+                if (type == '%') {
+                    return `${lueNum(value)}${type}`
+                } else {
+                    return `${lueNum(value)}`
+                }
+            }
+        },
+        legend: {
+            // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+            data: arr?.map((i: { name: any; }) => i.name),
+            textStyle: {
+                color: '#FFF'
+            }
+        },
+        grid: {
+            left: '6%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date,
+            axisLine: {
+                show: false,
+                lineStyle: {
+                    color: '#fff',
+                }
+            },
+            axisLabel: {
+                show: true,
+                color: '#fff'
+            },
+            axisTick: {
+                show: false,
+            },
+        },
+        yAxis: [{
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            // interval: 10000,
+            axisLabel: {
+                // show: false,
+                color: '#fff',
+                formatter: function (value, index) {
+                    return lueNum1(value)
+                }
+            },
+            // axisTick: {
+            //     show: false,
+            // },
+        }, {
+            type: 'value',
+            splitLine: {
+                show: false,
+                lineStyle: {
+                    color: "#e0e6f126"
+                }
+            },
+            offset: -10,
+            axisLabel: {
+                // show: false,
+                color: '#fff', 
+                formatter: function (value, index) {
+                    return lueNum1(value)
+                }
+            },
+            // axisTick: {
+            //     show: false,
+            // },
+        },],
+        series: arr?.map((i: { name: any; data: any; yAxisIndex: any; }, index: number) => {
+            return {
+                name: i.name,
+                stack: 'Total',
+                yAxisIndex: i.yAxisIndex,
+                symbolSize: 1, // 设置数据点的大小为8像素
+                type: 'line',
+                data: i.data,
+                itemStyle: {
+                    // color: backColor[index],
+                }
+            }
+        }),
+    }
+}
+
 // 假数据线图双Y轴
 export const lineOptionsYY = (arr: any, date: any, linetype: boolean = false, type: any) => {
     // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
