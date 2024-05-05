@@ -226,17 +226,17 @@ const getTrafficdata = async () => {
             {
                 name: '无界词-点击量',
                 data: [] as any,
-                yAxisIndex: 0
+                // yAxisIndex: 0
             },
             {
                 name: '生参付费词访客数',
                 data: [] as any,
-                yAxisIndex: 0
+                // yAxisIndex: 0
             },
             {
                 name: '生参免费词访客数',
                 data: [] as any,
-                yAxisIndex: 0
+                // yAxisIndex: 0
             },
             {
                 name: '行业-点击数',
@@ -287,6 +287,7 @@ const getTrafficdata = async () => {
             .map(it => dayjs(it).format("MM-DD"))
         
         const option = currencyLineOptions(visData, dayDate, false, '');
+        // const option = 
         option && myChart.setOption(option);
         let listener = function () {
             if (myChart) {
