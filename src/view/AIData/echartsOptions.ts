@@ -1,4 +1,5 @@
 import { fa, it } from "element-plus/es/locale";
+import { floatNum } from "@/utils/format.js";
 
 function getRecentDates(monthsOffset: number): string[] {
   // 创建当前时间的 Date 对象
@@ -61,6 +62,7 @@ function lueNum1(num) {
   }
   return num;
 }
+
 const orderMap = {
   S: 1,
   A: 2,
@@ -410,9 +412,12 @@ export const lineOptions = (
   arr: any,
   date: any,
   linetype: boolean = false,
-  type: any
+  type: any,
+  yAxisTick: boolean = false,
+  yAxisMin?: number
 ) => {
   // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
+  console.log(yAxisMin, "arr");
   return {
     tooltip: {
       trigger: "axis",
@@ -420,7 +425,7 @@ export const lineOptions = (
         if (type == "%") {
           return `${lueNum(value)}${type}`;
         } else {
-          return `${lueNum1(value)}`;
+          return `${floatNum(value)}`;
         }
       },
     },
@@ -457,6 +462,7 @@ export const lineOptions = (
     },
     yAxis: {
       type: "value",
+      min: yAxisMin,
       splitLine: {
         show: false,
         lineStyle: {
@@ -464,17 +470,17 @@ export const lineOptions = (
         },
       },
       axisLabel: {
-        show: false,
+        show: yAxisTick,
         color: "#fff",
       },
       axisTick: {
-        show: false,
+        show: yAxisTick,
       },
     },
     series: arr?.map((i: { name: any; data: any }, index: number) => {
       return {
         name: i.name,
-        stack: "Total",
+        stack: i.name,
         symbolSize: 1, // 设置数据点的大小为8像素
         type: "line",
         data: i.data,
@@ -485,6 +491,7 @@ export const lineOptions = (
     }),
   };
 };
+
 // 假数据线图
 export const lineOptions_lineAndbar = (
   arr: any,
@@ -2782,3 +2789,9 @@ export const XlineFlowOptions = (arr) => {
     ],
   };
 };
+
+// 弹窗的返回值必定是一个这样的格式
+interface Modal {
+  onclose: () => void;
+  onSuccess: () => void;
+}

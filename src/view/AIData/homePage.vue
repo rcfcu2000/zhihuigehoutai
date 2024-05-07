@@ -903,38 +903,41 @@ const getBox4 = async () => {
             const chartDom2 = document.getElementById("box4Right") as HTMLElement;
             const myChart2 = echarts.init(chartDom2);
 
-            let arr1Min = arr1[0].data.reduce((min, item) => {
-                return item < min ? item : min;
-            })
-            arr1[0].name = arr1[0].name + ':' + arr1Min
-            arr1[0].data = arr1[0].data.map((item: any, index: any) => {
-                return (item - arr1Min)
-            })
-            let arr2Min1 = arr2[0].data.reduce((min, item) => {
-                return item < min ? item : min;
-            })
-            arr2[0].name = arr2[0].name + ':' + arr2Min1
-            arr2[0].data = arr2[0].data.map((item: any, index: any) => {
-                return (item - arr2Min1)
-            })
-            let arr2Min2 = arr2[1].data.reduce((min, item) => {
-                return item < min ? item : min;
-            })
-            arr2[1].name = arr2[1].name + ':' + arr2Min2
-            arr2[1].data = arr2[1].data.map((item: any, index: any) => {
-                return (item - arr2Min2)
-            })
-            let arr2Min3 = arr2[2].data.reduce((min, item) => {
-                return item < min ? item : min;
-            })
-            arr2[2].name = arr2[2].name + ':' + arr2Min3
-            arr2[2].data = arr2[2].data.map((item: any, index: any) => {
-                return (item - arr2Min3)
-            })
-            const option1 = lineOptions(arr1, timeX, false, '');
+            // let arr1Min = arr1[0].data.reduce((min, item) => {
+            //     return item < min ? item : min;
+            // })
+            // arr1[0].name = arr1[0].name + ':' + arr1Min
+            // arr1[0].data = arr1[0].data.map((item: any, index: any) => {
+            //     return (item - arr1Min)
+            // })
+
+            // let arr2Min1 = arr2[0].data.reduce((min, item) => {
+            //     return item < min ? item : min;
+            // })
+            // arr2[0].name = arr2[0].name + ':' + arr2Min1
+            // arr2[0].data = arr2[0].data.map((item: any, index: any) => {
+            //     return (item - arr2Min1)
+            // })
+
+            // let arr2Min2 = arr2[1].data.reduce((min, item) => {
+            //     return item < min ? item : min;
+            // })
+            // arr2[1].name = arr2[1].name + ':' + arr2Min2
+            // arr2[1].data = arr2[1].data.map((item: any, index: any) => {
+            //     return (item - arr2Min2)
+            // })
+
+            // let arr2Min3 = arr2[2].data.reduce((min, item) => {
+            //     return item < min ? item : min;
+            // })
+            // arr2[2].name = arr2[2].name + ':' + arr2Min3
+            // arr2[2].data = arr2[2].data.map((item: any, index: any) => {
+            //     return (item - arr2Min3)
+            // })
+            const option1 = lineOptions(arr1, timeX, false, '', true, 4);
             option1 && myChart1.setOption(option1);
 
-            const option2 = lineOptions(arr2, timeX, false, '');
+            const option2 = lineOptions(arr2, timeX, false, '', true, 4);
             option2 && myChart2.setOption(option2);
 
             let listener1 = function () {
