@@ -141,8 +141,16 @@
                     :current_inventory="current_inventory" @load-more="loadMore" :tableCount="wordsCount" />
             </el-col>
             <el-col :span="12">
-                <dayListTbale v-model="count" :Commodity_detail="allData[1]" :comKey="0" :clearData="clearData"
-                    :current_inventory="current_inventory" @load-more="loadMore" :tableCount="dayCount" />
+                <dayListTbale 
+                    v-model="count"
+                    :Commodity_detail="allData[1]" 
+                    :comKey="0"
+                    :dayList="dayList"
+                    :clearData="clearData"
+                    :current_inventory="current_inventory" 
+                    @load-more="loadMore" 
+                    :tableCount="dayCount" 
+                />
             </el-col>
         </el-row>
         <goHome />
@@ -202,6 +210,7 @@ const pageNum_words = ref(0)
 const pageSize = ref(20)
 const wordsCount = ref(0)
 const dayCount = ref(0)
+const dayList = ref({})
 const disabledDate = (time: Date) => {
     return time.getTime() > Date.now()
 }
@@ -285,64 +294,67 @@ const getData = async () => {
     }, 1000)
 }
 
-const allData = reactive([{
-    componentTitle: '关键词分析',
-    data: [] as Array<any>,
-    column: [
-        {
-            title: '类型', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '', children: [
-                { title: '流量来源', width: 100, align: 'center', dataKey: 'keyword', key: 'keyword', unit: '', },
-            ]
-        },
-        {
-            title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'search_visitor_count', key: 'search_visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'search_add_to_cart_rate', key: 'search_add_to_cart_rate', unit: '%', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'search_conversion_rate', key: 'search_conversion_rate', unit: '%', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'search_fans_paid_buyers_count', key: 'search_fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'search_direct_paid_buyers_count', key: 'search_direct_paid_buyers_count', unit: '', },
-            ]
-        },
-        {
-            title: '直通车', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'ztc_visitor_count', key: 'ztc_visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'ztc_add_to_cart_rate', key: 'ztc_add_to_cart_rate', unit: '%', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'ztc_conversion_rate', key: 'ztc_conversion_rate', unit: '%', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'ztc_fans_paid_buyers_count', key: 'ztc_fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'ztc_direct_paid_buyers_count', key: 'ztc_direct_paid_buyers_count', unit: '', },
-            ]
-        },
-        {
-            title: '总计', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
-                { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
-                { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
-                { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
-                { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
-            ]
-        },
-    ]
-}, {
-    componentTitle: '每日明细',
-    data: [] as Array<any>,
-    column: [
-        { title: '日期', width: 120, align: 'center', dataKey: 'date', key: 'date', fixed: true, unit: '', },
-        { title: '商品访客数', width: 100, align: 'center', dataKey: 'product_visitor_count', key: 'product_visitor_count', unit: '' },
-        { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
-        { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '%' },
-        { title: '搜索访客占比', width: 110, align: 'center', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', unit: '%' },
-        { title: '老买家占比', width: 100, align: 'center', dataKey: 'returning_customer_ratio', key: 'returning_customer_ratio', unit: '%' },
-        { title: '搜索GMV占比', width: 115, align: 'center', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', unit: '%' },
-        { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '%' },
-        { title: '价格力星级', width: 100, align: 'center', dataKey: 'price_power_stars', key: 'price_power_stars', unit: '' },
-        { title: '价格力额外曝光', width: 125, align: 'center', dataKey: 'price_power_extra_exposure', key: 'price_power_extra_exposure', unit: '' },
-        { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '%' },
-        { title: '连带购买叶子类目宽度', width: 100, align: 'center', dataKey: 'associated_purchase_subcategory_width', key: 'associated_purchase_subcategory_width', unit: '' },
-        { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '%' },
-        { title: '推广花费', width: 100, align: 'center', dataKey: 'promotion_cost', key: 'promotion_cost', unit: '' },
-        { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '%' },
-    ]
-}])
+const allData = reactive([
+    {
+        componentTitle: '关键词分析',
+        data: [] as Array<any>,
+        column: [
+            {
+                title: '类型', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '', children: [
+                    { title: '流量来源', width: 100, align: 'center', dataKey: 'keyword', key: 'keyword', unit: '', },
+                ]
+            },
+            {
+                title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
+                    { title: '访客数', width: 80, align: 'center', dataKey: 'search_visitor_count', key: 'search_visitor_count', unit: '', },
+                    { title: '加购率', width: 80, align: 'center', dataKey: 'search_add_to_cart_rate', key: 'search_add_to_cart_rate', unit: '%', },
+                    { title: '转化率', width: 80, align: 'center', dataKey: 'search_conversion_rate', key: 'search_conversion_rate', unit: '%', },
+                    { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'search_fans_paid_buyers_count', key: 'search_fans_paid_buyers_count', unit: '', },
+                    { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'search_direct_paid_buyers_count', key: 'search_direct_paid_buyers_count', unit: '', },
+                ]
+            },
+            {
+                title: '直通车', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
+                    { title: '访客数', width: 80, align: 'center', dataKey: 'ztc_visitor_count', key: 'ztc_visitor_count', unit: '', },
+                    { title: '加购率', width: 80, align: 'center', dataKey: 'ztc_add_to_cart_rate', key: 'ztc_add_to_cart_rate', unit: '%', },
+                    { title: '转化率', width: 80, align: 'center', dataKey: 'ztc_conversion_rate', key: 'ztc_conversion_rate', unit: '%', },
+                    { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'ztc_fans_paid_buyers_count', key: 'ztc_fans_paid_buyers_count', unit: '', },
+                    { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'ztc_direct_paid_buyers_count', key: 'ztc_direct_paid_buyers_count', unit: '', },
+                ]
+            },
+            {
+                title: '总计', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
+                    { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
+                    { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
+                    { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
+                    { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
+                    { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
+                ]
+            },
+        ]
+    },
+    {
+        componentTitle: '每日明细',
+        data: [] as Array<any>,
+        column: [
+            { title: '日期', width: 120, align: 'center', dataKey: 'date', key: 'date', fixed: true, unit: '', },
+            { title: '商品访客数', width: 100, align: 'center', dataKey: 'product_visitor_count', key: 'product_visitor_count', unit: '' },
+            { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
+            { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '%' },
+            { title: '搜索访客占比', width: 110, align: 'center', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', unit: '%' },
+            { title: '老买家占比', width: 100, align: 'center', dataKey: 'returning_customer_ratio', key: 'returning_customer_ratio', unit: '%' },
+            { title: '搜索GMV占比', width: 115, align: 'center', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', unit: '%' },
+            { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '%' },
+            { title: '价格力星级', width: 100, align: 'center', dataKey: 'price_power_stars', key: 'price_power_stars', unit: '' },
+            { title: '价格力额外曝光', width: 125, align: 'center', dataKey: 'price_power_extra_exposure', key: 'price_power_extra_exposure', unit: '' },
+            { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '%' },
+            { title: '连带购买叶子类目宽度', width: 100, align: 'center', dataKey: 'associated_purchase_subcategory_width', key: 'associated_purchase_subcategory_width', unit: '' },
+            { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '%' },
+            { title: '推广花费', width: 100, align: 'center', dataKey: 'promotion_cost', key: 'promotion_cost', unit: '' },
+            { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '%' },
+        ]
+    }
+])
 const count = ref()
 let clearData = reactive([false])
 const current_inventory = reactive([])
@@ -401,6 +413,7 @@ const getDayList = async (arr: any) => {
     if (res.code == 0 && res.data.records) {
         dayCount.value = res.data.count
         allData[1].data = res.data.records
+        dayList.value = res.data.sum
     } else {
         ElMessage.error(res.msg)
     }

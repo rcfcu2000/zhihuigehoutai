@@ -18,6 +18,7 @@ module.exports = {
     defineExpose: "readonly",
     withDefaults: "readonly",
   },
+  "ignorePatterns": ["temp.js", "**/vendor/*.js", "dist", "node_modules"],
   rules: {
     'vue/no-v-model-argument':'off',
     'vue/max-attributes-per-line': [
@@ -78,13 +79,14 @@ module.exports = {
       }
     ],
     'handle-callback-err': [2, '^(err|error)$'],
-    indent: [
-      2,
-      2,
-      {
-        SwitchCase: 1
-      }
-    ],
+    indent: ['error', 4], //缩进风格
+    // indent: [
+    //   2,
+    //   // 2,
+    //   // {
+    //   //   SwitchCase: 1
+    //   // }
+    // ],
     'jsx-quotes': [2, 'prefer-single'],
     'key-spacing': [
       2,

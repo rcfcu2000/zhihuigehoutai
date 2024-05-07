@@ -565,6 +565,15 @@ import { EleResize } from "@/utils/echartsAuto.js"; //公共组件，支持echar
 import { useThrottle, useDebounce } from "@/utils/throttle-debounce";
 import { useUserStore } from '@/pinia/modules/user'
 
+import {
+  pallet_table_head,
+  category_table_head,
+  state_reactive,
+  GMV_table_head,
+  ResponsiblePerson_table_head,
+  product_details_table_head
+} from './utilsData/goalInitData.ts'
+
 const userStore = useUserStore()
 const pageTitle = "目标达成";
 const gola = ref();
@@ -585,9 +594,11 @@ const searchData = reactive({
   shop_name: userStore.currentShop.shop_name, //店铺名称
   shop_id: userStore.currentShop.shop_id,
 });
+
 const disabledDate = (time: Date) => {
   return time.getTime() > Date.now();
 };
+
 const getData = async () => {
   managerData.tableData = [];
   await getManager();
@@ -598,12 +609,8 @@ const getData = async () => {
   productData.tableData = [];
   await getProduct();
 };
-const state = reactive({
-  shopList: [] as any,
-  key: "",
-  palletList: [] as any,
-  loading: false,
-});
+
+const state = reactive(state_reactive);
 onMounted(async () => {
   state.loading = true
   await getAll()
@@ -636,6 +643,7 @@ const changeShop = async () => {
   palTableData.tableData = []
   await getAll()
 }
+
 const getPalletList = async () => {
   let data = searchData;
   data.start_date = data.date[0];
@@ -659,57 +667,7 @@ const getIndexData = async () => {
 
 // 货盘GMV达成率
 const palletGmvData = reactive({
-  table_head: [
-    {
-      title: "",
-      width: "",
-      align: "center",
-      dataKey: "name",
-      key: "name",
-      fixed: true,
-      unit: "",
-    },
-    {
-      title: "S",
-      width: "",
-      align: "center",
-      dataKey: "S",
-      key: "S",
-      unit: "",
-    },
-    {
-      title: "A",
-      width: "",
-      align: "center",
-      dataKey: "A",
-      key: "A",
-      unit: "",
-    },
-    {
-      title: "B",
-      width: "",
-      align: "center",
-      dataKey: "B",
-      key: "B",
-      unit: "",
-    },
-    {
-      title: "C",
-      width: "",
-      align: "center",
-      dataKey: "C",
-      key: "C",
-      unit: "",
-    },
-    {
-      title: "D",
-      width: "",
-      align: "center",
-      dataKey: "D",
-      key: "D",
-      unit: "",
-    },
-  ],
+  table_head: GMV_table_head,
   tableData: [],
 });
 const palletGmvload = ref(true);
@@ -819,80 +777,7 @@ const refreshTable1 = () => {
 };
 // 责任人分析
 const managerData = reactive({
-  table_head: [
-    // {
-    //     title: "负责人",
-    //     width: '',
-    //     align: "center",
-    //     dataKey: "manager",
-    //     key: "manager",
-    //     fixed: true,
-    //     unit: "",
-    // },
-    {
-      title: "GMV",
-      width: "100",
-      align: "center",
-      dataKey: "gmv",
-      key: "gmv",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "时间进度",
-      width: "",
-      align: "center",
-      dataKey: "target_day_rate",
-      key: "target_day_rate",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "GMV达成率",
-      width: "120",
-      align: "center",
-      dataKey: "target_gmv_rate",
-      key: "target_gmv_rate",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "GMV目标",
-      width: "100",
-      align: "center",
-      dataKey: "target_gmv",
-      key: "target_gmv",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "经营利润",
-      width: "",
-      align: "center",
-      dataKey: "profit",
-      key: "profit",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "利润目标",
-      width: "",
-      align: "center",
-      dataKey: "profit_rate",
-      key: "profit_rate",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "利润达成率",
-      width: "",
-      align: "center",
-      dataKey: "profit_target_rate",
-      key: "profit_target_rate",
-      fixed: false,
-      unit: "",
-    },
-  ] as any,
+  table_head: ResponsiblePerson_table_head,
   tableData: [] as any,
   sumData: [] as any,
 });
@@ -1022,62 +907,7 @@ const manager_filter_R = () => {
 
 // 类目分析
 const categoryData = reactive({
-  table_head: [
-    // {
-    //     title: "类目名称",
-    //     width: '',
-    //     align: "center",
-    //     dataKey: "category_lv3",
-    //     key: "category_lv3",
-    //     fixed: true,
-    //     unit: "",
-    // },
-    {
-      title: "GMV",
-      width: "100",
-      align: "center",
-      dataKey: "gmv",
-      key: "gmv",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "时间进度",
-      width: "",
-      align: "center",
-      dataKey: "target_day_rate",
-      key: "target_day_rate",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "GMV达成率",
-      width: "100",
-      align: "center",
-      dataKey: "target_gmv_rate",
-      key: "target_gmv_rate",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "GMV目标",
-      width: "100",
-      align: "center",
-      dataKey: "target_gmv",
-      key: "target_gmv",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "商品简称",
-      width: "",
-      align: "center",
-      dataKey: "product_name",
-      key: "product_name",
-      fixed: false,
-      unit: "",
-    },
-  ],
+  table_head: category_table_head,
   tableData: [] as any,
   sumData: [] as any,
 });
@@ -1201,134 +1031,7 @@ const category_filter_R = () => {
 
 // 货盘详情
 const palletData = reactive({
-  table_head: [
-    {
-      title: "本月货盘",
-      width: "",
-      align: "center",
-      dataKey: "pallet",
-      key: "pallet",
-      fixed: true,
-      unit: "",
-    },
-    {
-      title: "累计GMV",
-      width: "",
-      align: "center",
-      dataKey: "month_gmv",
-      key: "month_gmv",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "GMV目标",
-      width: "",
-      align: "center",
-      dataKey: "target_gmv",
-      key: "target_gmv",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "GMV达成率",
-      width: "",
-      align: "center",
-      dataKey: "target_gmv_rate",
-      key: "target_gmv_rate",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "推广花费",
-      width: "",
-      align: "center",
-      dataKey: "spend",
-      key: "spend",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "推广预算",
-      width: "",
-      align: "center",
-      dataKey: "monthly_budget",
-      key: "monthly_budget",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "推广占比",
-      width: "",
-      align: "center",
-      dataKey: "promotion_percentage",
-      key: "promotion_percentage",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "推广目标占比",
-      width: "",
-      align: "center",
-      dataKey: "promotion_target_percentage",
-      key: "promotion_target_percentage",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "推广差异",
-      width: "",
-      align: "center",
-      dataKey: "promotion_diff",
-      key: "promotion_diff",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "时间进度",
-      width: "",
-      align: "center",
-      dataKey: "time_schedule",
-      key: "time_schedule",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "综合ROI",
-      width: "",
-      align: "center",
-      dataKey: "composite_roi",
-      key: "composite_roi",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "客单价",
-      width: "",
-      align: "center",
-      dataKey: "customer_unit_price",
-      key: "customer_unit_price",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "净利润",
-      width: "",
-      align: "center",
-      dataKey: "profit",
-      key: "profit",
-      fixed: false,
-      unit: "",
-    },
-    {
-      title: "支付人数",
-      width: "",
-      align: "center",
-      dataKey: "paid_buyers",
-      key: "paid_buyers",
-      fixed: false,
-      unit: "",
-    },
-  ],
+  table_head: pallet_table_head,
   tableData: [] as any,
   sumData: [] as any,
 });
@@ -1563,6 +1266,7 @@ const productData = reactive({
       unit: "",
     },
   ],
+  table: product_details_table_head,
   tableData: [] as any,
   sumData: [] as any,
 });

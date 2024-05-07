@@ -60,7 +60,7 @@ let tableHead = ref([
     { key: 'address', dataKey: 'address', title: '地址', align: 'center', width: 150 }
 ])
 let tableData = reactive([] as Array<any>)
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'tableCount'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'tableCount', "dayList"])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 tableData = propData.Commodity_detail.data
@@ -88,7 +88,6 @@ const refreshTable = () => {
     table.doLayout()
 }
 watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([newD, newE]) => {
-    console.log(newD, newE, "newE")
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     if (newE[0]) {
@@ -105,7 +104,6 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
 
 const loadMore_day = (res) => {
     if (componentTitle.value == "每日明细") {
-        console.log('商品明细')
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'day')
@@ -141,6 +139,7 @@ interface SummaryMethodProps<T = Product> {
 
 const getSummaries = (param: SummaryMethodProps) => {
     const { columns, data } = param
+    console.log(data, 'data')
 
     const sums: any[] = []
     columns.forEach((column, index) => {
@@ -148,26 +147,52 @@ const getSummaries = (param: SummaryMethodProps) => {
             sums[index] = '合计'
             return
         }
+        
         const values = data.map((item) => Number(item[column.property]))
 
-        if (!values.every((value) => Number.isNaN(value))) {
-            sums[index] = `${values.reduce((prev, curr) => {
-                const value = Number(curr)
-                if (!Number.isNaN(value)) {
-                    if (column.property == 'payment_conversion_rate' || column.property == 'refund_rate' || column.property == 'free_search_click_through_rate' || column.property == 'repeat_purchase_rate' || column.property == 'search_visitor_ratio' || column.property == 'returning_customer_ratio' || column.property == 'search_gmv_ratio') {
-                        return floatNum(Number(prev) + curr)
-                    }
-                    else {
-                        return floatNum(Number(prev) + curr)
-                    }
-                } else {
-                    return prev
-                }
-            }, 0)}`
-        } else {
-            sums[index] = 'N/A'
-        }
+        // if (!values.every((value) => Number.isNaN(value))) {
+        //     sums[index] = `${values.reduce((prev, curr) => {
+        //         const value = Number(curr)
+        //         if (!Number.isNaN(value)) {
+        //             // if (column.property == 'payment_conversion_rate' || column.property == 'refund_rate' || column.property == 'free_search_click_through_rate' || column.property == 'repeat_purchase_rate' || column.property == 'search_visitor_ratio' || column.property == 'returning_customer_ratio' || column.property == 'search_gmv_ratio') {
+        //             //     return floatNum(Number(prev) + curr)
+        //             // }
+        //             // else {
+        //             //     return floatNum(Number(prev) + curr)
+        //             // }
+        //             return floatNum(Number(prev) + curr)
+        //         } else {
+        //             return prev
+        //         }
+        //     }, 0)}`
+        // } else {
+        //     sums[index] = 'N/A'
+        // }
+
+        // 枚举后端return的sum 对象
+        const { dayList } = propData
+        sums[index] = dayList[column.property]
     })
+
+        // const targetSum = [
+        //     dayList?.date, 
+        //     dayList?.product_visitor_count, 
+        //     dayList?.gmv, 
+        //     dayList?.payment_conversion_rate,
+        //     dayList?.search_visitor_ratio, 
+        //     dayList?.returning_customer_ratio, 
+        //     dayList?.search_gmv_ratio, 
+        //     dayList?.refund_rate,
+        //     dayList?.price_power_stars, 
+        //     dayList?.price_power_extra_exposure, 
+        //     dayList?.free_search_click_through_rate, 
+        //     dayList?.associated_purchase_subcategory_width,
+        //     dayList?.repeat_purchase_rate, 
+        //     dayList?.promotion_cost, 
+        //     dayList?.promotion_roi,
+        // ]
+    
+
     return sums.map((sum, index) => {
         if (index == 3 || index == 4 || index == 5 || index == 6 || index == 7 || index == 10 || index == 12 || index == 14) {
             return (Number(sum) * 100).toFixed(2) + '%'
