@@ -414,10 +414,22 @@ export const lineOptions = (
   linetype: boolean = false,
   type: any,
   yAxisTick: boolean = false,
-  yAxisMin?: number
+  status
 ) => {
+  // 获取折线图Y轴最大值
+  const yAxisMax = arr
+    .map((it) => it.data)
+    .flat()
+    .sort((cur, per) => cur - per)
+    .reverse()?.[0];
+
+  // 获取折线图Y轴最小值
+  const yAxisMin = arr
+    .map((it) => it.data)
+    .flat()
+    .sort((cur, per) => cur - per)?.[0];
+
   // const backColor = ['#01E5FF', '#C2FDF4', '#FECD04', '#0304FF', '#FD89EE']
-  console.log(yAxisMin, "arr");
   return {
     tooltip: {
       trigger: "axis",
@@ -462,7 +474,8 @@ export const lineOptions = (
     },
     yAxis: {
       type: "value",
-      min: yAxisMin,
+      min: status && yAxisMin,
+      max: status && yAxisMax,
       splitLine: {
         show: false,
         lineStyle: {
@@ -606,11 +619,11 @@ export const currencyLineOptions = (
   return {
     tooltip: {
       trigger: "axis",
-      valueFormatter: (value: number | string, dataIndex: number) => {
+      valueFormatter: (value: number, dataIndex: number) => {
         if (type == "%") {
           return `${lueNum(value)}${type}`;
         } else {
-          return `${lueNum(value)}`;
+          return `${value.toFixed(0)}`;
         }
       },
     },

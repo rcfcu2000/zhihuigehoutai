@@ -897,6 +897,7 @@ const getBox4 = async () => {
                 arr2[2].data.push(floatNum(item.service_experience_score))
                 timeX.push(item.date)
             })
+
             const chartDom1 = document.getElementById("box4Left") as HTMLElement;
             const myChart1 = echarts.init(chartDom1);
 
@@ -935,10 +936,11 @@ const getBox4 = async () => {
             //     return (item - arr2Min3)
             // })
 
-            const option1 = lineOptions(arr1, timeX, false, '', true, 4);
+
+            const option1 = lineOptions(arr1, timeX, false, '', true, true);
             option1 && myChart1.setOption(option1);
 
-            const option2 = lineOptions(arr2, timeX, false, '', true, 4);
+            const option2 = lineOptions(arr2, timeX, false, '', true, true);
             option2 && myChart2.setOption(option2);
 
             let listener1 = function () {
