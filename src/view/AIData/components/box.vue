@@ -14,11 +14,11 @@ import { ref, watch, onMounted, nextTick } from 'vue'
 import * as echarts from "echarts";
 import { EleResize } from "@/utils/echartsAuto.js";
 import 'echarts-wordcloud';
-import { wordsCloud } from "../echartsOptions";
+import { keyWordsCloud } from "../echartsOptions";
 
 onMounted(async () => {
 })
-const props = defineProps(['datas', 'idx'])
+const props = defineProps(['datas', 'idx', 'dateType'])
 const emit = defineEmits(['wordsClick'])
 watch([props.datas, props.idx], ([newD, newE]) => {
     nextTick(() => {
@@ -27,7 +27,7 @@ watch([props.datas, props.idx], ([newD, newE]) => {
         if (chartDom != null && chartDom !== "" && chartDom != undefined) {
             myChart.clear()
         }
-        const option = wordsCloud(props.datas.chartsData, '');
+        const option = keyWordsCloud(props.datas.chartsData, '', props.dateType);
         window.requestAnimationFrame(() => {
             option && myChart.setOption(option);
         })

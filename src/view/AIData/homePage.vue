@@ -934,6 +934,7 @@ const getBox4 = async () => {
             // arr2[2].data = arr2[2].data.map((item: any, index: any) => {
             //     return (item - arr2Min3)
             // })
+
             const option1 = lineOptions(arr1, timeX, false, '', true, 4);
             option1 && myChart1.setOption(option1);
 

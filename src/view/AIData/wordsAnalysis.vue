@@ -23,7 +23,7 @@
         <div class="page_words">
             <el-row :gutter="30" class="wordsRow">
                 <el-col :span="12" v-for="(item, index) in boxData" :key="index">
-                    <box :datas="item" :idx="index" @wordsClick="words_click" />
+                    <box :datas="item" :idx="index" @wordsClick="words_click" :dateType="dataType"/>
                 </el-col>
                 <el-col :span="12">
                     <boxHead title="访客趋势" />
@@ -193,6 +193,7 @@ let dataType = ref('vis')
 //     ratefocus = false
 //     change_words()
 // }
+
 const rateClick = () => {
     // visfocus = false
     // ratefocus = true

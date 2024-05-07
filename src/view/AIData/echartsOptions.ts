@@ -1268,6 +1268,122 @@ export const wordsCloud = (arr: any, name: any) => {
   };
 };
 
+// 关键词分析词云图
+export const keyWordsCloud = (arr: any, name: any, dateType: string) => {
+  return {
+    // tooltip: {
+    //   enterable: true,
+    //   triggerOn: "click",
+    //   trigger: "item",
+    //   confine: true,
+    //   position: "top",
+    //   formatter: (item) => {
+    //     return `<div style="pointer-events:auto;cursor:pointer" class="btn" data-clipboard-text=${item.data.formatterName}  id="btn-tooltip">${item.data.formatterName}: ${item.value}</div>`;
+    //   },
+    // },
+    tooltip: {
+      formatter: (item) => {
+        const { data } = item;
+        return `<div>${
+          dateType === "rate"
+            ? persentNum(data.payment_conversion_rate) + "%"
+            : floatNum(data.visitors_count)
+        }</div>`;
+      },
+    },
+    grid: {
+      left: "0",
+      right: "0",
+      bottom: "0",
+      // containLabel: true
+    },
+    title: {
+      text: name,
+      left: 10,
+      top: 20,
+      textStyle: {
+        color: "#FFF",
+        fontSize: fontSize(0.2),
+      },
+    },
+    series: [
+      {
+        type: "wordCloud",
+        // 要绘制云的形状,默认是 circle，可选的参数有 cardioid 、 diamond 、 triangle-forward 、 triangle 、 star
+        shape: "star",
+        // 保持maskImage的纵横比或1:1的形状
+        // 从echarts-wordcloud@2.1.0开始支持该选项
+        keepAspect: false,
+
+        // 左/上/宽/高/右/下用于字云的定位
+        // 默认放置在中心，大小为75% x 80%。
+        left: "center",
+        bottom: "center",
+        width: "98%",
+        height: "80%",
+        right: null,
+        // bottom: null,
+
+        // 数据中的值将映射到的文本大小范围。
+        // 默认值为最小12px，最大60px。
+        sizeRange: [12, 60],
+
+        // 文字旋转范围和步进程度。文本将通过rotationStep 45在[- 90,90]范围内随机旋转
+        rotationRange: [-60, 90],
+        rotationStep: 2,
+
+        // 网格大小(以像素为单位)，用于标记画布的可用性
+        // 网格大小越大，单词之间的间隔就越大
+        gridSize: 2,
+
+        // 设置为true允许文字部分地绘制在画布之外。
+        // 允许画比画布大的字
+        // 从echarts-wordcloud@2.1.0开始支持该选项
+        drawOutOfBound: false,
+
+        // 如果字体太大，无法显示文本，是否缩小文本。如果设置为false，则文本将不被渲染。如果设置为true，文本将被缩小。
+        shrinkToFit: true,
+
+        // 是否执行布局动画。
+        //当单词较多时禁用会导致UI阻塞。
+        layoutAnimation: true,
+
+        // 全局文本样式
+        textStyle: {
+          fontFamily: "PingFangSC-Semibold",
+          fontWeight: 400,
+          color: function () {
+            return (
+              "rgb(" +
+              [
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160),
+                Math.round(Math.random() * 160),
+              ].join(",") +
+              ")"
+            );
+          },
+        },
+        emphasis: {
+          focus: "self",
+          textStyle: {
+            textShadowBlur: 0,
+            textShadowColor: "#ffffff",
+          },
+        },
+        data: arr,
+        // data: [{
+        //     name: 'Farrah Abraham',
+        //     value: 366,
+        //     // Style of single text
+        //     textStyle: {
+        //     }
+        // }]
+      },
+    ],
+  };
+};
+
 export const lineOptionsNum = (arr: any) => {
   return {
     grid: {
