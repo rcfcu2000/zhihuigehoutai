@@ -137,15 +137,23 @@
 
         <el-row :gutter="20">
             <el-col :span="12">
-                <wordsTbale v-model="count" :Commodity_detail="allData[0]" :comKey="1" :clearData="clearData"
-                    :current_inventory="current_inventory" @load-more="loadMore" :tableCount="wordsCount" />
+            <wordsTbale 
+                v-model="count" 
+                :Commodity_detail="allData[0]" 
+                :comKey="1" 
+                :dayList="dayList0"
+                :clearData="clearData"
+                :current_inventory="current_inventory" 
+                @load-more="loadMore" 
+                :tableCount="wordsCount" 
+            />
             </el-col>
             <el-col :span="12">
                 <dayListTbale 
                     v-model="count"
                     :Commodity_detail="allData[1]" 
                     :comKey="0"
-                    :dayList="dayList"
+                    :dayList="dayList1"
                     :clearData="clearData"
                     :current_inventory="current_inventory" 
                     @load-more="loadMore" 
@@ -158,411 +166,376 @@
 </template>
 
 <script setup lang="ts" name="palletLinkAnalysis">
-import goHome from "./components/goHome.vue";
-import page_header from "./components/page_header.vue";
-import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
-import {
-    getProductDayList,
-    getKeywordList,
-    getChart3data,
-    getIndexTrend,
-    getIndexdata,
-    getProductlist
-} from "@/api/AIdata";
-import { getMonthFinalDay, weaklast } from "@/utils/getDate";
-import { reactive, onMounted, ref } from "vue";
-import { ElMessage } from "element-plus";
-import 'echarts-wordcloud'
-import { lineOptionsNum, XYlineOptions, pieItemOptions, wordsCloud } from "./echartsOptions";
-import { useThrottle, useDebounce } from '@/utils/throttle-debounce';
-import dayListTbale from './components/dayList_table.vue'
-import wordsTbale from './components/words_table.vue'
-import * as echarts from "echarts";
-import "echarts/extension/bmap/bmap";
-import { fa } from "element-plus/es/locale";
-import { useUserStore } from "@/pinia/modules/user";
-const userStore = useUserStore();
+    import goHome from "./components/goHome.vue";
+    import page_header from "./components/page_header.vue";
+    import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js"
+    import {
+        getProductDayList,
+        getKeywordList,
+        getChart3data,
+        getIndexTrend,
+        getIndexdata,
+        getProductlist
+    } from "@/api/AIdata";
+    import { getMonthFinalDay, weaklast } from "@/utils/getDate";
+    import { reactive, onMounted, ref } from "vue";
+    import { ElMessage } from "element-plus";
+    import 'echarts-wordcloud'
+    import { lineOptionsNum, XYlineOptions, pieItemOptions, wordsCloud } from "./echartsOptions";
+    import { useThrottle, useDebounce } from '@/utils/throttle-debounce';
+    import dayListTbale from './components/dayList_table.vue'
+    import wordsTbale from './components/words_table.vue'
+    import * as echarts from "echarts";
+    import "echarts/extension/bmap/bmap";
+    import { fa } from "element-plus/es/locale";
+    import { useUserStore } from "@/pinia/modules/user";
+    import {columnData} from './itemAnalysisData.ts'
 
-const pageTitle = "单品分析";
-type EChartsOption = echarts.EChartsOption;
-var option: EChartsOption;
-const state = reactive({
-    shopList: [] as any,
-    key: "" as any,
-    loading: false,
-    itemData: {
-        visitors_count: 0,
-        bundle_purchase: 0,
-        free_search_click_rate: 0,
-        gmv: 0,
-        payment_conversion_rate: 0,
-        refund_rate: 0,
-        repeat_purchase_rate: 0,
-        returning_customer_ratio: 0,
-        search_gmv_ratio: 0,
-        search_visitor_ratio: 0,
-    },
-    itemIndexTrend: [] as any,
-    itemChart3data: {} as any,
-});
-const pageNum_day = ref(0)
-const pageNum_words = ref(0)
-const pageSize = ref(20)
-const wordsCount = ref(0)
-const dayCount = ref(0)
-const dayList = ref({})
-const disabledDate = (time: Date) => {
-    return time.getTime() > Date.now()
-}
-const searchData = reactive({
-    date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
-    loading: false,
-    // date: ['2024-01-01', '2024-01-11'],
-    pageNum: 0,
-    pageSize: pageSize,
-    product_id: '',
-    start_date: '',
-    end_date: '',
-    shop_name: userStore.currentShop.shop_name, //店铺名称
-    shop_id: userStore.currentShop.shop_id,
-    key: state.key,
-});
 
-onMounted(async () => {
-    state.loading = true
-    let arr = searchData
-    arr.start_date = arr.date[0]
-    arr.end_date = arr.date[1]
-    const res = await getProductlist(arr)
-    if (res.code === 0) {
-        state.shopList = res.data.records
-        searchData.product_id = state.shopList[0]?.product_id
-        await getData()
-        searchData.loading = false
+    const userStore = useUserStore();
+
+    const pageTitle = "单品分析";
+    type EChartsOption = echarts.EChartsOption;
+    var option: EChartsOption;
+    const state = reactive({
+        shopList: [] as any,
+        key: "" as any,
+        loading: false,
+        itemData: {
+            visitors_count: 0,
+            bundle_purchase: 0,
+            free_search_click_rate: 0,
+            gmv: 0,
+            payment_conversion_rate: 0,
+            refund_rate: 0,
+            repeat_purchase_rate: 0,
+            returning_customer_ratio: 0,
+            search_gmv_ratio: 0,
+            search_visitor_ratio: 0,
+        },
+        itemIndexTrend: [] as any,
+        itemChart3data: {} as any,
+    });
+    const pageNum_day = ref(0)
+    const pageNum_words = ref(0)
+    const pageSize = ref(20)
+    const wordsCount = ref(0)
+    const dayCount = ref(0)
+    const dayList0 = ref({})
+    const dayList1 = ref({})
+    const disabledDate = (time: Date) => {
+        return time.getTime() > Date.now()
     }
-
-    // await getSearchShopList()
-    // setTimeout(async () => {
-    // await getData()
-    // }, 3000)
-})
-
-const changeShop = async () => {
-    state.loading = true
-    const currentShop = { ...userStore.currentShop }
-    searchData.shop_name = currentShop.shop_name
-    searchData.shop_id = currentShop.shop_id
-    let arr = searchData
-    arr.start_date = arr.date[0]
-    arr.end_date = arr.date[1]
-    const res = await getProductlist(arr)
-    if (res.code === 0) {
-        state.shopList = res.data.records
-        searchData.product_id = state.shopList[0]?.product_id
-        await getData()
-        searchData.loading = false
-    }
-    await getData()
-}
-
-const getSearchShopList = useThrottle(async () => {
-    const res = await getProductlist(
-        searchData
-    )
-    state.shopList = res.data.records
-    searchData.loading = false
-}, 1000)
-
-const remoteMethod = async (query: string) => {
-    searchData.loading = true
-    state.key = query
-    getSearchShopList()
-}
-
-const getData = async () => {
-    state.loading = true
-    pageNum_day.value = 0
-    pageNum_words.value = 0
-    clearData[0] = true
-    allData[0].data = []
-    allData[1].data = []
-    await getTopData()
-    await getWordsList(searchData)
-    await getDayList(searchData)
-    setTimeout(() => {
-        state.loading = false
-    }, 1000)
-}
-
-const allData = reactive([
-    {
-        componentTitle: '关键词分析',
-        data: [] as Array<any>,
-        column: [
-            {
-                title: '类型', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', fixed: true, unit: '', children: [
-                    { title: '流量来源', width: 100, align: 'center', dataKey: 'keyword', key: 'keyword', unit: '', },
-                ]
-            },
-            {
-                title: '手淘搜索', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                    { title: '访客数', width: 80, align: 'center', dataKey: 'search_visitor_count', key: 'search_visitor_count', unit: '', },
-                    { title: '加购率', width: 80, align: 'center', dataKey: 'search_add_to_cart_rate', key: 'search_add_to_cart_rate', unit: '%', },
-                    { title: '转化率', width: 80, align: 'center', dataKey: 'search_conversion_rate', key: 'search_conversion_rate', unit: '%', },
-                    { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'search_fans_paid_buyers_count', key: 'search_fans_paid_buyers_count', unit: '', },
-                    { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'search_direct_paid_buyers_count', key: 'search_direct_paid_buyers_count', unit: '', },
-                ]
-            },
-            {
-                title: '直通车', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                    { title: '访客数', width: 80, align: 'center', dataKey: 'ztc_visitor_count', key: 'ztc_visitor_count', unit: '', },
-                    { title: '加购率', width: 80, align: 'center', dataKey: 'ztc_add_to_cart_rate', key: 'ztc_add_to_cart_rate', unit: '%', },
-                    { title: '转化率', width: 80, align: 'center', dataKey: 'ztc_conversion_rate', key: 'ztc_conversion_rate', unit: '%', },
-                    { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'ztc_fans_paid_buyers_count', key: 'ztc_fans_paid_buyers_count', unit: '', },
-                    { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'ztc_direct_paid_buyers_count', key: 'ztc_direct_paid_buyers_count', unit: '', },
-                ]
-            },
-            {
-                title: '总计', width: 100, align: 'center', dataKey: 'pallet', key: 'pallet', unit: '', children: [
-                    { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
-                    { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
-                    { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
-                    { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
-                    { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
-                ]
-            },
-        ]
-    },
-    {
-        componentTitle: '每日明细',
-        data: [] as Array<any>,
-        column: [
-            { title: '日期', width: 120, align: 'center', dataKey: 'date', key: 'date', fixed: true, unit: '', },
-            { title: '商品访客数', width: 100, align: 'center', dataKey: 'product_visitor_count', key: 'product_visitor_count', unit: '' },
-            { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
-            { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '%' },
-            { title: '搜索访客占比', width: 110, align: 'center', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', unit: '%' },
-            { title: '老买家占比', width: 100, align: 'center', dataKey: 'returning_customer_ratio', key: 'returning_customer_ratio', unit: '%' },
-            { title: '搜索GMV占比', width: 115, align: 'center', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', unit: '%' },
-            { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '%' },
-            { title: '价格力星级', width: 100, align: 'center', dataKey: 'price_power_stars', key: 'price_power_stars', unit: '' },
-            { title: '价格力额外曝光', width: 125, align: 'center', dataKey: 'price_power_extra_exposure', key: 'price_power_extra_exposure', unit: '' },
-            { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '%' },
-            { title: '连带购买叶子类目宽度', width: 100, align: 'center', dataKey: 'associated_purchase_subcategory_width', key: 'associated_purchase_subcategory_width', unit: '' },
-            { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '%' },
-            { title: '推广花费', width: 100, align: 'center', dataKey: 'promotion_cost', key: 'promotion_cost', unit: '' },
-            { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '%' },
-        ]
-    }
-])
-const count = ref()
-let clearData = reactive([false])
-const current_inventory = reactive([])
-
-const getTopData = async () => {
-    const data = searchData
-    data.end_date = searchData.date[1]
-    data.start_date = searchData.date[0]
-    const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
-    if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
-        state.itemChart3data = { ...res1.data }
-        state.itemIndexTrend = res2.data.records ? res2.data.records.map((item: any, index: any) => {
-            item.date = item.date.substring(5)
-            return item
-        }) : [];
-        state.itemData = { ...res3.data };
-        await getHeaderChart()
-        state.loading = false
-
-    }
-}
-
-const getWordsList = async (arr: any) => {
-    pageNum_words.value++
-    arr.pageNum = pageNum_words.value
-    arr.start_date = arr.date[0]
-    arr.end_date = arr.date[1]
-    const res = await getKeywordList(arr)
-    if (res.code == 0 && res.data.records) {
-        wordsCount.value = res.data.count
-        // 
-        // { title: '访客数', width: 80, align: 'center', dataKey: 'sum_visitor_count', key: 'sum_visitor_count', unit: '', },
-        //         { title: '加购率', width: 80, align: 'center', dataKey: 'sum_add_rate', key: 'sum_add_rate', unit: '%', },
-        //         { title: '转化率', width: 80, align: 'center', dataKey: 'sum_conversion_rate', key: 'sum_conversion_rate', unit: '%', },
-        //         { title: '粉丝支付买家数', width: 125, align: 'center', dataKey: 'sum_fans_paid_buyers_count', key: 'sum_fans_paid_buyers_count', unit: '', },
-        //         { title: '直接支付买家数', width: 125, align: 'center', dataKey: 'sum_direct_paid_buyers_count', key: 'sum_direct_paid_buyers_count', unit: '', },
-        res.data.records.map((item: any, index: any) => {
-            item.sum_visitor_count = item.search_visitor_count + item.ztc_visitor_count
-            item.sum_add_rate = item.search_add_to_cart_rate + item.ztc_add_to_cart_rate
-            item.sum_conversion_rate = item.search_conversion_rate + item.ztc_conversion_rate
-            item.sum_fans_paid_buyers_count = item.search_fans_paid_buyers_count + item.ztc_fans_paid_buyers_count
-            item.sum_direct_paid_buyers_count = item.search_direct_paid_buyers_count + item.ztc_direct_paid_buyers_count
-        })
-        allData[0].data = res.data.records
-    } else {
-        ElMessage.error(res.msg)
-    }
-}
-
-const getDayList = async (arr: any) => {
-    pageNum_day.value++
-    arr.pageNum = pageNum_day.value
-    arr.start_date = arr.date[0]
-    arr.end_date = arr.date[1]
-    const res = await getProductDayList(arr)
-    if (res.code == 0 && res.data.records) {
-        dayCount.value = res.data.count
-        allData[1].data = res.data.records
-        dayList.value = res.data.sum
-    } else {
-        ElMessage.error(res.msg)
-    }
-}
-
-
-const getHeaderChart = () => {
-    const chartDom1 = document.getElementById("echarts1") as HTMLElement;
-    chartDom1.removeAttribute('_echarts_instance_')
-    const myChart1 = echarts.init(chartDom1);
-
-    const chartDom2 = document.getElementById("echarts2") as HTMLElement;
-    chartDom2.removeAttribute('_echarts_instance_')
-    const myChart2 = echarts.init(chartDom2);
-
-    const chartDom3 = document.getElementById("echarts3") as HTMLElement;
-    chartDom3.removeAttribute('_echarts_instance_')
-    const myChart3 = echarts.init(chartDom3);
-
-    const chartDom4 = document.getElementById("echarts4") as HTMLElement;
-    chartDom4.removeAttribute('_echarts_instance_')
-    const myChart4 = echarts.init(chartDom4);
-
-    const chartDom5 = document.getElementById("echarts5") as HTMLElement;
-    chartDom5.removeAttribute('_echarts_instance_')
-    const myChart5 = echarts.init(chartDom5);
-
-    const chartDom6 = document.getElementById("echarts6") as HTMLElement;
-    chartDom6.removeAttribute('_echarts_instance_')
-    const myChart6 = echarts.init(chartDom6);
-
-    const chartDom7 = document.getElementById("echarts7") as HTMLElement;
-    chartDom7.removeAttribute('_echarts_instance_')
-    const myChart7 = echarts.init(chartDom7);
-
-    const chartDom8 = document.getElementById("echarts8") as HTMLElement;
-    chartDom8.removeAttribute('_echarts_instance_')
-    const myChart8 = echarts.init(chartDom8);
-
-    const chartDom9 = document.getElementById("echarts9") as HTMLElement;
-    chartDom9.removeAttribute('_echarts_instance_')
-    const myChart9 = echarts.init(chartDom9);
-
-    const chartDom10 = document.getElementById("echarts10") as HTMLElement;
-    chartDom10.removeAttribute('_echarts_instance_')
-    const myChart10 = echarts.init(chartDom10);
-
-    const chartDom11 = document.getElementById("echarts11") as HTMLElement;
-    chartDom11.removeAttribute('_echarts_instance_')
-    const myChart11 = echarts.init(chartDom11);
-
-    const chartDom12 = document.getElementById("echarts12") as HTMLElement;
-    chartDom12.removeAttribute('_echarts_instance_')
-    const myChart12 = echarts.init(chartDom12);
-
-    const chartDom13 = document.getElementById("echarts13") as HTMLElement;
-    chartDom13.removeAttribute('_echarts_instance_')
-    const myChart13 = echarts.init(chartDom13);
-    let arr1 = state.itemIndexTrend?.map(i => i.visitors_count)
-    let arr2 = state.itemIndexTrend?.map(i => i.gmv)
-    let arr3 = state.itemIndexTrend?.map(i => i.payment_conversion_rate)
-    let arr4 = state.itemIndexTrend?.map(i => i.search_visitor_ratio)
-    let arr5 = state.itemIndexTrend?.map(i => i.search_gmv_ratio)
-    let arr6 = state.itemIndexTrend?.map(i => i.returning_customer_ratio)
-    let arr7 = state.itemIndexTrend?.map(i => i.refund_rate)
-    let arr8 = state.itemIndexTrend?.map(i => i.free_search_click_rate)
-    let arr9 = state.itemIndexTrend?.map(i => i.bundle_purchase)
-    let arr10 = state.itemIndexTrend?.map(i => i.repeat_purchase_rate)
-
-    let arr11Date = state.itemChart3data.price_power?.records?.map(i => i.date.substring(5))
-    let arr11pp_level = state.itemChart3data.price_power?.records?.map(i => i.pp_level)
-    let arr11unit_price = state.itemChart3data.price_power?.records?.map(i => i.unit_price)
-
-    let arr12 = state.itemChart3data.sku?.records?.map(i => {
-        return {
-            name: i.sku_name,
-            value: parseFloat((i.pay_amount).toFixed(2)),
-            ...i,
-        }
-    })
-
-
-    let arr13 = state.itemChart3data.review?.records?.map(i => {
-        return {
-            value: i.count,
-            name: i.keyword
-        }
-    })
-    const option1 = lineOptionsNum(arr1);
-    const option2 = lineOptionsNum(arr2);
-    const option3 = lineOptionsNum(arr3);
-    const option4 = lineOptionsNum(arr4);
-    const option5 = lineOptionsNum(arr5);
-    const option6 = lineOptionsNum(arr6);
-    const option7 = lineOptionsNum(arr7);
-    const option8 = lineOptionsNum(arr8);
-    const option9 = lineOptionsNum(arr9);
-    const option10 = lineOptionsNum(arr10);
-
-    const option11 = XYlineOptions(arr11Date, arr11pp_level, arr11unit_price);
-    const option12 = pieItemOptions(arr12);
-    const option13 = wordsCloud(arr13, '');
-
-
-    option1 && myChart1.setOption(option1);
-    option2 && myChart2.setOption(option2);
-    option3 && myChart3.setOption(option3);
-    option4 && myChart4.setOption(option4);
-    option5 && myChart5.setOption(option5);
-    option6 && myChart6.setOption(option6);
-    option7 && myChart7.setOption(option7);
-    option8 && myChart8.setOption(option8);
-    option9 && myChart9.setOption(option9);
-    option10 && myChart10.setOption(option10);
-
-    option11 && myChart11.setOption(option11);
-    option12 && myChart12.setOption(option12);
-    option13 && myChart13.setOption(option13);
-
-
-    window.addEventListener("resize", () => {
-        myChart1.resize();
-        myChart2.resize();
-        myChart3.resize();
-        myChart4.resize();
-        myChart5.resize();
-        myChart6.resize();
-        myChart7.resize();
-        myChart8.resize();
-        myChart9.resize();
-        myChart10.resize();
-
-        myChart11.resize();
-        myChart12.resize();
-        myChart13.resize();
+    const searchData = reactive({
+        date: [getMonthFinalDay("7").beginDate, getMonthFinalDay("7").endDate],
+        loading: false,
+        // date: ['2024-01-01', '2024-01-11'],
+        pageNum: 0,
+        pageSize: pageSize,
+        product_id: '',
+        start_date: '',
+        end_date: '',
+        shop_name: userStore.currentShop.shop_name, //店铺名称
+        shop_id: userStore.currentShop.shop_id,
+        key: state.key,
     });
 
-}
+    onMounted(async () => {
+        state.loading = true
+        let arr = searchData
+        arr.start_date = arr.date[0]
+        arr.end_date = arr.date[1]
+        const res = await getProductlist(arr)
+        if (res.code === 0) {
+            state.shopList = res.data.records
+            searchData.product_id = state.shopList[0]?.product_id
+            await getData()
+            searchData.loading = false
+        }
 
-const loadMore = (at: string) => {
-    clearData[0] = false
-    if (at == 'day') {
-        getDayList(searchData)
-    }
-    if (at == 'words') {
-        getWordsList(searchData)
-    }
-}
+        // await getSearchShopList()
+        // setTimeout(async () => {
+        // await getData()
+        // }, 3000)
+    })
 
+    const changeShop = async () => {
+        state.loading = true
+        const currentShop = { ...userStore.currentShop }
+        searchData.shop_name = currentShop.shop_name
+        searchData.shop_id = currentShop.shop_id
+        let arr = searchData
+        arr.start_date = arr.date[0]
+        arr.end_date = arr.date[1]
+        const res = await getProductlist(arr)
+        if (res.code === 0) {
+            state.shopList = res.data.records
+            searchData.product_id = state.shopList[0]?.product_id
+            await getData()
+            searchData.loading = false
+        }
+        await getData()
+    }
+
+    const getSearchShopList = useThrottle(async () => {
+        const res = await getProductlist(
+            searchData
+        )
+        state.shopList = res.data.records
+        searchData.loading = false
+    }, 1000)
+
+    const remoteMethod = async (query: string) => {
+        searchData.loading = true
+        state.key = query
+        getSearchShopList()
+    }
+
+    const getData = async () => {
+        state.loading = true
+        pageNum_day.value = 0
+        pageNum_words.value = 0
+        clearData[0] = true
+        allData[0].data = []
+        allData[1].data = []
+        await getTopData()
+        await getWordsList(searchData)
+        await getDayList(searchData)
+        setTimeout(() => {
+            state.loading = false
+        }, 1000)
+    }
+
+    const allData = reactive([
+        {
+            componentTitle: '关键词分析',
+            data: [] as Array<any>,
+            column: columnData
+        },
+        {
+            componentTitle: '每日明细',
+            data: [] as Array<any>,
+            column: [
+                { title: '日期', width: 120, align: 'center', dataKey: 'date', key: 'date', fixed: true, unit: '', },
+                { title: '商品访客数', width: 100, align: 'center', dataKey: 'product_visitor_count', key: 'product_visitor_count', unit: '' },
+                { title: 'GMV', width: 100, align: 'center', dataKey: 'gmv', key: 'gmv', },
+                { title: '支付转化率', width: 100, align: 'center', dataKey: 'payment_conversion_rate', key: 'payment_conversion_rate', unit: '%' },
+                { title: '搜索访客占比', width: 110, align: 'center', dataKey: 'search_visitor_ratio', key: 'search_visitor_ratio', unit: '%' },
+                { title: '老买家占比', width: 100, align: 'center', dataKey: 'returning_customer_ratio', key: 'returning_customer_ratio', unit: '%' },
+                { title: '搜索GMV占比', width: 115, align: 'center', dataKey: 'search_gmv_ratio', key: 'search_gmv_ratio', unit: '%' },
+                { title: '退款率', width: 100, align: 'center', dataKey: 'refund_rate', key: 'refund_rate', unit: '%' },
+                { title: '价格力星级', width: 100, align: 'center', dataKey: 'price_power_stars', key: 'price_power_stars', unit: '' },
+                { title: '价格力额外曝光', width: 125, align: 'center', dataKey: 'price_power_extra_exposure', key: 'price_power_extra_exposure', unit: '' },
+                { title: '免费搜索点击率', width: 125, align: 'center', dataKey: 'free_search_click_through_rate', key: 'free_search_click_through_rate', unit: '%' },
+                { title: '连带购买叶子类目宽度', width: 100, align: 'center', dataKey: 'associated_purchase_subcategory_width', key: 'associated_purchase_subcategory_width', unit: '' },
+                { title: '复购率', width: 100, align: 'center', dataKey: 'repeat_purchase_rate', key: 'repeat_purchase_rate', unit: '%' },
+                { title: '推广花费', width: 100, align: 'center', dataKey: 'promotion_cost', key: 'promotion_cost', unit: '' },
+                { title: '推广ROI', width: 100, align: 'center', dataKey: 'promotion_roi', key: 'promotion_roi', unit: '%' },
+            ]
+        }
+    ])
+    const count = ref()
+    let clearData = reactive([false])
+    const current_inventory = reactive([])
+
+    const getTopData = async () => {
+        const data = searchData
+        data.end_date = searchData.date[1]
+        data.start_date = searchData.date[0]
+        const [res1, res2, res3] = [await getChart3data(data), await getIndexTrend(data), await getIndexdata(data)]
+        if (res1.code === 0 && res2.code === 0 && res3.code === 0) {
+            state.itemChart3data = { ...res1.data }
+            state.itemIndexTrend = res2.data.records ? res2.data.records.map((item: any, index: any) => {
+                item.date = item.date.substring(5)
+                return item
+            }) : [];
+            state.itemData = { ...res3.data };
+            await getHeaderChart()
+            state.loading = false
+
+        }
+    }
+
+    const getWordsList = async (arr: any) => {
+        pageNum_words.value++
+        arr.pageNum = pageNum_words.value
+        arr.start_date = arr.date[0]
+        arr.end_date = arr.date[1]
+        const res = await getKeywordList(arr)
+        if (res.code == 0 && res.data.records) {
+            wordsCount.value = res.data.count
+            // res.data.records.map((item: any, index: any) => {
+            //     item.sum_visitor_count = item.search_visitor_count + item.ztc_visitor_count
+            //     item.sum_add_rate = item.search_add_to_cart_rate + item.ztc_add_to_cart_rate
+            //     item.sum_conversion_rate = item.search_conversion_rate + item.ztc_conversion_rate
+            //     item.sum_fans_paid_buyers_count = item.search_fans_paid_buyers_count + item.ztc_fans_paid_buyers_count
+            //     item.sum_direct_paid_buyers_count = item.search_direct_paid_buyers_count + item.ztc_direct_paid_buyers_count
+            // })
+            allData[0].data = res.data.records
+            dayList0.value = res.data.sum
+        } else {
+            ElMessage.error(res.msg)
+        }
+    }
+
+    const getDayList = async (arr: any) => {
+        pageNum_day.value++
+        arr.pageNum = pageNum_day.value
+        arr.start_date = arr.date[0]
+        arr.end_date = arr.date[1]
+        const res = await getProductDayList(arr)
+        if (res.code == 0 && res.data.records) {
+            dayCount.value = res.data.count
+            allData[1].data = res.data.records
+            dayList1.value = res.data.sum
+        } else {
+            ElMessage.error(res.msg)
+        }
+    }
+
+
+    const getHeaderChart = () => {
+        const chartDom1 = document.getElementById("echarts1") as HTMLElement;
+        chartDom1.removeAttribute('_echarts_instance_')
+        const myChart1 = echarts.init(chartDom1);
+
+        const chartDom2 = document.getElementById("echarts2") as HTMLElement;
+        chartDom2.removeAttribute('_echarts_instance_')
+        const myChart2 = echarts.init(chartDom2);
+
+        const chartDom3 = document.getElementById("echarts3") as HTMLElement;
+        chartDom3.removeAttribute('_echarts_instance_')
+        const myChart3 = echarts.init(chartDom3);
+
+        const chartDom4 = document.getElementById("echarts4") as HTMLElement;
+        chartDom4.removeAttribute('_echarts_instance_')
+        const myChart4 = echarts.init(chartDom4);
+
+        const chartDom5 = document.getElementById("echarts5") as HTMLElement;
+        chartDom5.removeAttribute('_echarts_instance_')
+        const myChart5 = echarts.init(chartDom5);
+
+        const chartDom6 = document.getElementById("echarts6") as HTMLElement;
+        chartDom6.removeAttribute('_echarts_instance_')
+        const myChart6 = echarts.init(chartDom6);
+
+        const chartDom7 = document.getElementById("echarts7") as HTMLElement;
+        chartDom7.removeAttribute('_echarts_instance_')
+        const myChart7 = echarts.init(chartDom7);
+
+        const chartDom8 = document.getElementById("echarts8") as HTMLElement;
+        chartDom8.removeAttribute('_echarts_instance_')
+        const myChart8 = echarts.init(chartDom8);
+
+        const chartDom9 = document.getElementById("echarts9") as HTMLElement;
+        chartDom9.removeAttribute('_echarts_instance_')
+        const myChart9 = echarts.init(chartDom9);
+
+        const chartDom10 = document.getElementById("echarts10") as HTMLElement;
+        chartDom10.removeAttribute('_echarts_instance_')
+        const myChart10 = echarts.init(chartDom10);
+
+        const chartDom11 = document.getElementById("echarts11") as HTMLElement;
+        chartDom11.removeAttribute('_echarts_instance_')
+        const myChart11 = echarts.init(chartDom11);
+
+        const chartDom12 = document.getElementById("echarts12") as HTMLElement;
+        chartDom12.removeAttribute('_echarts_instance_')
+        const myChart12 = echarts.init(chartDom12);
+
+        const chartDom13 = document.getElementById("echarts13") as HTMLElement;
+        chartDom13.removeAttribute('_echarts_instance_')
+        const myChart13 = echarts.init(chartDom13);
+        let arr1 = state.itemIndexTrend?.map(i => i.visitors_count)
+        let arr2 = state.itemIndexTrend?.map(i => i.gmv)
+        let arr3 = state.itemIndexTrend?.map(i => i.payment_conversion_rate)
+        let arr4 = state.itemIndexTrend?.map(i => i.search_visitor_ratio)
+        let arr5 = state.itemIndexTrend?.map(i => i.search_gmv_ratio)
+        let arr6 = state.itemIndexTrend?.map(i => i.returning_customer_ratio)
+        let arr7 = state.itemIndexTrend?.map(i => i.refund_rate)
+        let arr8 = state.itemIndexTrend?.map(i => i.free_search_click_rate)
+        let arr9 = state.itemIndexTrend?.map(i => i.bundle_purchase)
+        let arr10 = state.itemIndexTrend?.map(i => i.repeat_purchase_rate)
+
+        let arr11Date = state.itemChart3data.price_power?.records?.map(i => i.date.substring(5))
+        let arr11pp_level = state.itemChart3data.price_power?.records?.map(i => i.pp_level)
+        let arr11unit_price = state.itemChart3data.price_power?.records?.map(i => i.unit_price)
+
+        let arr12 = state.itemChart3data.sku?.records?.map(i => {
+            return {
+                name: i.sku_name,
+                value: parseFloat((i.pay_amount).toFixed(2)),
+                ...i,
+            }
+        })
+
+
+        let arr13 = state.itemChart3data.review?.records?.map(i => {
+            return {
+                value: i.count,
+                name: i.keyword
+            }
+        })
+        const option1 = lineOptionsNum(arr1);
+        const option2 = lineOptionsNum(arr2);
+        const option3 = lineOptionsNum(arr3);
+        const option4 = lineOptionsNum(arr4);
+        const option5 = lineOptionsNum(arr5);
+        const option6 = lineOptionsNum(arr6);
+        const option7 = lineOptionsNum(arr7);
+        const option8 = lineOptionsNum(arr8);
+        const option9 = lineOptionsNum(arr9);
+        const option10 = lineOptionsNum(arr10);
+
+        const option11 = XYlineOptions(arr11Date, arr11pp_level, arr11unit_price);
+        const option12 = pieItemOptions(arr12);
+        const option13 = wordsCloud(arr13, '');
+
+
+        option1 && myChart1.setOption(option1);
+        option2 && myChart2.setOption(option2);
+        option3 && myChart3.setOption(option3);
+        option4 && myChart4.setOption(option4);
+        option5 && myChart5.setOption(option5);
+        option6 && myChart6.setOption(option6);
+        option7 && myChart7.setOption(option7);
+        option8 && myChart8.setOption(option8);
+        option9 && myChart9.setOption(option9);
+        option10 && myChart10.setOption(option10);
+
+        option11 && myChart11.setOption(option11);
+        option12 && myChart12.setOption(option12);
+        option13 && myChart13.setOption(option13);
+
+
+        window.addEventListener("resize", () => {
+            myChart1.resize();
+            myChart2.resize();
+            myChart3.resize();
+            myChart4.resize();
+            myChart5.resize();
+            myChart6.resize();
+            myChart7.resize();
+            myChart8.resize();
+            myChart9.resize();
+            myChart10.resize();
+
+            myChart11.resize();
+            myChart12.resize();
+            myChart13.resize();
+        });
+
+    }
+
+    const loadMore = (at: string) => {
+        clearData[0] = false
+        if (at == 'day') {
+            getDayList(searchData)
+        }
+        if (at == 'words') {
+            getWordsList(searchData)
+        }
+    }
 
 </script>
 

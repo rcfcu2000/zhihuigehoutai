@@ -29,26 +29,26 @@
                     :align="item.align" :width="item.width">
                     <template #default="scope">
                         <div
-                            v-if="scope.column.property == 'search_conversion_rate' || scope.column.property == 'search_add_to_cart_rate' || scope.column.property == 'ztc_add_to_cart_rate' || scope.column.property == 'ztc_conversion_rate'|| scope.column.property == 'sum_add_rate'|| scope.column.property == 'sum_conversion_rate'">
-                            {{ lueNum(scope.row[scope.column.property]*100) }}%
+                            v-if="scope.column.property == 'search_conversion_rate' || scope.column.property == 'search_add_to_cart_rate' || scope.column.property == 'ztc_add_to_cart_rate' || scope.column.property == 'ztc_conversion_rate'|| scope.column.property == 'zj_add_to_cart_rate'|| scope.column.property == 'zj_conversion_rate'">
+                            {{ floatNum(scope.row[scope.column.property]*100) }}%
                         </div>
                         <div
                             v-else-if="scope.column.property == 'search_visitor_count' || scope.column.property == 'ztc_visitor_count'">
-                            {{ lueNum(scope.row[scope.column.property]) }}
+                            {{ roundNum(scope.row[scope.column.property]) }}
                         </div>
-                        <!-- <div v-else-if="scope.column.property == 'sum_visitor_count'">
+                        <!-- <div v-else-if="scope.column.property == 'zj_visitor_count'">
                             {{ lueNum(scope.row['search_visitor_count'] + scope.row['ztc_visitor_count']) }}
                         </div>
-                        <div v-else-if="scope.column.property == 'sum_add_rate'">
+                        <div v-else-if="scope.column.property == 'zj_add_to_cart_rate'">
                             {{ persentNum(scope.row['search_add_to_cart_rate'] + scope.row['ztc_add_to_cart_rate']) }}
                         </div>
-                        <div v-else-if="scope.column.property == 'sum_conversion_rate'">
+                        <div v-else-if="scope.column.property == 'zj_conversion_rate'">
                             {{ persentNum(scope.row['search_conversion_rate'] + scope.row['ztc_conversion_rate']) }}
                         </div>
-                        <div v-else-if="scope.column.property == 'sum_fans_paid_buyers_count'">
+                        <div v-else-if="scope.column.property == 'zj_fans_paid_buyers_count'">
 
                         </div>
-                        <div v-else-if="scope.column.property == 'sum_direct_paid_buyers_count'">
+                        <div v-else-if="scope.column.property == 'zj_direct_paid_buyers_count'">
 
                         </div> -->
                         <div v-else>
@@ -97,7 +97,7 @@ const lineData = () => {
     }
     return arr
 }
-const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory', 'tableCount'])
+const propData = defineProps(['Commodity_detail', 'comKey', 'clearData', 'current_inventory', 'tableCount', "dayList"])
 const emit = defineEmits(['loadMore', 'changePallet'])
 const componentTitle = ref('')
 const current_inventory = reactive({
@@ -132,7 +132,6 @@ const refreshTable = () => {
     table.doLayout()
 }
 watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([newD, newE]) => {
-    console.log(newD, newE, "newE")
     componentTitle.value = newD.componentTitle
     tableHead = newD.column
     if (newE[0]) {
@@ -148,9 +147,7 @@ watch([propData.Commodity_detail, propData.clearData, propData.tableCount], ([ne
 }, { deep: true })
 
 const loadMore_words = (res) => {
-    console.log(componentTitle.value, "componentTitle.value")
     if (componentTitle.value == "关键词分析") {
-        console.log('关键词')
         if (!loadType.value && propData.tableCount > tableData.length) {
             loadType.value = true
             emit('loadMore', 'product')
@@ -186,27 +183,33 @@ const getSummaries = (param: SummaryMethodProps) => {
         }
         const values = data.map((item) => Number(item[column.property]))
 
-        if (!values.every((value) => Number.isNaN(value))) {
-            sums[index] = `${values.reduce((prev, curr) => {
-                const value = Number(curr)
-                if (!Number.isNaN(value)) {
-                    if (column.property == 'add_to_cart_rate' || column.property == 'conversion_rate') {
-                        return floatNum(Number(prev) + curr)
-                    }
-                    else {
-                        return floatNum(Number(prev) + curr)
-                    }
-                } else {
-                    return prev
-                }
-            }, 0)}`
-        } else {
-            sums[index] = 'N/A'
-        }
+        // if (!values.every((value) => Number.isNaN(value))) {
+        //     sums[index] = `${values.reduce((prev, curr) => {
+        //         const value = Number(curr)
+        //         if (!Number.isNaN(value)) {
+        //             if (column.property == 'add_to_cart_rate' || column.property == 'conversion_rate') {
+        //                 return floatNum(Number(prev) + curr)
+        //             }
+        //             else {
+        //                 return floatNum(Number(prev) + curr)
+        //             }
+        //         } else {
+        //             return prev
+        //         }
+        //     }, 0)}`
+        // } else {
+        //     sums[index] = 'N/A'
+        // }
+
+        // 枚举后端return的sum 对象
+        const { dayList } = propData
+        const targetDayList = dayList?.[0]
+        
+        sums[index] = targetDayList?.[column?.property]
     })
     return sums.map((sum, index) => {
         if (index == 2 || index == 3 || index == 7 || index == 8 || index == 13 || index == 12) {
-            if (sum) {
+            if (typeof sum === 'number') {
                 return (sum * 100).toFixed(2) + '%'
             } else {
                 return 'N/A'

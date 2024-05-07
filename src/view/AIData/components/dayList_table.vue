@@ -139,7 +139,6 @@ interface SummaryMethodProps<T = Product> {
 
 const getSummaries = (param: SummaryMethodProps) => {
     const { columns, data } = param
-    console.log(data, 'data')
 
     const sums: any[] = []
     columns.forEach((column, index) => {
@@ -173,24 +172,6 @@ const getSummaries = (param: SummaryMethodProps) => {
         const { dayList } = propData
         sums[index] = dayList[column.property]
     })
-
-        // const targetSum = [
-        //     dayList?.date, 
-        //     dayList?.product_visitor_count, 
-        //     dayList?.gmv, 
-        //     dayList?.payment_conversion_rate,
-        //     dayList?.search_visitor_ratio, 
-        //     dayList?.returning_customer_ratio, 
-        //     dayList?.search_gmv_ratio, 
-        //     dayList?.refund_rate,
-        //     dayList?.price_power_stars, 
-        //     dayList?.price_power_extra_exposure, 
-        //     dayList?.free_search_click_through_rate, 
-        //     dayList?.associated_purchase_subcategory_width,
-        //     dayList?.repeat_purchase_rate, 
-        //     dayList?.promotion_cost, 
-        //     dayList?.promotion_roi,
-        // ]
     
 
     return sums.map((sum, index) => {
