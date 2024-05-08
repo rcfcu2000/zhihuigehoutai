@@ -599,6 +599,8 @@ const searchData = reactive({
     pageSize: 20,
 });
 
+const current_inventory = ref(undefined)
+
 onMounted(async () => {
     state.loading = true
     await getData();
@@ -829,7 +831,9 @@ const palletEcharts = async () => {
             }
         };
         myChart1.on("click", (params) => {
-            console.log(params, 'params')
+            const { name } = params
+            getProduct([`${name}`])
+            getFlow([`${name}`])
         })
 
         EleResize.on(chartDom1, listener1);
@@ -999,14 +1003,14 @@ const product_pageSize = ref(20)
 let nomore_product = ref(false)
 let productLoad = ref(true)
 let load_product = ref(false)
-const getProduct = async () => {
+const getProduct = async (current_inventory?: string) => {
     productLoad.value = true
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = product_pageNum
     data.pageSize = product_pageSize.value
-    const [res] = [await getProductListdata_traffic(data)];
+    const [res] = [await getProductListdata_traffic({...data, current_inventory})];
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
             item.avg_stay_duration = lueNum(item.avg_stay_duration)
@@ -1203,14 +1207,14 @@ const flow_pageSize = ref(20)
 let nomore_flow = ref(false)
 let flowLoad = ref(true)
 let load_flow = ref(false)
-const getFlow = async () => {
+const getFlow = async (current_inventory?: string) => {
     flowLoad.value = true
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = flow_pageNum
     data.pageSize = flow_pageSize.value
-    const [res] = [await getTrafficListdata(data)];
+    const [res] = [await getTrafficListdata({...data, current_inventory})];
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
             item.buy_tgi = lueNum1(item.buy_tgi)
