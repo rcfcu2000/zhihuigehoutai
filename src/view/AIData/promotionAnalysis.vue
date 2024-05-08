@@ -126,7 +126,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                {{ parseFloat((state.titleData.promotion_gmv_percentage).toFixed(2)) }}
+                                {{ parseFloat((state.titleData.promotion_roi).toFixed(2)) }}
                             </span>
                             <span class="ctn_name">
                                 推广ROI
@@ -134,7 +134,7 @@
                         </li>
                         <li>
                             <span class="ctn_num">
-                                {{ parseFloat((state.titleData.overall_roi)) }}
+                                {{ parseFloat((state.titleData.overall_roi)).toFixed(2) }}
                             </span>
                             <span class="ctn_name">
                                 全店ROI

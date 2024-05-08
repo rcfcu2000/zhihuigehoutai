@@ -159,15 +159,26 @@
       <el-col :span="7">
         <div class="box" style="position: relative">
           <boxHead title="类目分析" />
-          <div class="gmvTrend" style="top: 25px; left: 8vw; position: absolute">
-            <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true" @click="category_filter_R" />
+          <div 
+            class="gmvTrend" 
+            style="top: 25px; left: 8vw; position: absolute"
+          >
+            <el-button 
+              type="primary" 
+              :icon="RefreshLeft" 
+              size="small" 
+              :circle="true" 
+              @click="category_filter_R" 
+            />
           </div>
           <div class="managerA">
-            <el-table ref="tableListRefcategory" :data="categoryData.tableData" border v-loading="categoryLoad"
+            <el-table 
+              ref="tableListRefcategory" 
+              :data="categoryData.tableData" 
+              border v-loading="categoryLoad"
               class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 370px" v-el-table-infinite-scroll="loadMore_category"
-              :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-              :infinite-scroll-delay="2000" @filter-change="categoryRowClick">
+              style="width: 100%; height: 370px" 
+              @filter-change="categoryRowClick">
               <el-table-column show-overflow-tooltip :label="category_filter_label" width="120" align="left"
                 key="category_lv3" prop="category_lv3" :filters="category_filter" :filter-multiple="false"
                 filter-class-name="category_filter">
@@ -276,10 +287,19 @@
         <div class="box">
           <boxHead title="商品详情" />
           <div class="managerA">
-            <el-table ref="tableListRefproduct" :data="productData.tableData" border v-loading="productLoad"
-              class="palletGmv" element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-              v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
-              :infinite-scroll-disabled="false" :infinite-scroll-immediate="false" :infinite-scroll-delay="2000">
+            <el-table 
+              ref="tableListRefproduct" 
+              :data="productData.tableData" border 
+              v-loading="productLoad"
+              class="palletGmv" 
+              element-loading-background="rgba(122, 122, 122, 0.8)" 
+              style="width: 100%; height: 250px"
+              v-el-table-infinite-scroll="loadMore_product" 
+              :infinite-scroll-distance="100"
+              :infinite-scroll-disabled="false" 
+              :infinite-scroll-immediate="false" 
+              :infinite-scroll-delay="2000"
+            >
               <el-table-column v-for="(item, index) in productData.table_head" :key="index" show-overflow-tooltip
                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
                 <template #default="scope">
@@ -921,13 +941,14 @@ let category_filter = [] as any;
 let category_filterData = [] as any;
 let category_filterFirst = [] as any;
 let category_sumData = [] as any;
+
 const getCategory = async (filter: boolean = false, level: number = 0) => {
   categoryLoad.value = true;
   let data = searchData as any;
   data.start_date = data.date[0];
   data.end_date = data.date[1];
-  data.pageNum = category_pageNum;
-  data.pageSize = category_pageSize.value;
+  data.pageNum = 1;
+  data.pageSize = 9999;
   const [res] = [await getCategoryAlysisdata(data)];
   if (res.code == 0) {
     let arr = [] as any;
@@ -983,6 +1004,7 @@ const getCategory = async (filter: boolean = false, level: number = 0) => {
     });
   }
 };
+
 // 添加滚动监听函数
 const addScrollListener1 = () => {
   const table1 = tableListRefcategory.value?.$el.querySelector(
@@ -1824,6 +1846,17 @@ const remoteMethod1 = async (query: string) => {
   state.key = query;
   getSearchShopList1();
 };
+
+// 类目分析el-table 虚拟滚动
+// <el-table 
+//   ref="tableListRefcategory" 
+//   :data="categoryData.tableData" 
+//   border v-loading="categoryLoad"
+//   class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+//   style="width: 100%; height: 370px" v-el-table-infinite-scroll="loadMore_category"
+//   :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
+//   :infinite-scroll-delay="2000" @filter-change="categoryRowClick">
+
 </script>
 
 <style lang="scss" scoped>
@@ -2109,3 +2142,4 @@ $echarts_bg_img: url("./images/_2.png");
   font-size: large;
 }
 </style>
+

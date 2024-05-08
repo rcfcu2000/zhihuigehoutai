@@ -381,6 +381,7 @@ const getIndexdata = async () => {
         current_inventory: [],
         product_manager: "",
         inventory_change: [],
+        shop_name: searchData.shop_name
     };
     const res = await shopGetIndexdata(data);
     if (res.code == 0) {
@@ -395,6 +396,7 @@ const getPromotion = async () => {
         current_inventory: [],
         product_manager: "",
         inventory_change: [],
+        shop_name: searchData.shop_name
     };
     const res = await getPromotiondata(data);
     if (res.code == 0) {
@@ -409,6 +411,7 @@ const gettreeData = async () => {
         current_inventory: [],
         product_manager: "",
         inventory_change: [],
+        shop_name: searchData.shop_name
     };
     const resp3 = await getSubGmvList(data);
     if (resp3.code === 0) {
