@@ -828,6 +828,9 @@ const palletEcharts = async () => {
                 myChart1.resize();
             }
         };
+        myChart1.on("click", (params) => {
+            console.log(params, 'params')
+        })
 
         EleResize.on(chartDom1, listener1);
 

@@ -413,7 +413,7 @@ const state = reactive({
         promotion_cost: 0, // 推广花费
         promotion_gmv: 0, // 推广产生的GMV
         promotion_gmv_percentage: 0, // 推广GMV占比
-        // promotion_roi: 0, // 推广投资回报率
+        promotion_roi: 0, // 推广投资回报率
         // promotion_traffic_percentage: 0, // 推广流量占比
     } as any,
     extendList: [] as any,
