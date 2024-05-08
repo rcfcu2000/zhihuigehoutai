@@ -1300,7 +1300,7 @@ export const keyWordsCloud = (arr: any, name: any, dateType: string) => {
         return `<div>${
           dateType === "rate"
             ? persentNum(data.payment_conversion_rate) + "%"
-            : floatNum(data.visitors_count)
+            : data.visitors_count
         }</div>`;
       },
     },
