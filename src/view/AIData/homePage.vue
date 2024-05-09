@@ -233,7 +233,7 @@
                                 <span class="ctn_tit">加购成本</span>
                             </li>
                             <li class="roduct_right_ctn_data">
-                                <span class="ctn_num">{{lueNum((ikun.ali_wang_wang_inquiries * 100))}}</span>
+                                <span class="ctn_num">{{ikun.ali_wang_wang_inquiries}}</span>
                                 <span class="ctn_tit">旺旺咨询量</span>
                             </li>
                         </ul>

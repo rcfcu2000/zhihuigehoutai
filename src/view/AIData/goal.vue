@@ -102,11 +102,22 @@
             <el-button type="primary" :icon="RefreshLeft" size="small" :circle="true" @click="manager_filter_R" />
           </div>
           <div class="managerA">
-            <el-table ref="tableListRefmanager" :data="managerData.tableData" border v-loading="managerLoad"
-              class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
-              style="width: 100%; height: 370px" v-el-table-infinite-scroll="loadMore_manager"
-              :infinite-scroll-distance="100" :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-              :infinite-scroll-delay="2000" @filter-change="managerRowClick">
+            <el-table 
+              ref="tableListRefmanager" 
+              :data="managerData.tableData" 
+              border 
+              v-loading="managerLoad"
+              class="palletGmv" 
+              show-overflow-tooltip 
+              element-loading-background="rgba(122, 122, 122, 0.8)"
+              style="width: 100%; height: 370px"
+              v-el-table-infinite-scroll="loadMore_manager"
+              :infinite-scroll-distance="100" 
+              :infinite-scroll-disabled="false" 
+              :infinite-scroll-immediate="false"
+              :infinite-scroll-delay="2000" 
+              @filter-change="managerRowClick"
+            >
               <el-table-column show-overflow-tooltip :label="manager_filter_label" width="100" align="left"
                 key="manager" prop="manager" :filters="manager_filter" :filter-multiple="false"
                 filter-class-name="manager_filter">
@@ -131,7 +142,8 @@
             </el-table>
             <el-table ref="tableListRefmanager_sum" :show-header="false" :data="managerData.sumData" border
               :v-loading="managerLoad" class="palletGmv" show-overflow-tooltip
-              element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px">
+              element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 30px"
+            >
               <el-table-column show-overflow-tooltip label="责任人" width="120" align="left" key="manager" prop="manager">
               </el-table-column>
               <el-table-column v-for="(item, index) in managerData.table_head" :key="index" :prop="item.dataKey"
@@ -161,7 +173,7 @@
           <boxHead title="类目分析" />
           <div 
             class="gmvTrend" 
-            style="top: 25px; left: 8vw; position: absolute"
+            style="top: 25px; left: 8vw; position: absolute;"
           >
             <el-button 
               type="primary" 
@@ -175,14 +187,25 @@
             <el-table 
               ref="tableListRefcategory" 
               :data="categoryData.tableData" 
-              border v-loading="categoryLoad"
-              class="palletGmv" show-overflow-tooltip element-loading-background="rgba(122, 122, 122, 0.8)"
+              border 
+              v-loading="categoryLoad"
+              class="palletGmv" 
+              show-overflow-tooltip 
+              element-loading-background="rgba(122, 122, 122, 0.8)"
               style="width: 100%; height: 370px" 
-              @filter-change="categoryRowClick">
-              <el-table-column show-overflow-tooltip :label="category_filter_label" width="120" align="left"
-                key="category_lv3" prop="category_lv3" :filters="category_filter" :filter-multiple="false"
-                filter-class-name="category_filter">
-              </el-table-column>
+              @filter-change="categoryRowClick"
+            >
+              <el-table-column 
+                show-overflow-tooltip 
+                :label="category_filter_label" 
+                width="120" 
+                align="left"
+                key="category_lv3" 
+                prop="category_lv3" 
+                :filters="category_filter" 
+                :filter-multiple="false"
+                filter-class-name="category_filter"
+              />
               <el-table-column v-for="(item, index) in categoryData.table_head" :key="index" show-overflow-tooltip
                 :prop="item.dataKey" :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
               </el-table-column>
@@ -208,8 +231,16 @@
               <el-table-column show-overflow-tooltip label="流量来源" width="120" align="left" key="category_lv3"
                 prop="category_lv3">
               </el-table-column>
-              <el-table-column v-for="(item, index) in categoryData.table_head" :key="index" :prop="item.dataKey"
-                show-overflow-tooltip :label="item.title" :width="item.width" :align="item.align" :fixed="item.fixed">
+              <el-table-column 
+                v-for="(item, index) in categoryData.table_head" 
+                :key="index" 
+                :prop="item.dataKey"
+                show-overflow-tooltip 
+                :label="item.title" 
+                :width="item.width" 
+                :align="item.align" 
+                :fixed="item.fixed"
+              >
               </el-table-column>
 
               <template #append v-if="nomore_category">
@@ -795,6 +826,7 @@ const refreshTable1 = () => {
   table.doLayout();
   tables.doLayout();
 };
+
 // 责任人分析
 const managerData = reactive({
   table_head: ResponsiblePerson_table_head,
@@ -811,6 +843,23 @@ let manager_filter = [] as any;
 let manager_filterData = [] as any;
 let manager_filterFirst = [] as any;
 let manager_sumData = [] as any;
+
+const totalManager = (arrData) => {
+  return arrData?.map(sum => {
+    return {
+      ...sum,
+      manager: "合计",
+      gmv: lueNum(sum.gmv),
+      target_day_rate: lueNum(sum.target_day_rate * 100) + "%",
+      target_gmv: lueNum(sum.target_gmv),
+      target_gmv_rate: lueNum(sum.target_gmv_rate * 100) + "%",
+      profit: lueNum(sum.profit),
+      profit_rate: lueNum(sum.profit_rate * 100) + "%",
+      profit_target_rate: lueNum(sum.profit_target_rate * 100) + "%",
+    }
+  })
+}
+
 const getManager = async (filter: boolean = false, level: number = 0) => {
   managerLoad.value = true;
   let data = searchData as any;
@@ -822,47 +871,49 @@ const getManager = async (filter: boolean = false, level: number = 0) => {
   if (res.code == 0) {
     let arr = [] as any;
     if (res.data.records.length > 0) {
-      res.data.records.map((item: any, index: any) => {
-        item.gmv = lueNum(item.gmv);
-        item.target_day_rate = lueNum(item.target_day_rate * 100) + "%";
-        item.target_gmv = lueNum(item.target_gmv);
-        item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + "%";
-        item.profit = lueNum(item.profit);
-        item.profit_rate = lueNum(item.profit_rate * 100) + "%";
-        item.profit_target_rate = lueNum(item.profit_target_rate * 100) + "%";
-        if (level == 0) {
-          let obj = {
-            text: item.manager,
-            value: item.manager,
-            index: index,
-          };
-          manager_filter.push(obj);
+      const { data: { records } } = res;
+      arr = records.map(item => {
+        return {
+          ...item,
+          gmv: lueNum(item.gmv),
+          target_day_rate: lueNum(item.target_day_rate * 100) + "%",
+          target_gmv: lueNum(item.target_gmv),
+          target_gmv_rate: lueNum(item.target_gmv_rate * 100) + "%",
+          profit: lueNum(item.profit),
+          profit_rate: lueNum(item.profit_rate * 100) + "%",
+          profit_target_rate: lueNum(item.profit_target_rate * 100) + "%"
         }
-        arr.push(item);
-      });
+      })
+      if(level == 0){
+        manager_filter = records.map((it, index) => ({
+          text: it.manager,
+          value: it.manager,
+          index
+        }))
+      }
+
     } else {
       nomore_manager.value = true;
       scroll_manager.value = true;
     }
     if (res.data.sum !== null && res.data.sum !== undefined && !filter) {
-      let sum = res.data.sum;
-      sum.manager = "合计";
-      sum.gmv = lueNum(sum.gmv);
-      sum.target_day_rate = lueNum(sum.target_day_rate * 100) + "%";
-      sum.target_gmv = lueNum(sum.target_gmv);
-      sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + "%";
-      sum.profit = lueNum(sum.profit);
-      sum.profit_rate = lueNum(sum.profit_rate * 100) + "%";
-      sum.profit_target_rate = lueNum(sum.profit_target_rate * 100) + "%";
-      managerData.sumData = [sum];
-      manager_sumData = [sum];
+      const { data: { sum }} = res
+      const targetManagerSumData = totalManager([sum]);
+      managerData.sumData = targetManagerSumData;
+      manager_sumData = targetManagerSumData;
     } else {
-      managerData.sumData = manager_filterData;
+      const { data: { sum }} = res
+      const targetManagerSumData = totalManager([sum]);
+      managerData.sumData = targetManagerSumData;
     }
     if (filter) {
-      managerData.tableData = [...manager_filterData, ...arr].filter(
-        (item) => item !== undefined
-      );
+      if(searchData.product_manager.length > 0 ) {
+        managerData.tableData = [ ...arr ].filter(
+          (item) => item !== undefined
+        ).map(it => ({...it, manager: it.category_lv3}));
+      } else {
+        managerData.tableData = [...arr].map(it => ({...it, manager: it.manager}))
+      }
     } else {
       manager_filterFirst = [...managerData.tableData, ...arr].filter(
         (item) => item !== undefined
@@ -899,6 +950,7 @@ const loadMore_manager = async () => {
   managerLoad.value = true;
   debounce(getManager(), 300);
 };
+
 // 筛选点击
 const managerRowClick = async (newFilters: any) => {
   let counter = 1;
@@ -914,8 +966,10 @@ const managerRowClick = async (newFilters: any) => {
   );
   manager_filterData = [{ ...data }];
   scroll_manager.value = false;
+  manager_pageNum = 1
   getManager(true, 1);
 };
+
 // 重置筛选
 const manager_filter_R = () => {
   manager_filter_label = "流量来源";
@@ -931,16 +985,41 @@ const categoryData = reactive({
   tableData: [] as any,
   sumData: [] as any,
 });
+
 let category_filter_label = "类目名称";
 let category_pageNum = 1;
 const category_pageSize = ref(20);
 let nomore_category = ref(false);
 let scroll_category = ref(false);
 let categoryLoad = ref(true);
-let category_filter = [] as any;
+let category_filter = [];
 let category_filterData = [] as any;
 let category_filterFirst = [] as any;
 let category_sumData = [] as any;
+
+// 类目分析-tabel 合计数据格式转换
+const targetMapSumData = (arrData) => arrData?.map(it => {
+  return {
+    ...it,
+    category_lv3: "合计",
+    gmv: lueNum(it.gmv),
+    target_day_rate: lueNum(it.target_day_rate * 100) + "%",
+    target_gmv: lueNum(it.target_gmv),
+    target_gmv_rate: lueNum(it.target_gmv_rate * 100) + "%"
+  };
+});
+
+// 类目分析-tabel 数据格式转换
+const targetMapSumData1 = (arrData) => arrData?.map(it => {
+  return {
+    ...it,
+    gmv: lueNum(it.gmv),
+    target_day_rate: lueNum(it.target_day_rate * 100) + "%",
+    target_gmv: lueNum(it.target_gmv),
+    target_gmv_rate: lueNum(it.target_gmv_rate * 100) + "%"
+  };
+});
+
 
 const getCategory = async (filter: boolean = false, level: number = 0) => {
   categoryLoad.value = true;
@@ -953,42 +1032,43 @@ const getCategory = async (filter: boolean = false, level: number = 0) => {
   if (res.code == 0) {
     let arr = [] as any;
     if (res.data.records.length > 0) {
-      res.data.records.map((item: any, index: any) => {
-        item.gmv = lueNum(item.gmv);
-        item.target_day_rate = lueNum(item.target_day_rate * 100) + "%";
-        item.target_gmv = lueNum(item.target_gmv);
-        item.target_gmv_rate = lueNum(item.target_gmv_rate * 100) + "%";
+      const { data: { records } } = res;
 
-        if (level == 0) {
-          let obj = {
+      arr = targetMapSumData1(records)
+      
+      if (level === 0 ) {
+        const categoryFilterList = records.map((item, index) => {
+          return {
             text: item.category_lv3,
             value: item.category_lv3,
-            index: index,
-          };
-          category_filter.push(obj);
-        }
-        arr.push(item);
-      });
+            index,
+          }
+        })
+        category_filter = categoryFilterList
+      }
+      
     } else {
       nomore_category.value = true;
       scroll_category.value = true;
     }
     if (res.data.sum !== null && res.data.sum !== undefined && !filter) {
-      let sum = res.data.sum;
-      sum.category_lv3 = "合计";
-      sum.gmv = lueNum(sum.gmv);
-      sum.target_day_rate = lueNum(sum.target_day_rate * 100) + "%";
-      sum.target_gmv = lueNum(sum.target_gmv);
-      sum.target_gmv_rate = lueNum(sum.target_gmv_rate * 100) + "%";
-      categoryData.sumData = [sum];
-      category_sumData = [sum];
+      const { data: { sum } } = res
+      const targetSumData = targetMapSumData([sum])
+      categoryData.sumData = targetSumData;
+      category_sumData = targetSumData;
     } else {
-      categoryData.sumData = category_filterData;
+      const { data: { sum } } = res
+      categoryData.sumData = targetMapSumData([sum])
     }
+
     if (filter) {
-      categoryData.tableData = [...category_filterData, ...arr].filter(
-        (item) => item !== undefined
-      );
+      if(data.lv3){
+        categoryData.tableData = [...arr].filter(
+          (item) => item !== undefined
+        ).map(it => ({...it, category_lv3: it.product_id}));
+      } else {
+        categoryData.tableData = [...arr].map(it => ({...it, category_lv3: it.category_lv3}))
+      }
     } else {
       category_filterFirst = [...categoryData.tableData, ...arr].filter(
         (item) => item !== undefined
@@ -1020,6 +1100,7 @@ const addScrollListener1 = () => {
     table1.scrollLeft = event.target.scrollLeft;
   };
 };
+
 const loadMore_category = async () => {
   category_pageNum++;
   categoryLoad.value = true;
@@ -1038,7 +1119,8 @@ const categoryRowClick = async (newFilters: any) => {
   const data = category_filterFirst.find(
     (category_filterData) => category_filterData.category_lv3 === newObject.key1[0]
   );
-  category_filterData = [{ ...data }];
+  // category_filterData = [{ ...data }];
+  category_filterData = categoryData.sumData
   scroll_category.value = false;
   getCategory(true, 1);
 };
@@ -2131,6 +2213,15 @@ $echarts_bg_img: url("./images/_2.png");
   padding: 2px 0 !important;
 }
 
+
+::v-deep(.el-table-filter) {
+    eight: 200px;
+    overflow: auto;
+    margin-top:20px;
+    box-shadow:0 0 0!important;
+}
+
+
 ::v-deep(.el-table-fixed-column--left) {
   background-color: rgba(1, 16, 37, 1) !important;
 }
@@ -2141,5 +2232,6 @@ $echarts_bg_img: url("./images/_2.png");
   color: #fff;
   font-size: large;
 }
+
 </style>
 

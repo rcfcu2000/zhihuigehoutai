@@ -833,7 +833,6 @@ const palletEcharts = async () => {
         myChart1.on("click", (params) => {
             const { name } = params
             getProduct([`${name}`])
-            getFlow([`${name}`])
         })
 
         EleResize.on(chartDom1, listener1);
@@ -1207,14 +1206,14 @@ const flow_pageSize = ref(20)
 let nomore_flow = ref(false)
 let flowLoad = ref(true)
 let load_flow = ref(false)
-const getFlow = async (current_inventory?: string) => {
+const getFlow = async () => {
     flowLoad.value = true
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = flow_pageNum
     data.pageSize = flow_pageSize.value
-    const [res] = [await getTrafficListdata({...data, current_inventory})];
+    const [res] = [await getTrafficListdata({...data})];
     if (res.code == 0) {
         const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
             item.buy_tgi = lueNum1(item.buy_tgi)
