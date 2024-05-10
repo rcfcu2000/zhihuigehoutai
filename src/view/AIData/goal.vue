@@ -64,17 +64,24 @@
           </div>
 
           <div class="box2_center_top_left_center_right">
-            <div class="absu"></div>
+
+            <div class="absu" id="month-proportion-box" />
             <div class="wenzi">
-              <div class="num">{{ persentNum(indexData.data.target_day_rate) }}%</div>
+              <div 
+                class="num" 
+                :style="{color: (indexData.data.diff >= 0 ? '#1aab40' : '#ff1212') }"
+              >
+              {{ floatNum(indexData.data.target_gmv_rate * 100) }}%
+            </div>
               <div class="percentage">
-                目标: {{ persentNum(indexData.data.target_gmv_rate) }}%({{
-    persentNum(
-      indexData.data.target_day_rate - indexData.data.target_gmv_rate
-    )
-  }}%)
+                目标: {{ 
+                  floatNum(indexData.data.target_day_rate * 100) 
+                }}%({{
+                  floatNum((indexData.data.target_gmv_rate - indexData.data.target_day_rate) * 100)
+                }}%)
               </div>
             </div>
+
           </div>
         </div>
       </el-col>
@@ -587,7 +594,7 @@ import { reactive, onMounted, ref, nextTick } from "vue";
 import goHome from "./components/goHome.vue";
 import page_header from "./components/page_header.vue";
 import boxHead from "./components/box_head.vue";
-import { lineOptions, lineOptions_lineAndbar } from "./echartsOptions";
+import { lineOptions, lineOptions_lineAndbar, lineFillOptionsNums } from "./echartsOptions";
 import {
   GetGmvTargetdata,
   GetGmvTrenddata,
@@ -607,7 +614,9 @@ import {
   addProductTarget,
   getProductlist,
   proGetPalletListdata,
+  getIndexTrenddata,
 } from "@/api/AIdata";
+
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { formatTimeToStr } from "@/utils/date";
 import { persentNum, floatNum, lueNum, formatDate } from "@/utils/format.js";
@@ -659,19 +668,24 @@ const getData = async () => {
   await getPallet();
   productData.tableData = [];
   await getProduct();
+
+  await monthProportion()
 };
 
 const state = reactive(state_reactive);
+
 onMounted(async () => {
   state.loading = true
   await getAll()
 });
+
 const getAll = async () => {
   await getData();
   await getIndexData();
   await getGmvTarget();
   await getGmvTrend();
   await getPalletList();
+  await monthProportion();
   const res = await getProductlist({ key: "" });
   if (res.code == 0) {
     state.shopList = res.data.records;
@@ -680,6 +694,7 @@ const getAll = async () => {
     state.loading = false
   }, 1000)
 }
+
 const changeShop = async () => {
   state.loading = true
   const currentShop = { ...userStore.currentShop }
@@ -712,7 +727,10 @@ const getIndexData = async () => {
   data.end_date = data.date[1];
   const [res] = [await getIndexdata_target(data)];
   if (res.code == 0) {
-    indexData.data = res.data ? res.data : {};
+    indexData.data = res.data ? {
+      ...res.data,
+      diff: res.data.target_gmv_rate - res.data.target_day_rate
+    } : {};
   }
 };
 
@@ -817,6 +835,7 @@ const refreshTable = () => {
   table.doLayout();
   tables.doLayout();
 };
+
 const tableListRefcategory = ref();
 const tableListRefcategory_sum = ref();
 const refreshTable1 = () => {
@@ -929,6 +948,7 @@ const getManager = async (filter: boolean = false, level: number = 0) => {
     });
   }
 };
+
 // 添加滚动监听函数
 const addScrollListener = () => {
   const table1 = tableListRefmanager.value?.$el.querySelector(
@@ -944,6 +964,7 @@ const addScrollListener = () => {
     table1.scrollLeft = event.target.scrollLeft;
   };
 };
+
 // 滚动加载更多
 const loadMore_manager = async () => {
   manager_pageNum++;
@@ -1139,6 +1160,7 @@ const palletData = reactive({
   tableData: [] as any,
   sumData: [] as any,
 });
+
 let pallet_pageNum = 1;
 const pallet_pageSize = ref(20);
 let nomore_pallet = ref(false);
@@ -1434,11 +1456,13 @@ const getProduct = async () => {
     });
   }
 };
+
 const loadMore_product = async () => {
   product_pageNum++;
   productLoad.value = true;
   debounce(getProduct(), 300);
 };
+
 // 添加滚动监听函数
 const addScrollListener2 = () => {
   const table1 = tableListRefproduct.value?.$el.querySelector(
@@ -1490,6 +1514,7 @@ const setSearchData = reactive({
   shop_id: userStore.currentShop.shop_id,
 });
 let goalSetKey = ref(0);
+
 // 产品分析
 const proTableData = reactive({
   table_head: [
@@ -1593,6 +1618,7 @@ const loadMore_proTarget = async () => {
   proTargetLoad.value = true;
   debounce(proTargetClick(), 300);
 };
+
 let proTarget_edit = ref(false);
 const labelPosition = ref<FormProps["labelPosition"]>("right");
 const ruleFormRef = ref<FormInstance>();
@@ -1929,6 +1955,45 @@ const remoteMethod1 = async (query: string) => {
   getSearchShopList1();
 };
 
+// 月累GMV 目标百分占比背景面积图
+const monthProportion = async() => {
+  const { shop_name, date  } = searchData
+  const start_date = date?.[0]
+  const end_date = date?.[1]
+  
+  // 请求月累GMV达成率面积图数据
+  const productListData = await getIndexTrenddata({
+    shop_name,
+    start_date,
+    end_date,
+    pageNum: 0,
+    pageSize: 0,
+    product_manager: [],
+    current_inventory: [],
+    lv3: ""
+  })
+
+  // 数据格式转换
+  const { data: { records } } = productListData;
+
+  const target_gmv_rate = indexData?.data?.target_gmv_rate
+  const target_day_rate = indexData?.data?.target_day_rate
+  const targetLineFillOptionsTime = records.map(it => (it.date));
+  const targetLineFillOptionsData = records.map(it => ((it.add_gmv)));
+  
+  // 初始化面积图并将数据射入
+  const monthProportionBox = document.getElementById("month-proportion-box");
+  const chartLineFillOptionsDocument = echarts.init(monthProportionBox);
+  const lineFillOptions = lineFillOptionsNums(targetLineFillOptionsData, targetLineFillOptionsTime, target_gmv_rate, target_day_rate);
+
+  const listener = () => {
+    chartLineFillOptionsDocument && chartLineFillOptionsDocument.resize()
+  }
+  lineFillOptions && chartLineFillOptionsDocument.setOption(lineFillOptions);
+  EleResize.on(monthProportionBox, listener);
+  
+}
+
 // 类目分析el-table 虚拟滚动
 // <el-table 
 //   ref="tableListRefcategory" 
@@ -2023,10 +2088,10 @@ $echarts_bg_img: url("./images/_2.png");
 
 .box2_center_top_left_center_right {
   flex: 0.6;
-  text-align: center;
-  display: flex;
+  /* text-align: center; */
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
   position: relative;
 
   .absu {
@@ -2035,12 +2100,16 @@ $echarts_bg_img: url("./images/_2.png");
     height: 100%;
     top: 0;
     left: 0;
-    background-image: url("./images/nnnn.png");
-    background-size: 100% 100%;
+    /* background-image: url("./images/nnnn.png"); */
+    /* background-size: 100% 100%; */
+  }
+
+  #month-proportion-box{
+    position: absolute;
   }
 
   .wenzi {
-    position: relative;
+    position: absolute;
     z-index: 1;
 
     .num {

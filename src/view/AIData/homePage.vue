@@ -98,19 +98,21 @@
                             </div>
 
                             <div class="box2_center_top_left_center_right">
-                                <div class="absu"></div>
-                                <div class="wenzi">
+                                <div class="absu" id="month-proportion-box" />
+                                <div 
+                                    class="wenzi"
+                                    :style="{color: (state.sumGMV.diff >= 0 ? '#1aab40' : '#ff1212') }"
+                                >
                                     <div class="num">
-                                        {{ persentNum(state.sumGMV.target_day_rate) }}
+                                        {{ floatNum(state.sumGMV.target_gmv_rate * 100) }}%
                                     </div>
                                     <div class="percentage">
-                                        目标: {{ persentNum(state.sumGMV.target_gmv_rate) }}({{
-            floatNum(
-                (state.sumGMV.target_day_rate -
-                    state.sumGMV.target_gmv_rate) *
-                100
-            )
-        }}%)
+                                        目标: {{ floatNum(state.sumGMV.target_day_rate) * 100 }}%({{
+                                            floatNum(
+                                                (state.sumGMV.target_gmv_rate - state.sumGMV.target_day_rate) *
+                                                100
+                                            )
+                                        }}%)
                                     </div>
                                 </div>
                             </div>
@@ -270,7 +272,8 @@ import {
     getGmvVistordata,
     getTrafficdata,
     shopGetIndexdata,
-    getPromotiondata
+    getPromotiondata,
+    getIndexTrenddata
 } from "@/api/AIdata";
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { reactive, onMounted, ref } from "vue";
@@ -283,6 +286,7 @@ import {
     lineOptions,
     lineOptionsYY,
     lineOptions1_y,
+    lineFillOptionsNums
 } from "./echartsOptions";
 import { persentNum, floatNum, lueNum, roundNum } from "@/utils/format.js";
 // import dayListTbale from './components/dayList_table.vue'
@@ -364,6 +368,8 @@ const getData = async () => {
     setTimeout(()=>{
         state.loading = false
     },1000)
+
+    await monthProportion()
 };
 
 const changeShop = async () => {
@@ -832,7 +838,10 @@ const getbox2Echarts = async () => {
             }
         });
         state.tableData = arr;
-        state.sumGMV = res.data.sum ? res.data.sum : "";
+        state.sumGMV = res.data.sum ? {
+            ...res.data.sum,
+            diff: res.data.sum.target_gmv_rate - res.data.sum.target_day_rate
+        } : {};
     }
     if (res1.code == 0) {
         let gmv_date = [] as any;
@@ -961,6 +970,45 @@ const getBox4 = async () => {
         }
     }
 };
+
+// 月累GMV 目标百分占比背景面积图
+const monthProportion = async() => {
+    const { shop_name, date  } = searchData
+    const start_date = date?.[0]
+    const end_date = date?.[1]
+    
+    // 请求月累GMV达成率面积图数据
+    const productListData = await getIndexTrenddata({
+        shop_name,
+        start_date,
+        end_date,
+        pageNum: 0,
+        pageSize: 0,
+        product_manager: [],
+        current_inventory: [],
+        lv3: ""
+    })
+
+    // 数据格式转换
+    const { data: { records } } = productListData;
+
+    const target_gmv_rate = state.sumGMV?.target_gmv_rate
+    const target_day_rate = state.sumGMV?.target_day_rate
+    const targetLineFillOptionsTime = records.map(it => (it.date));
+    const targetLineFillOptionsData = records.map(it => ((it.add_gmv)));
+    
+    // 初始化面积图并将数据射入
+    const monthProportionBox = document.getElementById("month-proportion-box");
+    const chartLineFillOptionsDocument = echarts.init(monthProportionBox);
+    const lineFillOptions = lineFillOptionsNums(targetLineFillOptionsData, targetLineFillOptionsTime, target_gmv_rate, target_day_rate);
+
+    const listener = () => {
+        chartLineFillOptionsDocument && chartLineFillOptionsDocument.resize()
+    }
+    lineFillOptions && chartLineFillOptionsDocument.setOption(lineFillOptions);
+    EleResize.on(monthProportionBox, listener);
+    
+}
 </script>
 
 <style lang="scss" scoped>
@@ -1182,10 +1230,10 @@ $echarts_bg_img: url("./images/_2.png");
 
                         .box2_center_top_left_center_right {
                             flex: 0.6;
-                            text-align: center;
+                            /* text-align: center;
                             display: flex;
                             align-items: center;
-                            justify-content: center;
+                            justify-content: center; */
                             position: relative;
 
                             .absu {
@@ -1194,19 +1242,18 @@ $echarts_bg_img: url("./images/_2.png");
                                 height: 100%;
                                 top: 0;
                                 left: 0;
-                                background-image: url("./images/nnnn.png");
-                                background-size: 100% 100%;
+                                /* background-image: url("./images/nnnn.png");
+                                background-size: 100% 100%; */
                             }
 
                             .wenzi {
-                                position: relative;
+                                position: absolute;
                                 z-index: 1;
 
                                 .num {
                                     font-size: 48px;
                                     font-weight: 700;
                                     letter-spacing: 0px;
-                                    color: rgba(255, 0, 0, 1);
                                 }
 
                                 .percentage {

@@ -2354,6 +2354,77 @@ export const lineFillOptionsNum = (arr: any, times: any, type: any) => {
   };
 };
 
+export const lineFillOptionsNums = (
+  arr: any,
+  times: any,
+  target_gmv_rate,
+  target_day_rate
+) => {
+  const color =
+    target_gmv_rate - target_day_rate >= 0 ? "rgba(2,111,141, 1)" : "#331126";
+  return {
+    tooltip: {
+      show: true,
+    },
+    grid: {
+      top: "2%",
+      left: "0%",
+      right: "2%",
+      bottom: "0%",
+      // containLabel: true
+    },
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      show: true,
+      data: times,
+    },
+    yAxis: {
+      type: "value",
+      show: false,
+      data: arr,
+    },
+    series: [
+      {
+        symbol: "none",
+        data: arr,
+        type: "line",
+        lineStyle: {
+          width: 0,
+        },
+        areaStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0.1,
+                color, // 0% 处的颜色
+              },
+              {
+                offset: 0.1,
+                color, // 0% 处的颜色
+              },
+              {
+                offset: 0.1,
+                color, // 0% 处的颜色
+              },
+              {
+                offset: 0.1,
+                color, // 100% 处的颜色
+              },
+            ],
+            global: false, // 缺省为 false
+          },
+        },
+      },
+    ],
+  };
+};
+
 export const lineFillOptionsNum_100 = (arr: any, times: any, type: any) => {
   return {
     tooltip: {

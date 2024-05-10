@@ -665,6 +665,13 @@ export const addProductTarget = (data) => {
     })
 }
 
-
+// 目标达成-指数趋势信息
+export const getIndexTrenddata = (data) => {
+    return service({
+        url: "/target/getIndexTrenddata",
+        method: 'post',
+        data
+    })
+}
 
 

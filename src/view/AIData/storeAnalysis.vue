@@ -9,6 +9,7 @@
                     <div class="boxHead">
                         店铺关键指标
                     </div>
+
                     <div id="box_body">
                         <el-row :gutter="20">
                             <el-col :span="12">
@@ -36,6 +37,7 @@
                             </el-col>
                         </el-row>
                     </div>
+
                 </div>
             </el-col>
             <el-col :span="12">
@@ -392,7 +394,14 @@ import {
 import { getMonthFinalDay, weaklast } from "@/utils/getDate";
 import { mergeArr } from "@/utils/format";
 import page_header from './components/page_header.vue'
-import { lineFillOptionsNum,lineFillOptionsNum_100, lineOptions1_y,lineOptions1_y_100, pieItemOptions1, lineOptionsNum } from "./echartsOptions"
+import { 
+    lineFillOptionsNum,
+    lineFillOptionsNum_100, 
+    lineOptions1_y,
+    lineOptions1_y_100, 
+    pieItemOptions1, 
+    lineOptionsNum 
+} from "./echartsOptions"
 import { EleResize } from "@/utils/echartsAuto.js";
 import * as echarts from 'echarts';
 import { useUserStore } from "@/pinia/modules/user";
@@ -609,6 +618,7 @@ let customer_service_trend = {
     customer_satisfaction_rate: [] as Array<any>,
     inquiry_conversion_rate: [] as Array<any>,
 };
+
 const getTrendData = async (obj: any) => {
     obj.start_date = obj.date[0]
     obj.end_date = obj.date[1]
