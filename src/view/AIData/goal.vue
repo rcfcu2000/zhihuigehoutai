@@ -669,7 +669,9 @@ const getData = async () => {
   productData.tableData = [];
   await getProduct();
 
+  await getIndexData();
   await monthProportion()
+  await getGmvTarget()
 };
 
 const state = reactive(state_reactive);
@@ -746,35 +748,40 @@ const getGmvTarget = async () => {
   data.end_date = data.date[1];
   const [res] = [await GetGmvTargetdata(data)];
   if (res.code == 0) {
-    let arr = [{ name: "累计GMV" }, { name: "GMV目标" }, { name: "GMV达成率" }] as any;
-    res.data.records?.map((item: any, index: any) => {
-      if (item.pallet == "S") {
-        arr[0].S = lueNum(item.month_gmv);
-        arr[1].S = lueNum(item.target_gmv);
-        arr[2].S = persentNum(item.target_gmv_rate) + "%";
-      }
-      if (item.pallet == "A") {
-        arr[0].A = lueNum(item.month_gmv);
-        arr[1].A = lueNum(item.target_gmv);
-        arr[2].A = persentNum(item.target_gmv_rate) + "%";
-      }
-      if (item.pallet == "B") {
-        arr[0].B = lueNum(item.month_gmv);
-        arr[1].B = lueNum(item.target_gmv);
-        arr[2].B = persentNum(item.target_gmv_rate) + "%";
-      }
-      if (item.pallet == "C") {
-        arr[0].C = lueNum(item.month_gmv);
-        arr[1].C = lueNum(item.target_gmv);
-        arr[2].C = persentNum(item.target_gmv_rate) + "%";
-      }
-      if (item.pallet == "D") {
-        arr[0].D = lueNum(item.month_gmv);
-        arr[1].D = lueNum(item.target_gmv);
-        arr[2].D = persentNum(item.target_gmv_rate) + "%";
-      }
-    });
-    palletGmvData.tableData = arr;
+    const { data: { records } } = res
+    const transformedData = [
+        // 累计GMV  
+        {
+            name: '累计GMV',
+            ...records.reduce((acc, item) => {
+                if (item.pallet !== '-') {
+                    acc[item.pallet] = lueNum((item.month_gmv));
+                }
+                return acc;
+            }, {})
+        },
+        // GMV目标  
+        {
+            name: 'GMV目标',
+            ...records.reduce((acc, item) => {
+                if (item.pallet !== '-') {
+                    acc[item.pallet] = lueNum((item.target_gmv)); // 格式化成和GMV相同的格式，尽管值都是0  
+                }
+                return acc;
+            }, {})
+        },
+        // GMV达成率  
+        {
+            name: 'GMV达成率',
+            ...records.reduce((acc, item) => {
+                if (item.pallet !== '-') {
+                    acc[item.pallet] = persentNum((item.target_gmv_rate));
+                }
+                return acc;
+            }, {})
+        }
+    ];
+    palletGmvData.tableData = transformedData;
     palletGmvload.value = false;
   }
 };

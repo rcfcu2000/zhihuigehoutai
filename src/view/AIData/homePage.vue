@@ -107,7 +107,7 @@
                                         {{ floatNum(state.sumGMV.target_gmv_rate * 100) }}%
                                     </div>
                                     <div class="percentage">
-                                        目标: {{ floatNum(state.sumGMV.target_day_rate) * 100 }}%({{
+                                        目标: {{ floatNum(state.sumGMV.target_day_rate * 100)}}%({{
                                             floatNum(
                                                 (state.sumGMV.target_gmv_rate - state.sumGMV.target_day_rate) *
                                                 100
