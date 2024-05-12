@@ -618,6 +618,7 @@ const GMVDismantling = () => {
         let data = {
             end_date: searchData.date[1],
             start_date: searchData.date[0],
+            shop_name: searchData.shop_name,
             product_manager: "",
             inventory_change: [],
             current_inventory: [params.data.name],

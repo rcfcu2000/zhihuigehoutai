@@ -60,15 +60,24 @@
                     <div class="echarts_title">商品明细</div>
                     <div class="echarts_box">
                         <div>
-                            <el-table :data="productData.tableData" border v-loading="productLoad"
-                                element-loading-background="rgba(122, 122, 122, 0.8)" style="width: 100%; height: 250px"
-                                v-el-table-infinite-scroll="loadMore_product" :infinite-scroll-distance="100"
-                                :infinite-scroll-disabled="false" :infinite-scroll-immediate="false"
-                                :infinite-scroll-delay="2000" lazy :load="load_product"
+                            <el-table 
+                                :data="productData.tableData" 
+                                border v-loading="productLoad"
+                                element-loading-background="rgba(122, 122, 122, 0.8)" 
+                                style="width: 100%; height: 250px"
+                                v-el-table-infinite-scroll="loadMore_product" 
+                                :infinite-scroll-distance="100"
+                                :infinite-scroll-disabled="false" 
+                                :infinite-scroll-immediate="false"
+                                :infinite-scroll-delay="2000" 
+                                lazy 
+                                :load="load_product"
                                 :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-                                @cell-click="proCellClick">
+                                @cell-click="proCellClick"
+                            >
                                 <el-table-column label="商品ID" width="150">
-                                    <template #default="scope">F
+                                    <template #default="scope">
+                                        <span>{{ scope.row.cur_pallet }}</span>&nbsp;
                                         <span>{{ scope.row.product_id }}</span>
                                     </template>
                                 </el-table-column>
@@ -639,6 +648,7 @@ const managerChange = (e: any) => {
     searchData.product_manager = [e]
     getAllEcharts()
 }
+
 const getAllEcharts = async () => {
     state.loading = true
     await getTrafficdata()
@@ -830,9 +840,11 @@ const palletEcharts = async () => {
                 myChart1.resize();
             }
         };
-        myChart1.on("click", (params) => {
+        myChart1.on("click", async (params) => {
             const { name } = params
-            getProduct([`${name}`])
+            product_pageNum = 1
+            productGrade.value = [`${name}`]
+            await getProduct()
         })
 
         EleResize.on(chartDom1, listener1);
@@ -1002,40 +1014,43 @@ const product_pageSize = ref(20)
 let nomore_product = ref(false)
 let productLoad = ref(true)
 let load_product = ref(false)
-const getProduct = async (current_inventory?: string) => {
+let productGrade = ref([])
+const getProduct = async () => {
     productLoad.value = true
     let data = searchData;
     data.start_date = data.date[0];
     data.end_date = data.date[1];
     data.pageNum = product_pageNum
     data.pageSize = product_pageSize.value
-    const [res] = [await getProductListdata_traffic({...data, current_inventory})];
+    const [res] = [await getProductListdata_traffic({...data, current_inventory: productGrade.value})];
     if (res.code == 0) {
-        const resd = res.data.records ? res.data.records.map((item: any, index: any) => {
-            item.avg_stay_duration = lueNum(item.avg_stay_duration)
-            item.depth_visit = lueNum(item.depth_visit)
-            item.gmv = lueNum(item.gmv)
-            item.overall_score = lueNum(item.overall_score)
-            item.pallet_change = lueNum(item.pallet_change)
-            item.profit = lueNum(item.profit)
-            item.uv = lueNum(item.uv)
-
-            item.add_car_efficiency = lueNum(item.add_car_efficiency * 100)
-            item.conversion_efficiency = lueNum(item.conversion_efficiency * 100)
-            item.loss_efficiency = lueNum(item.loss_efficiency * 100)
-            item.old_percentage = lueNum(item.old_percentage * 100)
-            item.pay_conversion_rate = lueNum(item.pay_conversion_rate * 100)
-            item.pay_gmv_percentage = lueNum(item.pay_gmv_percentage * 100)
-            item.refund_efficiency = lueNum(item.refund_efficiency * 100)
-            item.repurchase_efficiency = lueNum(item.repurchase_efficiency * 100)
-            item.spend_percentage = lueNum(item.spend_percentage * 100)
-            item.bounce_rate = lueNum(item.bounce_rate * 100)
-            item.children = []
-            item.hasChildren = true
-            return item
-        }) : []
+        const { data: { records } } = res
+        const resd = records?.map(item => {
+            return {
+                ...item,
+                avg_stay_duration: lueNum(item.avg_stay_duration),
+                depth_visit: lueNum(item.depth_visit),
+                gmv: lueNum(item.gmv),
+                overall_score: lueNum(item.overall_score),
+                pallet_change: lueNum(item.pallet_change),
+                profit: lueNum(item.profit),
+                uv: lueNum(item.uv),
+                add_car_efficiency: lueNum(item.add_car_efficiency * 100),
+                conversion_efficiency: lueNum(item.conversion_efficiency * 100),
+                loss_efficiency: lueNum(item.loss_efficiency * 100),
+                old_percentage: lueNum(item.old_percentage * 100),
+                pay_conversion_rate: lueNum(item.pay_conversion_rate * 100),
+                pay_gmv_percentage: lueNum(item.pay_gmv_percentage * 100),
+                refund_efficiency: lueNum(item.refund_efficiency * 100),
+                repurchase_efficiency: lueNum(item.repurchase_efficiency * 100),
+                spend_percentage: lueNum(item.spend_percentage * 100),
+                bounce_rate: lueNum(item.bounce_rate * 100),
+                children: [],
+                hasChildren: true
+            }
+        })
         nomore_product.value = (resd.length > 0) ? false : true
-        productData.tableData = productData.tableData.concat(resd)
+        productData.tableData = resd
         productLoad.value = false
     }
 }

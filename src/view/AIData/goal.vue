@@ -2291,7 +2291,7 @@ $echarts_bg_img: url("./images/_2.png");
 
 
 ::v-deep(.el-table-filter) {
-    eight: 200px;
+    height: 200px;
     overflow: auto;
     margin-top:20px;
     box-shadow:0 0 0!important;
